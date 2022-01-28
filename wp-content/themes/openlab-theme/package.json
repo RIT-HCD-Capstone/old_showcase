@@ -1,0 +1,25 @@
+{
+  "name": "openlab_theme",
+  "version": "1.3.2",
+  "main": "Gruntfile.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "OpenLab Team",
+  "license": "GPLv2",
+  "devDependencies": {
+    "grunt": "^1.4.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-less": "^2.0.0",
+    "grunt-contrib-uglify": "^4.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "jcarousellite": "^1.9.2",
+    "jit-grunt": "^0.9.1"
+  },
+  "description": "",
+  "dependencies": {
+    "grunt-log": "^1.0.0",
+    "grunt-php-set-constant": "0.0.15"
+  }
+}

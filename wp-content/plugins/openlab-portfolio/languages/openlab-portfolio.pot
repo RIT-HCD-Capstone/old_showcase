@@ -1,0 +1,352 @@
+# Copyright (C) 2020 OpenLab
+# This file is distributed under the same license as the OpenLab Portfolio plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenLab Portfolio 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/openlab-portfolio\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-04-13T10:43:47+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.4.0\n"
+"X-Domain: openlab-portfolio\n"
+
+#. Plugin Name of the plugin
+msgid "OpenLab Portfolio"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "http://openlab.citytech.cuny.edu"
+msgstr ""
+
+#. Description of the plugin
+msgid "WordPress portfolio tools, developed for Commons In A Box and the City Tech OpenLab."
+msgstr ""
+
+#. Author of the plugin
+msgid "OpenLab"
+msgstr ""
+
+#: src/Export/Exporter.php:84
+msgid "Unable to create export folder."
+msgstr ""
+
+#: src/Export/Exporter.php:102
+msgid "Folder %s does not exist."
+msgstr ""
+
+#: src/Export/Exporter.php:109
+msgid "Folder %s is not readable."
+msgstr ""
+
+#: src/Export/Exporter.php:122
+msgid "Could not open path: %"
+msgstr ""
+
+#: src/Export/Exporter.php:138
+msgid "Unable to create WXP export file."
+msgstr ""
+
+#: src/Export/Exporter.php:154
+msgid "Unable to generate export file. ZipArchive not available."
+msgstr ""
+
+#: src/Export/Exporter.php:169
+msgid "Unable to add data to export file."
+msgstr ""
+
+#: src/Export/Service.php:37
+#: src/Export/Service.php:38
+#: views/export/export.php:2
+msgid "Export Portfolio"
+msgstr ""
+
+#: src/Import/ArchiveUpload.php:70
+msgid "Please select an OpenLab Portfolio archive file."
+msgstr ""
+
+#: src/Import/ArchiveUpload.php:77
+msgid "Incorrect format. Please choose an OpenLab Portfolio archive file."
+msgstr ""
+
+#: src/Import/Decompressor.php:62
+msgid "Unable to extract export file."
+msgstr ""
+
+#: src/Import/Importer.php:186
+#: src/Import/Importer.php:260
+msgid "This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating."
+msgstr ""
+
+#: src/Import/Importer.php:419
+msgid "The file does not exist, please try again."
+msgstr ""
+
+#: src/Import/Importer.php:479
+msgid "Invalid author mapping"
+msgstr ""
+
+#: src/Import/Importer.php:667
+msgid "Failed to import \"%s\": Invalid post type %s"
+msgstr ""
+
+#: src/Import/Importer.php:677
+msgid "%s \"%s\" already exists."
+msgstr ""
+
+#: src/Import/Importer.php:759
+msgid "Skipping attachment \"%s\", fetching attachments disabled"
+msgstr ""
+
+#: src/Import/Importer.php:780
+msgid "Failed to import \"%s\" (%s)"
+msgstr ""
+
+#: src/Import/Importer.php:812
+#: src/Import/Importer.php:1663
+msgid "Imported \"%s\" (%s)"
+msgstr ""
+
+#: src/Import/Importer.php:817
+msgid "Post %d remapped to %d"
+msgstr ""
+
+#: src/Import/Importer.php:880
+msgid "Processing menu item %s"
+msgstr ""
+
+#: src/Import/Importer.php:923
+msgid "Menu item %d mapped to %d"
+msgstr ""
+
+#: src/Import/Importer.php:965
+msgid "Invalid file type"
+msgstr ""
+
+#: src/Import/Importer.php:1476
+msgid "Failed to import user \"%s\""
+msgstr ""
+
+#: src/Import/Importer.php:1497
+msgid "Imported user \"%s\""
+msgstr ""
+
+#: src/Import/Importer.php:1501
+msgid "User %d remapped to %d"
+msgstr ""
+
+#: src/Import/Importer.php:1639
+msgid "Failed to import %s %s"
+msgstr ""
+
+#: src/Import/Importer.php:1668
+msgid "Term %d remapped to %d"
+msgstr ""
+
+#: src/Import/Importer.php:1710
+msgid "Local file is too large, limit is %s"
+msgstr ""
+
+#: src/Import/Importer.php:1750
+msgid "Running post-processing for post %d"
+msgstr ""
+
+#: src/Import/Importer.php:1763
+msgid "Could not find the post parent for \"%s\" (post #%d)"
+msgstr ""
+
+#: src/Import/Importer.php:1768
+msgid "Post %d was imported with parent %d, but could not be found"
+msgstr ""
+
+#: src/Import/Importer.php:1782
+msgid "Could not find the author for \"%s\" (post #%d)"
+msgstr ""
+
+#: src/Import/Importer.php:1787
+msgid "Post %d was imported with author \"%s\", but could not be found"
+msgstr ""
+
+#: src/Import/Importer.php:1813
+msgid "Post %d was marked for post-processing, but none was required."
+msgstr ""
+
+#: src/Import/Importer.php:1824
+msgid "Could not update \"%s\" (post #%d) with mapped data"
+msgstr ""
+
+#: src/Import/Importer.php:1869
+msgid "Could not find the menu object for \"%s\" (post #%d)"
+msgstr ""
+
+#: src/Import/Importer.php:1874
+msgid "Post %d was imported with object \"%d\" of type \"%s\", but could not be found"
+msgstr ""
+
+#: src/Import/Importer.php:1896
+msgid "Could not find the comment parent for comment #%d"
+msgstr ""
+
+#: src/Import/Importer.php:1900
+msgid "Comment %d was imported with parent %d, but could not be found"
+msgstr ""
+
+#: src/Import/Importer.php:1914
+msgid "Could not find the author for comment #%d"
+msgstr ""
+
+#: src/Import/Importer.php:1918
+msgid "Comment %d was imported with author %d, but could not be found"
+msgstr ""
+
+#: src/Import/Importer.php:1935
+msgid "Could not update comment #%d with mapped data"
+msgstr ""
+
+#: src/Import/Service.php:46
+#: src/Import/Service.php:47
+#: views/import/header.php:1
+msgid "Import Portfolio"
+msgstr ""
+
+#: src/Import/Service.php:106
+msgid "Step 3: Import Complete. Check out your site!"
+msgstr ""
+
+#: src/Import/Service.php:107
+msgid "Import unsuccessful. Contact network admin for support."
+msgstr ""
+
+#: src/Import/Service.php:184
+msgid "Missing import file ID from request."
+msgstr ""
+
+#: src/Share/RestController.php:68
+msgid "Sorry, you are not allowed to edit this comment."
+msgstr ""
+
+#: src/Share/RestController.php:91
+msgid "Missing Portfolio post ID."
+msgstr ""
+
+#: src/Share/RestController.php:111
+msgid "Invalid comment ID."
+msgstr ""
+
+#: src/Share/RestController.php:130
+msgid "Invalid post ID."
+msgstr ""
+
+#: src/Share/Service.php:350
+#: views/share/dialog.php:40
+msgid "Citation"
+msgstr ""
+
+#: src/Share/Service.php:358
+#: views/share/dialog.php:44
+msgid "Annotation"
+msgstr ""
+
+#: views/export/export.php:6
+msgid "Use this tool to export your Portfolio."
+msgstr ""
+
+#: views/export/export.php:7
+msgid "A Portfolio Archive file (.zip) will be downloaded to your computer and can be used with Import Portfolio tool."
+msgstr ""
+
+#: views/export/export.php:12
+msgid "Download Archive File"
+msgstr ""
+
+#: views/import/error.php:4
+#: views/import/import.php:4
+#: views/import/settings.php:4
+#: views/import/upload.php:4
+msgid "Step 1: Choose and upload your Portfolio Archive file (.zip)."
+msgstr ""
+
+#: views/import/error.php:9
+msgid "Try Again"
+msgstr ""
+
+#: views/import/header.php:2
+msgid "Use this tool to import previously exported Portfolio Archive."
+msgstr ""
+
+#: views/import/import.php:5
+#: views/import/settings.php:5
+msgid "Step 2: Import the Portfolio Archive"
+msgstr ""
+
+#: views/import/import.php:6
+msgid "Step 3: Now importing."
+msgstr ""
+
+#: views/import/import.php:11
+msgid "Type"
+msgstr ""
+
+#: views/import/import.php:12
+msgid "Message"
+msgstr ""
+
+#: views/import/settings.php:10
+msgid "Start Importing"
+msgstr ""
+
+#: views/import/upload.php:10
+msgid "Import zip file"
+msgstr ""
+
+#: views/import/upload.php:13
+msgid "Upload Archive File"
+msgstr ""
+
+#: views/share/button/comment.php:4
+#: views/share/button/post.php:4
+#: views/share/dialog.php:5
+#: views/share/dialog.php:14
+msgid "Add to Portfolio"
+msgstr ""
+
+#: views/share/button/comment.php:10
+#: views/share/button/post.php:10
+msgid "Added to my Portfolio"
+msgstr ""
+
+#: views/share/dialog.php:6
+msgid "Close this dialog window"
+msgstr ""
+
+#: views/share/dialog.php:8
+msgid "Loading..."
+msgstr ""
+
+#: views/share/dialog.php:11
+msgid "Cancel"
+msgstr ""
+
+#: views/share/dialog.php:23
+msgid "Choose a Format:"
+msgstr ""
+
+#: views/share/dialog.php:26
+msgid "Post"
+msgstr ""
+
+#: views/share/dialog.php:31
+msgid "Page"
+msgstr ""
+
+#: views/share/dialog.php:36
+msgid "Title"
+msgstr ""
+
+#: views/share/dialog.php:41
+msgid "This <a href=\"{{ data.url }}\">entry</a> was originaly posted in \"{{ data.site_name }}\" on {{ data.date }}"
+msgstr ""

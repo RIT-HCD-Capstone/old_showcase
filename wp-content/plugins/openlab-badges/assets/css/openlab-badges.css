@@ -1,0 +1,113 @@
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    -webkit-clip-path: inset(50%);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    word-wrap: normal !important;
+}
+
+ul.badge-links {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.badge-links li {
+	display: inline-block;
+	margin: 0 10px 0 0;
+	padding: 0;
+}
+
+ul.badge-links li:last-child {
+	margin-right: 0;
+}
+
+.group-badge {
+	background: #fafafa;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	font-size: 11px;
+	font-weight: 600;
+	min-width: 50px;
+	padding: 0 3px;
+	position: relative;
+	text-align: center;
+}
+
+.group-badge .group-badge-shortname {
+	text-transform: uppercase;
+}
+
+.group-list ul.badge-links li {
+	margin-right: 2px;
+}
+
+.group-list ul.badge-links li:last-child {
+	margin-right: 0px;
+}
+
+.badge-tooltip {
+	background: #fff;
+	border: 1px solid #aaa;
+	bottom: -35px;
+	display: none;
+	left: 5px;
+	padding: 5px;
+	position: absolute !important;
+	white-space: nowrap;
+	width: auto;
+	z-index: 100;
+}
+
+.group-list .badge-tooltip {
+}
+
+.tooltip-on .badge-tooltip {
+	display: block;
+}
+
+/* Arrow */
+.badge-tooltip:after, .badge-tooltip:before {
+	bottom: 100%;
+	left: 20px;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.badge-tooltip:after {
+	border-color: rgba(136, 183, 213, 0);
+	border-bottom-color: #fff;
+	border-width: 5px;
+	margin-left: -5px;
+}
+.badge-tooltip:before {
+	border-color: rgba(194, 225, 245, 0);
+	border-bottom-color: #aaa;
+	border-width: 6px;
+	margin-left: -6px;
+}
+
+/* Group admin */
+.badge-selector .avatar-badge {
+	display: inline-block;
+}
+.badge-selector {
+	list-style-type: none;
+	padding-left: 0;
+}
+.badge-selector > li {
+	margin-bottom: 1em;
+}
+.badge-selector input {
+	margin-right: 16px;
+}

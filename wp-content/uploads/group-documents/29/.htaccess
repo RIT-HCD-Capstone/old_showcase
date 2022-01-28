@@ -1,0 +1,8 @@
+
+# BEGIN Buddypress Group Documents plugin
+# The directives (lines) between "BEGIN Buddypress Group Documents plugin" and "END Buddypress Group Documents plugin" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+Order Allow,Deny
+Deny from all
+# END Buddypress Group Documents plugin
