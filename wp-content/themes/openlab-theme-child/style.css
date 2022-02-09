@@ -3,4 +3,5 @@ Theme Name:     OpenLab Child
 Author:         ktb1193@rit.edu
 Template:       openlab-theme 
 Version:        1.0.0
+Description:    This is a child theme. It facilitates optional overriding of CBOX OpenLab code without directly editing it, so when CBOX OpenLab code is updated, desired edits aren't removed (because the child theme isn't updated).
 */

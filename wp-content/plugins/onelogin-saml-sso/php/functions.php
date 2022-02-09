@@ -1,5 +1,4 @@
 <?php
-
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
 	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
@@ -10,6 +9,7 @@ use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Settings;
 
 require_once "compatibility.php";
+include_once (ABSPATH . 'wp-admin/includes/plugin.php');
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
@@ -104,7 +104,13 @@ function saml_custom_login_footer() {
 		$saml_login_message = "SAML Login";
 	}
 
-	echo '<div style="font-size: 110%;padding:8px;background: #fff;text-align: center;"><a href="'.esc_url( get_site_url().'/wp-login.php?saml_sso') .'">'.esc_html($saml_login_message).'</a></div>';
+	$login_page = 'wp-login.php';
+	if (is_plugin_active('wps-hide-login/wps-hide-login.php')) {
+		$login_page = str_replace( 'wp-login.php', get_site_option( 'whl_page', 'login' ), $login_page ) . '/';
+	}
+	
+	$redirect_to = isset($_GET['redirect_to']) ? '&redirect_to='.$_GET['redirect_to'] : '';
+	echo '<div style="font-size: 110%;padding:8px;background: #fff;text-align: center;"><a href="'.esc_url( get_site_url().'/'.$login_page.'?saml_sso'.$redirect_to) .'">'.esc_html($saml_login_message).'</a></div>';
 }
 
 function saml_load_translations() {
@@ -144,7 +150,12 @@ function saml_sso() {
 		wp_redirect(home_url());
 		exit();
 	}
-	if (isset($_SERVER['REQUEST_URI']) && !isset($_GET['saml_sso'])) {
+
+	if (isset($_GET["target"])) {
+		$auth->login($_GET["target"]);
+	} else if (isset($_GET['redirect_to'])) {
+		$auth->login($_GET['redirect_to']);
+	} else if (isset($_SERVER['REQUEST_URI']) && !isset($_GET['saml_sso'])) {
 		$auth->login($_SERVER['REQUEST_URI']);
 	} else {
 		$auth->login();
@@ -241,6 +252,25 @@ function saml_acs() {
 
 	$errors = $auth->getErrors();
 	if (!empty($errors)) {
+		// Don't raise an error on passive mode
+		$errorReason = $auth->getLastErrorReason();
+		if (strpos($errorReason, 'Responder') != false && strpos($errorReason, 'Passive') !== false ) {
+			$relayState = esc_url_raw( $_REQUEST['RelayState'], ['https','http']);
+
+			if (empty($relayState)) {
+				wp_redirect(home_url());
+			} else {
+				if (strpos($relayState, 'redirect_to') !== false) {
+					$query = wp_parse_url($relayState, PHP_URL_QUERY);
+					parse_str($query, $parameters);
+					redirect_to_relaystate_if_trusted(urldecode($parameters['redirect_to']));
+				}  else {
+					redirect_to_relaystate_if_trusted($relayState);
+				}
+			}
+			exit();
+		}
+
 		echo '<br>'.__("There was at least one error processing the SAML Response").': ';
 		foreach($errors as $error) {
 			echo esc_html($error).'<br>';
@@ -352,6 +382,7 @@ function saml_acs() {
 	}
 
 	$matcher = get_option('onelogin_saml_account_matcher');
+	$newuser = false;
 
 	if (empty($matcher) || $matcher == 'username') {
 		$matcherValue = $userdata['user_login'];
@@ -399,6 +430,7 @@ function saml_acs() {
 			}
 		}
 	} else if (get_option('onelogin_saml_autocreate')) {
+		$newuser = true;
 		if (!validate_username($username)) {
 			echo __("The username provided by the IdP"). ' "'. esc_attr($username). '" '. __("is not valid and can't create the user at wordpress");
 			exit();
@@ -455,7 +487,7 @@ function saml_acs() {
 		setcookie(SAML_NAMEID_SP_NAME_QUALIFIER_COOKIE, $auth->getNameIdSPNameQualifier(), time() + MONTH_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN, $secure, true);
 	}
 
-	do_action( 'onelogin_saml_attrs', $attrs, wp_get_current_user(), get_current_user_id() );
+	do_action( 'onelogin_saml_attrs', $attrs, wp_get_current_user(), get_current_user_id(), $newuser);
 
 	// Trigger the wp_login hook used by wp_signon()
 	// @see https://developer.wordpress.org/reference/hooks/wp_login/
