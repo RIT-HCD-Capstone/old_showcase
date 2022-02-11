@@ -354,3 +354,4 @@ $academic_unit_data = cboxol_get_object_academic_unit_data_for_display(
 
 <?php
 openlab_group_profile_activity_list();
+?>

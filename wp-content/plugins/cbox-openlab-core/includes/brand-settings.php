@@ -63,6 +63,13 @@ function cboxol_get_brand_page_types() {
 			'settings_page_title'       => __( 'Search Results', 'commons-in-a-box' ),
 			'settings_page_description' => __( 'This placeholder page is used to display search results. This page\'s contents are generated dynamically, but you can edit the page title and slug.', 'commons-in-a-box' ),
 		),
+                //--begin edit
+                'acknowledgements'=> array(
+                        'settings_page_title'   =>      __( 'Acknowledgements', 'commons-in-a-box'),
+                        'settings_page_description'=>   __( 'This page can contain the Acknowledgements for your site.'),
+                        'parent'                =>      'about',
+                ),
+                //--end edit
 	);
 }
 
