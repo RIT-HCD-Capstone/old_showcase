@@ -2226,7 +2226,7 @@ function openlab_bp_group_site_pages( $mobile = false ) {
 				?>
 
 				<?php if ( openlab_is_my_portfolio() || is_super_admin() ) : ?>
-					<ul class="sidebar-sublinks portfolio-sublinks inline-element-list">
+					<ul class="sidebar-sublinks portfolio-sublinks inline-element-list"> 
 						<li class="portfolio-site-link bold">
 							<a class="bold no-deco" href="<?php echo esc_url( $group_site_settings['site_url'] ); ?>"><?php echo esc_html( $portfolio_group_type->get_label( 'visit_portfolio_site' ) ); ?><span class="fa fa-chevron-circle-right cyan-circle" aria-hidden="true"></span></a>
 						</li>

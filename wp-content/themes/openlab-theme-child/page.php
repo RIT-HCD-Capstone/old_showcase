@@ -1,8 +1,9 @@
+<!-- the purpose of this file is to add the About Menu to the Acknowledgements page-->
 <?php get_header(); ?>
 
-<div id="content" class="hfeed row">
+<div id="content" class="hfeed row"> 
 	<?php
-	$show_about_sidebar = cboxol_is_brand_page( 'about' ) || cboxol_is_brand_page('acknowledgements') || cboxol_is_brand_page( 'terms-of-use' ) || cboxol_is_brand_page( 'contact-us' );
+	$show_about_sidebar = (get_the_ID() == 557) || cboxol_is_brand_page( 'about' ) || cboxol_is_brand_page( 'terms-of-use' ) || cboxol_is_brand_page( 'contact-us' ); 
 
 	if ( $show_about_sidebar ) {
 		get_template_part( 'parts/sidebar/about-mobile' );
@@ -14,7 +15,7 @@
 		while ( have_posts() ) :
 			the_post();
 			?>
-
+                         
 			<div <?php post_class( 'col-sm-18 col-xs-24' ); ?>>
 				<div id="openlab-main-content"  class="content-wrapper">
 					<div class="entry-title">
@@ -28,24 +29,24 @@
 									<span class="icon-bar"></span>
 									<span class="icon-bar"></span>
 								</button>
-							</div>
+                                                        </div> 
 						<?php endif; ?>
 					</div>
 					<div class="entry-content"><?php the_content(); ?></div>
 				</div>
 			</div><!--hentry-->
-
+                        
 			<?php
 		endwhile;
 	endif;
-	?>
+        ?>
 
 	<?php
 	//add the about-page sidebar to just the about page and any child about page
 	if ( $show_about_sidebar ) {
 		get_template_part( 'parts/sidebar/about' );
 	} elseif ( is_page( 'help' ) ) {
-		get_template_part( 'parts/sidebar/help' );
+		//get_template_part( 'parts/sidebar/help' );
 	}
 	?>
 

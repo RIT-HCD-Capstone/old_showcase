@@ -366,7 +366,7 @@ if ( $this->total_entries() > 0 ) :
 															<div class="fui-rich-textarea"><?php echo wp_kses_post( $detail_item['value'] ); ?></div>
 
 															<?php
-														} elseif ( 'number' === $detail_item['type'] || 'currency' === $detail_item['type'] || 'calculation' === $detail_item['type'] ) {
+														} elseif ( 'number' === $detail_item['type'] || 'currency' === $detail_item['type'] || ( 'calculation' === $detail_item['type'] && is_numeric( $detail_item['value'] ) ) ) {
 															$separator = isset( $detail_item['separator'] ) ? $detail_item['separator'] : '';
 															$point     = isset( $detail_item['point'] ) ? $detail_item['point'] : '';
 															$precision = isset( $detail_item['precision'] ) ? $detail_item['precision'] : 0;

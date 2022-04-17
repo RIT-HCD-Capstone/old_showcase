@@ -60,7 +60,7 @@
 			var self = this;
 
 			this.$el.find(
-				'input.forminator-input, .forminator-checkbox, .forminator-radio, .forminator-input-file, select.forminator-select2, .forminator-multiselect input'
+				'.forminator-textarea, input.forminator-input, .forminator-checkbox, .forminator-radio, .forminator-input-file, select.forminator-select2, .forminator-multiselect input'
 			).each(function () {
 				$(this).on('change', function () {
 					// Give jquery sometime to apply changes

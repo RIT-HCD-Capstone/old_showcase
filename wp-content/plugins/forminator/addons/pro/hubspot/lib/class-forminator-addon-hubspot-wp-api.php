@@ -686,4 +686,25 @@ class Forminator_Addon_Hubspot_Wp_Api {
 		return $response;
 	}
 
+	/**
+	 * Get Property of field
+	 *
+	 * @param string $property
+	 * @param string $field
+	 * @param array $args
+	 *
+	 * @return array|mixed|object
+	 * @throws Forminator_Addon_Hubspot_Wp_Api_Exception
+	 * @throws Forminator_Addon_Hubspot_Wp_Api_Not_Found_Exception
+	 */
+	public function get_property( $property, $field, $args ) {
+		$response = $this->send_authenticated( 'GET', 'properties/v1/contacts/properties/named/' . $field, $args );
+
+		if ( property_exists( $response, $property ) ) {
+			return $response->$property;
+		} else {
+			return __( 'Property does not exist', 'forminator' );
+		}
+	}
+
 }

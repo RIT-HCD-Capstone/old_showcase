@@ -1,6 +1,6 @@
 <div class="ab-sub-wrapper">
 	<div class="ab-submenu">
-		<form name="login-form" style="display:none;" id="sidebar-login-form" class="standard-form form" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" method="post">
+		<form name="login-form" style="display:none;" id="sidebar-login-form" class="standard-form form" action="<?php echo esc_url( site_url( 'wp-login.php?saml_sso', 'login_post' ) ); ?>" method="post">
 			<label><?php esc_html_e( 'Username', 'commons-in-a-box' ); ?><br /><input type="text" name="log" id="dropdown-user-login" class="input form-control" value="" /></label><br />
 			<label><?php esc_html_e( 'Password', 'commons-in-a-box' ); ?><br /><input class="form-control" type="password" name="pwd" id="dropdown-user-pass" class="input" value="" /></label>
 			<p class="forgetmenot checkbox"><label><input name="rememberme" type="checkbox" id="dropdown-rememberme" value="forever" /> <?php esc_html_e( 'Keep Me Logged In', 'commons-in-a-box' ); ?></label></p>

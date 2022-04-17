@@ -1,3 +1,5 @@
+<!-- the purpose of this file is to access remove the 'Recent Posts' and 'Recent Comments' menus from loading by invoking activity-list.php -->
+<!-- the purpose of this file is to replace 'Recent Docs' with 'Recent Posts' -->
 <?php
 /**
  * Group "home" template.
@@ -353,5 +355,4 @@ $academic_unit_data = cboxol_get_object_academic_unit_data_for_display(
 <?php endif; ?>
 
 <?php
-openlab_group_profile_activity_list();
-?>
+ bp_get_template_part( 'groups/single/activity-list' );//openlab_show_site_posts_and_comments(); /*this does that*///

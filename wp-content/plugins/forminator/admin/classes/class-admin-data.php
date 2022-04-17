@@ -131,6 +131,7 @@ class Forminator_Admin_Data {
 			'countries'                      => forminator_get_countries_list(),
 			'userList'                       => forminator_list_users(),
 			'variables'                      => forminator_get_vars(),
+			'variablesForHiddenField'		 => forminator_get_vars( true ),
 			'payment_variables'              => forminator_get_payment_vars(),
 			'maxUpload'                      => forminator_get_max_upload(),
 			'captchaLangs'                   => forminator_get_captcha_languages(),

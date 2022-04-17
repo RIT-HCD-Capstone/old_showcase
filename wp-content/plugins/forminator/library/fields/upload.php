@@ -568,17 +568,19 @@ class Forminator_Upload extends Forminator_Field {
 				if ( ! empty( $upload ) ) {
 					$file_name = trim( sanitize_file_name( $upload['file_name'] ) );
 					$temp_path = forminator_upload_root() . '/' . $file_name;
+
+					$unique_file_name = wp_unique_filename( $upload_dir['path'], $file_name );
+					$exploded_name    = explode( '/', $unique_file_name );
+					$filename         = end( $exploded_name );
+					if ( wp_is_writable( $upload_dir['path'] ) ) {
+						$file_path = $upload_dir['path'] . '/' . trim( sanitize_file_name( $filename ) );
+						$file_url  = $upload_dir['url'] . '/' . trim( sanitize_file_name( $filename ) );
+					} else {
+						$file_path = $upload_dir['basedir'] . '/' . trim( sanitize_file_name( $filename ) );
+						$file_url  = $upload_dir['baseurl'] . '/' . trim( sanitize_file_name( $filename ) );
+					}
+
 					if ( file_exists( $temp_path ) ) {
-						$unique_file_name = wp_unique_filename( $upload_dir['path'], $file_name );
-						$exploded_name    = explode( '/', $unique_file_name );
-						$filename         = end( $exploded_name );
-						if ( wp_is_writable( $upload_dir['path'] ) ) {
-							$file_path = $upload_dir['path'] . '/' . trim( sanitize_file_name( $filename ) );
-							$file_url  = $upload_dir['url'] . '/' . trim( sanitize_file_name( $filename ) );
-						} else {
-							$file_path = $upload_dir['basedir'] . '/' . trim( sanitize_file_name( $filename ) );
-							$file_url  = $upload_dir['baseurl'] . '/' . trim( sanitize_file_name( $filename ) );
-						}
 						if ( rename( $temp_path, $file_path ) ) {
 							if ( $use_library && 'multiple' === $file_type ) {
 								$upload_id = wp_insert_attachment(
@@ -601,6 +603,23 @@ class Forminator_Upload extends Forminator_Field {
 
 							$file_path_arr[] = $file_path;
 							$file_url_arr[]  = $file_url;
+						}
+					} else {
+						// Check maybe it was already saved on previous submission but it had other fields validation issues.
+						preg_match( '/(\-([0-9]+))\.[^.]+$/', $file_path, $matches );
+						if ( ! empty( $matches[0] ) ) {
+							if ( '-1' === $matches[1] ) {
+								$replace = '';
+							} else {
+								$replace = '-' . ( --$matches[2] );
+							}
+							$ext       = str_replace( $matches[1], $replace, $matches[0] );
+							$file_path = substr( $file_path, 0, -strlen( $matches[0] ) ) . $ext;
+							$file_url  = substr( $file_url, 0, -strlen( $matches[0] ) ) . $ext;
+							if ( file_exists( $file_path ) ) {
+								$file_path_arr[] = $file_path;
+								$file_url_arr[]  = $file_url;
+							}
 						}
 					}
 				}

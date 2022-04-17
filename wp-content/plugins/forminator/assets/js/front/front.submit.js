@@ -273,8 +273,13 @@
 								} else {
 									if (typeof data.data !== "undefined") {
 										var isShowSuccessMessage = true;
+
 										//Remove background of the success message if form behaviour is redirect and the success message is empty
-										if ( typeof data.data.url !== 'undefined' ) {
+										if (
+											typeof data.data.url !== 'undefined' &&
+											typeof data.data.newtab !== 'undefined' &&
+											'newtab_thankyou' !== data.data.newtab
+										) {
 											isShowSuccessMessage = false;
 										}
 										if ( isShowSuccessMessage ) {
@@ -309,17 +314,21 @@
 									}
 								}
 
-								if (!data.data.success && typeof data.data.errors !== 'undefined' && data.data.errors.length) {
+								if ( ! data.data.success ) {
 									$this.trigger('forminator:form:submit:failed', formData);
-									self.show_messages(data.data.errors);
 									self.multi_upload_disable( $this, false );
+
+									if ( typeof data.data.errors !== 'undefined' && data.data.errors.length ) {
+										self.show_messages(data.data.errors);
+									}
 								}
 
 								if (data.success === true) {
+									var hideForm = typeof data.data.behav !== "undefined" && data.data.behav === 'behaviour-hide';
 									// Reset form
 									if ($this[0]) {
 										var resetEnabled = self.settings.resetEnabled;
-										if(resetEnabled) {
+										if(resetEnabled && ! hideForm) {
 											$this[0].reset();
 										}
 
@@ -327,13 +336,15 @@
 
 										// reset signatures
 										$this.find('.forminator-field-signature img').trigger('click');
+
+										// Reset Select field submissions
 										if (typeof data.data.select_field !== "undefined") {
 											$.each(data.data.select_field, function (index, value) {
 												if (value.length > 0) {
 													$.each(value, function (i, v) {
 														if (v['value']) {
 															if (v['type'] === 'multiselect') {
-																$this.find("#" + index + " input[value=" + v['value'] + "]").closest('li').remove().trigger("change");
+																$this.find("#" + index + " input[value=" + v['value'] + "]").closest('.forminator-option').remove().trigger("change");
 															} else {
 																$this.find("#" + index + " option[value=" + v['value'] + "]").remove().trigger("change");
 															}
@@ -400,7 +411,7 @@
 
 									}
 
-									if (typeof data.data.behav !== "undefined" && data.data.behav === 'behaviour-hide') {
+									if (hideForm) {
 										self.$el.find('.forminator-row').hide();
 										self.$el.find('.forminator-pagination-steps').hide();
 										self.$el.find('.forminator-pagination-footer').hide();

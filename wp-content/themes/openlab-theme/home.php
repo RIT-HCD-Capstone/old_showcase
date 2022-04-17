@@ -9,7 +9,7 @@ get_header();
 ?>
 
 <div id="openlab-main-content" class="clearfix row-home-top">
-	<div class="no-gutter no-gutter-right login">
+        <div class="no-gutter no-gutter-right login">
 		<div id="cuny_openlab_jump_start">
 			<?php get_template_part( 'parts/home/login' ); ?>
 		</div>

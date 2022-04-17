@@ -26,6 +26,7 @@ function forminator_set_message_vars( $embed_id, $embed_title, $embed_url, $user
 	$message_vars['user_ip']     = Forminator_Geo::get_user_ip();
 	$message_vars['date_mdy']    = date( 'm/d/Y' );
 	$message_vars['date_dmy']    = date( 'd/m/Y' );
+	$message_vars['submission_time'] = date_i18n( 'g:i:s a, T', forminator_local_timestamp(), true );
 	$message_vars['embed_id']    = $embed_id;
 	$message_vars['embed_title'] = $embed_title;
 	$message_vars['embed_url']   = $embed_url;

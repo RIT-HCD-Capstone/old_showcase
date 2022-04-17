@@ -803,7 +803,7 @@ class Forminator_Postdata extends Forminator_Field {
 		$force_default_author = self::get_property( 'default_author', $field, false );
 		$force_default_author = filter_var( $force_default_author, FILTER_VALIDATE_BOOLEAN );
 
-		// default behaviour.
+		// default behavior.
 		if ( is_user_logged_in() ) {
 			$post_author = get_current_user_id();
 		} else {

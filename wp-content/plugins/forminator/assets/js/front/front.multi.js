@@ -187,15 +187,10 @@
 
 			if( self.settings.has_stripe ) {
 				var stripe_payment = $(this.element).find('.forminator-stripe-element').first();
-				$(this.element).forminatorFrontPayment({
-					type: 'stripe',
-					paymentEl: stripe_payment,
-					paymentRequireSsl: self.settings.payment_require_ssl,
-					generalMessages: self.settings.general_messages,
-					has_loader: self.settings.has_loader,
-					loader_label: self.settings.loader_label,
-				});
+
+				this.renderStripe( self, stripe_payment );
 			}
+
 			if( self.settings.has_paypal ) {
 				$(this.element).forminatorFrontPayPal({
 					type: 'paypal',
@@ -922,12 +917,16 @@
 						this.value = parseFloat( this.value ).toFixed( decimals );
 					});
 				}
+				/*
+				* We changed the autoUnmask to false so we can use the formatted (masked) values on HTML field
+				* Every time the unmasked value is needed, $(selector).inputmask('unmaskedvalue'); must be used
+				*/
 				$( this ).inputmask({
 					'alias': 'decimal',
 					'rightAlign': false,
 					'digitsOptional': false,
 					'showMaskOnHover': false,
-					'autoUnmask' : true,
+					'autoUnmask' : false,
 					'removeMaskOnSubmit': true,
 				});
 			});
@@ -1215,6 +1214,38 @@
 			return object;
 
 		},
+
+		/**
+		 * Render Stripe once it's available
+		 *
+		 * @param string
+		 * @param type ('array'/'object')
+		 */
+		renderStripe: function( form, stripe_payment, stripeLoadCounter = 0 ) {
+			var self = this;
+
+			setTimeout( function() {
+				stripeLoadCounter++;
+
+				if ( 'undefined' !== typeof Stripe ) {
+
+					$( form.element ).forminatorFrontPayment({
+						type: 'stripe',
+						paymentEl: stripe_payment,
+						paymentRequireSsl: form.settings.payment_require_ssl,
+						generalMessages: form.settings.general_messages,
+						has_loader: form.settings.has_loader,
+						loader_label: form.settings.loader_label,
+					});
+
+				// Retry checking for 30 seconds
+				} else if ( stripeLoadCounter < 300 ) {
+					self.renderStripe( form, stripe_payment, stripeLoadCounter );
+				} else {
+					console.error( 'Failed to load Stripe.' );
+				}
+			}, 100 );
+		}
 
 	});
 

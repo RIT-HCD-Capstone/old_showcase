@@ -1,7 +1,59 @@
 /*
 Theme Name:     OpenLab Child
+Theme URI:      https://dhssatrit.cad.rit.edu/openlab-theme-child/
 Author:         ktb1193@rit.edu
 Template:       openlab-theme 
 Version:        1.0.0
 Description:    This is a child theme. It facilitates optional overriding of CBOX OpenLab code without directly editing it, so when CBOX OpenLab code is updated, desired edits aren't removed (because the child theme isn't updated).
 */
+#main-nav-sec-header {
+        background-color: black; 
+        overflow: hidden;
+}
+
+.home-page .row-home-top .login {
+        background: /*#F76902*/#f78b3e;
+        border-bottom: 13px solid /*#000000*/#F76902;
+}
+
+.home-page .row-home-top .login .log-box #open-lab-login {
+        border-bottom: 13px solid /*#D0D3D4*/#F76902;
+}
+.home-page .row-home-top .slider .camera_wrap .camera_pag {
+        background: black;
+}
+
+#breadcrumb-container {
+	background-color: #000000;
+}
+	
+#breadcrumb-container .breadcrumb-col .breadcrumb-prefix-label {
+        background: #000000;
+}
+#breadcrumb-container .breadcrumb-col .fa.fa-caret-right {
+        color: #000000;
+}
+
+.pagination li a.current,
+.pagination li span.current {
+        background: /*#f76902*/#000000;
+        border-color: /*#f76902*/#000000;
+        color: #fff;
+}
+
+.navbar-default .container-fluid ul.nav li.current-menu-item a {
+        background: /*#f76902*/#000000;
+        color: #fff;
+}
+
+.sidebar .sidebar-block ul.sidebar-nav li:hover > a,
+.sidebar .sidebar-block ul.sidebar-nav li:focus > a {
+        background: /*#f76902*/#000000;
+        color: #fff;
+}
+
+.sidebar .sidebar-block ul.sidebar-nav li.current-menu-item > a,
+.sidebar .sidebar-block ul.sidebar-nav li.selected-page > a {
+        background: /*#f76902*/#000000;
+        color: #fff;
+}

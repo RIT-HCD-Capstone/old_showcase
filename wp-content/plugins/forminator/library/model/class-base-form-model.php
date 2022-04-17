@@ -744,7 +744,7 @@ abstract class Forminator_Base_Form_Model {
 	}
 
 	/**
-	 * Migrate payment fields to new behaviour with multi payments
+	 * Migrate payment fields to new behavior with multi payments
 	 *
 	 * @return array
 	 * @since 1.15
@@ -1259,10 +1259,12 @@ abstract class Forminator_Base_Form_Model {
 		$settings  = ! empty( $settings ) ? $settings : $this->settings;
 
 		// default is always store.
-		$is_prevent_store = false;
+		$store_submissions = true;
 
-		$is_prevent_store = isset( $settings['store'] ) ? $settings['store'] : $is_prevent_store;
-		$is_prevent_store = filter_var( $is_prevent_store, FILTER_VALIDATE_BOOLEAN );
+		$store_submissions = isset( $settings['store_submissions'] ) ? $settings['store_submissions'] : $store_submissions;
+		// We have to reverse this because disable store submissions was changed to positive statement since 1.15.12
+		// from prevent store to store submissions
+		$is_prevent_store = filter_var( $store_submissions, FILTER_VALIDATE_BOOLEAN ) ? false : true;
 
 		/**
 		 * Filter is_prevent_store flag of the module

@@ -108,6 +108,7 @@ class Forminator_Fields {
 	 */
 	public function forminator_schedule_delete_temp_files() {
 		if ( ! wp_next_scheduled( 'schedule_delete_temp_files_cron' ) ) {
+			// Set to run after 25 hours so it will be more than 24 hours compared to file upload time
 			wp_schedule_single_event( time() + 60 * 60 * 24, 'schedule_delete_temp_files_cron' );
 		}
 	}
@@ -128,7 +129,7 @@ class Forminator_Fields {
 						if ( ! empty( $file ) && ! in_array( $file, array( '.', '..' ), true ) ) {
 							$temp_file = $temp_path . $file;
 							$file_time = filemtime( $temp_file );
-							if ( file_exists( $temp_file ) && ( time() - $file_time ) > 60 * 60 * 24 ) {
+							if ( file_exists( $temp_file ) && ( time() - $file_time ) >= 60 * 60 * 12 ) {
 								unlink( $temp_file );
 							}
 						}

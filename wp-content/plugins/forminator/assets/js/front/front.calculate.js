@@ -65,8 +65,10 @@
 					if ($(this).data('isHidden')) {
 						$(this).closest('.forminator-col').addClass('forminator-hidden forminator-hidden-option');
 						var rowField = $(this).closest('.forminator-row');
+						rowField.addClass('forminator-hidden-option');
+
 						if (rowField.find('> .forminator-col:not(.forminator-hidden)').length === 0) {
-							rowField.addClass('forminator-hidden forminator-hidden-option');
+							rowField.addClass('forminator-hidden');
 						}
 					}
 				});
@@ -317,7 +319,8 @@
 				if (!isFinite(res)) {
 					throw ('Infinity calculation result.');
 				}
-				res = parseFloat(res).toFixed(calcField.precision);
+				// Support cases like 1.005. Correct result is 1.01.
+				res = ( +( Math.round( res + `e+${calcField.precision}` )  + `e-${calcField.precision}` ) ).toFixed(calcField.precision);
 			} catch (e) {
 				this.isError = true;
 				console.log(e);
@@ -328,7 +331,7 @@
 
 			if ($input.val() !== String(res)) {
 				var decimal_point = $input.data('decimal-point');
-				res = res.replace(".", decimal_point );
+				res = String(res).replace(".", decimal_point );
 				$input.val(res).trigger("change");
 			}
 		},
@@ -442,12 +445,28 @@
 						value = Number(calculation);
 					}
 				}
+			} else if ( this.field_has_inputMask( $element ) ) {
+				value = parseFloat( $element.inputmask( 'unmaskedvalue' ) );
 			} else {
 				var number = $element.val();
 				value = parseFloat( number.replace(',','.') );
 			}
 
 			return isNaN(value) ? 0 : value;
+		},
+
+		field_has_inputMask: function ( $element ) {
+			var hasMask = false;
+
+			$element.each(function () {
+				if ( undefined !== $( this ).attr( 'data-inputmask' ) ) {
+					hasMask = true;
+					//break
+					return false;
+				}
+			});
+
+			return hasMask;
 		},
 
 		field_is_radio: function ($element) {

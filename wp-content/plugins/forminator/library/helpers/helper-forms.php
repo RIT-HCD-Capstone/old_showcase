@@ -951,7 +951,7 @@ function forminator_get_chart_data( Forminator_Poll_Model $poll ) {
 
 			$color = $field->color;
 
-			if ( empty( $color ) ) {
+			if ( empty( $color ) || empty($form_settings['poll-colors']) ) {
 				// Colors.
 				if ( empty( $chart_colors ) ) {
 					$chart_colors = $default_chart_colors;

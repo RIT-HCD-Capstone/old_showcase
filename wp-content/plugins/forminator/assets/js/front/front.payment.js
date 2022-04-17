@@ -81,14 +81,16 @@
 	// Avoid Plugin.prototype conflicts
 	$.extend(ForminatorFrontPayment.prototype, {
 		init: function () {
-			if (!this.settings.paymentEl) {
+			if (!this.settings.paymentEl || typeof this.settings.paymentEl.data() === 'undefined') {
 				return;
 			}
 
 			var self         = this;
 			this._stripeData = this.settings.paymentEl.data();
 
-			this.mountCardField();
+			if ( false === this.mountCardField() ) {
+				return;
+			}
 
 			$(this.element).on('payment.before.submit.forminator', function (e, formData, callback) {
 				self._form = self.getForm(e);
@@ -501,6 +503,10 @@
 			var zipField = this.getStripeData('zipField');
 			var fieldId = this.getStripeData('fieldId');
 
+			if ( null === key ) {
+				return false;
+			}
+
 			// Init Stripe
 			this._stripe = Stripe( key, {
 				locale: this.getStripeData('language')
@@ -632,7 +638,7 @@
 		},
 
 		getStripeData: function (key) {
-			if (typeof this._stripeData[key] !== 'undefined') {
+			if ( (typeof this._stripeData !== 'undefined') && (typeof this._stripeData[key] !== 'undefined') ) {
 				return this._stripeData[key];
 			}
 
@@ -691,6 +697,8 @@
 
 			} else if (this.field_is_select($element)) {
 				value = $element.val();
+			} else if ( this.field_has_inputMask( $element ) ) {
+				value = parseFloat( $element.inputmask( 'unmaskedvalue' ) );
 			} else {
 				value = $element.val()
 			}
@@ -735,6 +743,20 @@
 			}
 
 			return isNaN(value) ? 0 : value;
+		},
+
+		field_has_inputMask: function ( $element ) {
+			var hasMask = false;
+
+			$element.each(function () {
+				if ( undefined !== $( this ).attr( 'data-inputmask' ) ) {
+					hasMask = true;
+					//break
+					return false;
+				}
+			});
+
+			return hasMask;
 		},
 
 		field_is_radio: function ($element) {

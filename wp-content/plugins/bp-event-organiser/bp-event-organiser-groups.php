@@ -172,7 +172,7 @@ class BP_Event_Organiser_Group_Extension extends BP_Group_Extension {
 			'user_has_access' => current_user_can( 'read_group_events', bp_get_current_group_id() ),
 			'position'        => 0,
 			'link'            => bpeo_get_group_permalink() . 'upcoming/',
-		), $default_params );
+		), $default_params ); 
 
 		// We only allow group admins to see the Manage tab
 		$admin_ids = bp_group_admin_ids( groups_get_current_group(), 'array' );
@@ -263,7 +263,7 @@ class BP_Event_Organiser_Group_Extension extends BP_Group_Extension {
 		}
 
 		// Use our template stack.
-		add_filter( 'eventorganiser_template_stack', 'bpeo_register_template_stack' );
+		//add_filter( 'eventorganiser_template_stack', 'bpeo_register_template_stack' );
 
 		// Load our template part.
 		eo_get_template_part( 'buddypress/groups/single/subnav-events' );

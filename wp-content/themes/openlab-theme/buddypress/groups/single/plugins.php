@@ -40,7 +40,7 @@ if ( function_exists( 'openlab_eo_is_event_detail_screen' ) && openlab_eo_is_eve
 						<div class="group-count col-sm-7 pull-right"><?php echo esc_html( openlab_get_files_count() ); ?></div>
 					</div>
 
-				<?php elseif ( bp_is_current_component( 'events' ) || bp_is_current_action( 'events' ) ) : ?>
+				<?php elseif (bp_is_current_component( 'events' ) || bp_is_current_action( 'events' )) : ?>
 
 					<?php //do nothing - event sub nav is handled via template override in buddypress/groups/single/subnav-events.php ?>
 

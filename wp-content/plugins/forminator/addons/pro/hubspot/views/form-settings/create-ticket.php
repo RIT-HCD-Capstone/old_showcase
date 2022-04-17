@@ -215,7 +215,7 @@ foreach ( $template_vars as $key => $val ) {
 						aria-describedby="ticket-name-input-error"
 					/>
 
-					<select id="select-ticket-name" class="select-field">
+					<select id="select-ticket-name" class="sui-variables select-field">
 
 						<?php
 						if ( ! empty( $vars['form_fields'] ) ) :
@@ -265,7 +265,7 @@ foreach ( $template_vars as $key => $val ) {
 						<?php echo esc_attr( $vars['ticket_description'] ); ?>
 					</textarea>
 
-					<select id="select-ticket-description" class="select-field">
+					<select id="select-ticket-description" class="sui-variables select-field">
 
 						<?php
 						if ( ! empty( $vars['form_fields'] ) ) :

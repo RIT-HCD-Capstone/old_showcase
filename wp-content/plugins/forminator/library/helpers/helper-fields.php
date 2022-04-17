@@ -387,9 +387,12 @@ function forminator_post_categories( $type = '' ) {
  *
  * @since 1.0
  * @since 1.5 add `user_id`
+ *
+ * @param bool $add_query	@since 1.15.6
+ *
  * @return mixed
  */
-function forminator_get_vars() {
+function forminator_get_vars( $add_query = false ) {
 	$vars_list = array(
 		'user_ip'      	  => esc_html__( 'User IP Address', 'forminator' ),
 		'date_mdy'     	  => esc_html__( 'Date (mm/dd/yyyy)', 'forminator' ),
@@ -405,8 +408,11 @@ function forminator_get_vars() {
 		'user_email'   	  => esc_html__( 'User Email', 'forminator' ),
 		'user_login'   	  => esc_html__( 'User Login', 'forminator' ),
 		'custom_value' 	  => esc_html__( 'Custom Value', 'forminator' ),
-		'query'        	  => esc_html__( 'Query Parameter', 'forminator' ),
 	);
+
+	if ( $add_query ) {
+		$vars_list['query'] = esc_html__( 'Query Parameter', 'forminator' );
+	}
 
 	/**
 	 * Filter forminator var list
@@ -560,8 +566,14 @@ function forminator_replace_form_data( $content, $data, Forminator_Form_Model $c
 					$value           = implode( ', ', array_keys( array_intersect( array_flip( $field_options ), array_map( 'stripslashes', $selected_values ) ) ) );
 				}
 			} elseif ( isset( $data[ $element_id ] ) ) {
-				// Check if field exist, if not we replace the ID with empty string.
-				$value = $data[ $element_id ];
+
+				if ( strpos( $element_id, 'number' ) !== false ) {
+					$field = $custom_form->get_field( $element_id, true );
+					$value = Forminator_Field::forminator_number_formatting( $field, $data[ $element_id ] );
+				} else {
+					$value = $data[ $element_id ];
+				}
+
 			} elseif ( ( strpos( $element_id, 'postdata' ) !== false
 						|| strpos( $element_id, 'upload' ) !== false
 						|| strpos( $element_id, 'calculation' ) !== false
@@ -570,6 +582,10 @@ function forminator_replace_form_data( $content, $data, Forminator_Form_Model $c
 						|| strpos( $element_id, 'signature' ) !== false )
 					&& $custom_form && $entry ) {
 				$value = forminator_get_field_from_form_entry( $element_id, $custom_form, $data, $entry );
+
+				if ( strpos( $element_id, 'html' ) !== false ) {
+					$value = forminator_replace_form_data( $value, $data, $custom_form, $entry, $get_labels );
+				}
 			} else {
 				// element with suffixes, etc.
 				// use submitted `data` since its possible to disable DB storage,.
@@ -652,7 +668,7 @@ function forminator_replace_custom_form_data( $content, Forminator_Form_Model $c
 }
 
 /**
- * Get Html Formatted of form entry
+ * Get Html Formatted of form entry for email notification
  *
  * @since 1.0.3
  *
@@ -805,7 +821,7 @@ function forminator_get_formatted_form_non_empty_entry( Forminator_Form_Model $c
 					) {
 				$value = forminator_replace_form_data( '{' . $form_field->slug . '}', $data, $custom_form, $entry, true );
 			} else {
-				$value = render_entry( $entry, $slug );
+				$value = render_entry( $entry, $slug, $field_array, '', true );
 			}
 			/**
 			 * Filter value of a field that is not saved in DB
@@ -1028,6 +1044,10 @@ function forminator_replace_variables( $content, $id = false, $data_current_url 
 		$date_dmy = date_i18n( 'd/m/Y', forminator_local_timestamp(), true );
 		$content  = str_replace( '{date_dmy}', $date_dmy, $content );
 
+		// Submission time.
+		$submission_time = date_i18n( 'g:i:s a, T', forminator_local_timestamp(), true );
+		$content  = str_replace( '{submission_time}', $submission_time, $content );
+
 		// Handle Embed Post/Page ID variable.
 		$embed_post_id = forminator_get_post_data( 'ID', $post_id );
 		$content       = str_replace( '{embed_id}', $embed_post_id, $content );
@@ -1095,6 +1115,7 @@ function forminator_replace_variables( $content, $id = false, $data_current_url 
 
 /**
  * Render entry
+ * Used in email notifications
  * TODO: refactor this
  *
  * @since 1.0
@@ -1107,7 +1128,7 @@ function forminator_replace_variables( $content, $id = false, $data_current_url 
  *
  * @return string
  */
-function render_entry( $item, $column_name, $field = null, $type = '' ) {
+function render_entry( $item, $column_name, $field = null, $type = '', $remove_empty = false ) {
 	$data = $item->get_meta( $column_name, '' );
 
 	$is_calculation = false;
@@ -1150,101 +1171,101 @@ function render_entry( $item, $column_name, $field = null, $type = '' ) {
 								// possible empty when postdata not required.
 								if ( ! empty( $value ) ) {
 
-									$post_id = $data['postdata'];
-									$url     = get_edit_post_link( $post_id, 'link' );
+                                    $post_id = $data['postdata'];
+                                    $url = get_edit_post_link( $post_id, 'link' );
 
-									// Title.
-									$title = get_the_title( $post_id );
-									$title = ! empty( $title ) ? $title : __( '(no title)', 'forminator' );
+                                    // Title
+                                    $title = get_the_title( $post_id );
+                                    $title = ! empty( $title ) ? $title : __( '(no title)', 'forminator' );
 
-									$output .= '<ul>';
+                                    $output .= '<ul>';
 
-										$output .= '<li>';
-										$output .= '<b>' . esc_html__( 'Title', 'forminator' ) . ':</b> ';
-										$output .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', 'forminator' ) . '">'
-														. $title .
-													'</a>';
-										$output .= '</li>';
+                                        $output .= '<li>';
+                                        $output .= '<b>' . esc_html__( 'Title', 'forminator' ) . ':</b> ';
+                                        $output .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', 'forminator' ) . '">'
+                                                        . $title .
+                                                    '</a>';
+                                        $output .= '</li>';
 
-										// Content.
-									if ( ! empty( $data['value']['post-content'] ) ) {
-										$post_content = $data['value']['post-content'];
-										$output      .= '<li>';
-										$output      .= '<b>' . esc_html__( 'Content', 'forminator' ) . ':</b><br>';
-										$output      .= wp_kses( $post_content, 'post' );
-										$output      .= '</li>';
-									}
+                                        // Content
+                                        if ( ! empty( $data['value']['post-content'] ) ) {
+                                            $post_content  = $data['value']['post-content'];
+                                            $output .= '<li>';
+                                            $output .= '<b>' . esc_html__( 'Content', 'forminator' ) . ':</b><br>';
+                                            $output .= wp_kses( $post_content, 'post' );
+                                            $output .= '</li>';
+                                        }
 
-										// Excerpt.
-									if ( ! empty( $data['value']['post-excerpt'] ) ) {
-										$post_excerpt = $data['value']['post-excerpt'];
-										$output      .= '<li>';
-										$output      .= '<b>' . esc_html__( 'Excerpt', 'forminator' ) . ':</b><br>';
-										$output      .= wp_strip_all_tags( $post_excerpt );
-										$output      .= '</li>';
-									}
+                                        // Excerpt
+                                        if ( ! empty( $data['value']['post-excerpt'] ) ) {
+                                            $post_excerpt = $data['value']['post-excerpt'];
+                                            $output .= '<li>';
+                                            $output .= '<b>' . esc_html__( 'Excerpt', 'forminator' ) . ':</b><br>';
+                                            $output .= wp_strip_all_tags( $post_excerpt );
+                                            $output .= '</li>';
+                                        }
 
-										// Category.
-									if ( ! empty( $data['value']['category'] ) ) {
-										$post_category = $data['value']['category'];
-										$post_category = get_the_category_by_ID( $post_category );
-										// In case of deleted categories.
-										if ( ! empty( $post_category ) ) {
-											$output .= '<li>';
-											$output .= '<b>' . esc_html__( 'Category', 'forminator' ) . ':</b> ';
-											$output .= $post_category;
-											$output .= '</li>';
-										}
-									}
+                                        // Category
+                                        if ( ! empty( $data['value']['category'] ) ) {
+                                            $post_category = $data['value']['category'];
+                                            $post_category = get_the_category_by_ID( $post_category );
+                                            // In case of deleted categories.
+                                            if ( ! empty( $post_category ) ) {
+                                                $output .= '<li>';
+                                                $output .= '<b>' . esc_html__( 'Category', 'forminator' ) . ':</b> ';
+                                                $output .= $post_category;
+                                                $output .= '</li>';
+                                            }
+                                        }
 
-										// Tags.
-									if ( ! empty( $data['value']['post_tag'] ) ) {
-										$post_tag_id = $meta_value['value']['post_tag'];
-										$term_args   = array(
-											'taxonomy'   => 'post_tag',
-											'term_taxonomy_id' => $post_tag_id,
-											'hide_empty' => false,
-											'fields'     => 'names',
-										);
-										$term_query  = new WP_Term_Query( $term_args );
+                                        // Tags
+                                        if ( ! empty( $data['value']['post_tag'] ) ) {
+                                            $post_tag_id = $data['value']['post_tag'];
+                                            $term_args = array(
+                                                'taxonomy'          => 'post_tag',
+                                                'term_taxonomy_id'  => $post_tag_id,
+                                                'hide_empty'        => false,
+                                                'fields'            => 'names',
+                                            );
+                                            $term_query = new WP_Term_Query( $term_args );
 
-										// In case of deleted tags.
-										if ( ! empty( $tag = $term_query->terms ) ) {
-											$output .= '<li>';
-											$output .= '<b>' . esc_html__( 'Tag', 'forminator' ) . ':</b> ';
-											$output .= $tag[0];
-											$output .= '</li>';
-										}
-									}
+                                            // In case of deleted tags.
+                                            if ( ! empty( $tag = $term_query->terms ) ) {
+                                                $output .= '<li>';
+                                                $output .= '<b>' . esc_html__( 'Tag', 'forminator' ) . ':</b> ';
+                                                $output .= $tag[0];
+                                                $output .= '</li>';
+                                            }
+                                        }
 
-										// Featured Image.
-									if ( ! empty( $data['value']['post-image'] ) && ! empty( $data['value']['post-image']['attachment_id'] ) ) {
-										$post_image_id = $data['value']['post-image']['attachment_id'];
-										$output       .= '<li>';
-										$output       .= '<b>' . esc_html__( 'Featured image', 'forminator' ) . ':</b><br>';
-										$output       .= wp_get_attachment_image( $post_image_id, array( 100, 100 ) );
-										$output       .= '</li>';
-									}
+                                        // Featured Image
+                                        if ( ! empty( $data['value']['post-image'] ) && ! empty( $data['value']['post-image']['attachment_id'] ) ) {
+                                            $post_image_id = $data['value']['post-image']['attachment_id'];
+                                            $output .= '<li>';
+                                            $output .= '<b>' . esc_html__( 'Featured image', 'forminator' ) . ':</b><br>';
+                                            $output .= wp_get_attachment_image( $post_image_id, array( 100, 100 ) );
+                                            $output .= '</li>';
+                                        }
 
-										// Custom fields.
-									if ( ! empty( $data['value']['post-custom'] ) ) {
-										$post_custom = $data['value']['post-custom'];
-										$output     .= '<li>';
-											$output .= '<b>' . esc_html__( 'Custom fields', 'forminator' ) . ':</b><br>';
-											$output .= '<ul class="' . esc_attr( 'bulleted' ) . '">';
-										foreach ( $post_custom as $field ) {
-											if ( ! empty( $field['value'] ) ) {
-														$output .= '<li>';
-														$output .= esc_html( $field['key'] ) . ': ';
-														$output .= esc_html( $field['value'] );
-														$output .= '</li>';
-											}
-										}
-											$output .= '</ul>';
-											$output .= '</li>';
-									}
+                                        // Custom fields
+                                        if ( ! empty( $data['value']['post-custom'] ) ) {
+                                            $post_custom   = $data['value']['post-custom'];
+                                            $output .= '<li>';
+                                                $output .= '<b>' . esc_html__( 'Custom fields', 'forminator' ) . ':</b><br>';
+                                                $output .= '<ul class="' . esc_attr( 'bulleted' ) . '">';
+                                                    foreach ( $post_custom as $field ) {
+                                                        if ( ! empty( $field['value'] ) ) {
+                                                            $output .= '<li>';
+                                                            $output .= esc_html( $field['key'] ) . ': ';
+                                                            $output .= esc_html( $field['value'] );
+                                                            $output .= '</li>';
+                                                        }
+                                                    }
+                                                $output .= '</ul>';
+                                            $output .= '</li>';
+                                        }
 
-									$output .= '</ul>';
+                                    $output .= '</ul>';
 
 								}
 							} else {
@@ -1257,27 +1278,60 @@ function render_entry( $item, $column_name, $field = null, $type = '' ) {
 										}
 										$is_product = true;
 									} else {
-										if ( 'country' === $key ) {
-											if ( isset( $countries[ $value ] ) ) {
-												$output .= sprintf( __( '<strong>Country: </strong> %s', 'forminator' ), $countries[ $value ] ) . '<br/> ';
-											} else {
-												$output .= sprintf( __( '<strong>Country: </strong> %s', 'forminator' ), $value ) . '<br/> ';
-											}
+
+										$key_slug = $key;
+
+										if ( in_array( $key, Forminator_Form_Entry_Model::field_suffix(), true ) ) {
+											$key = Forminator_Form_Entry_Model::translate_suffix( $key );
 										} else {
-											if ( in_array( $key, Forminator_Form_Entry_Model::field_suffix(), true ) ) {
-												$key = Forminator_Form_Entry_Model::translate_suffix( $key );
-											} else {
-												$key = strtolower( $key );
-												$key = ucfirst( str_replace( array( '-', '_' ), ' ', $key ) );
-											}
-											$value   = esc_html( $value );
-											$output .= sprintf( __( '<strong>%1$s : </strong> %2$s', 'forminator' ), $key, $value ) . '<br/> ';
+											$key = strtolower( $key );
+											$key = ucfirst( str_replace( array( '-', '_' ), ' ', $key ) );
 										}
-										// Todo..remove duplicate code.
-										if ( false !== stripos( $key, 'name-' ) ) {
-											$value = esc_html( $value );
-											/* translators: ... */
-											$output .= sprintf( __( '<strong>%1$s : </strong> %2$s', 'forminator' ), $key, $value ) . '<br/> ';
+
+										// Name labels
+										if ( 'prefix' === $key_slug && ! empty( $field[ 'prefix_label' ] ) ) {
+											$key = $field[ 'prefix_label' ];
+										}
+										if ( 'first-name' === $key_slug && ! empty( $field[ 'fname_label' ] ) ) {
+											$key = $field[ 'fname_label' ];
+										}
+										if ( 'middle-name' === $key_slug && ! empty( $field[ 'mname_label' ] ) ) {
+											$key = $field[ 'mname_label' ];
+										}
+										if ( 'last-name' === $key_slug && ! empty( $field[ 'lname_label' ] ) ) {
+											$key = $field[ 'lname_label' ];
+										}
+
+										// Address labels
+										if ( 'street_address' === $key_slug && ! empty( $field[ 'street_address_label' ] ) ) {
+											$key = $field[ 'street_address_label' ];
+										}
+										if ( 'address_line' === $key_slug && ! empty( $field[ 'address_line_label' ] ) ) {
+											$key = $field[ 'address_line_label' ];
+										}
+										if ( 'city' === $key_slug && ! empty( $field[ 'address_city_label' ] ) ) {
+											$key = $field[ 'address_city_label' ];
+										}
+										if ( 'state' === $key_slug && ! empty( $field[ 'address_state_label' ] ) ) {
+											$key = $field[ 'address_state_label' ];
+										}
+										if ( 'zip' === $key_slug && ! empty( $field[ 'address_zip_label' ] ) ) {
+											$key = $field[ 'address_zip_label' ];
+										}
+										if ( 'country' === $key_slug ) {
+
+											if ( ! empty( $field[ 'address_country_label' ] ) ) {
+												$key = $field[ 'address_country_label' ];
+											}
+											if ( isset( $countries[ $value ] ) ) {
+												$value = $countries[ $value ];
+											}
+										}
+
+										if ( $remove_empty && empty( $value ) ) {
+											$output .= '';
+										} else {
+											$output .= sprintf( __( '<strong>%1$s : </strong> %2$s', 'forminator' ), esc_html( $key ), esc_html( $value ) ) . "<br/> ";
 										}
 									}
 								}
@@ -1297,13 +1351,24 @@ function render_entry( $item, $column_name, $field = null, $type = '' ) {
 							false !== strpos( $column_name, 'name' ) ||
 							false !== strpos( $column_name, 'address' ) ||
 							false !== strpos( $column_name, 'upload' ) ||
-							false !== strpos( $column_name, 'date' ) ||
 							false !== strpos( $column_name, 'time' ) ||
 							false !== strpos( $column_name, 'postdata' ) ||
 							false !== strpos( $column_name, 'signature' )
 						)
 					) {
 						$output = trim( $output );
+
+					} elseif ( false !== strpos( $column_name, 'date' ) && 'select' === $field['field_type'] ) {
+						$meta_value = array(
+							'day'    => $data['day'],
+							'month'  => $data['month'],
+							'year'   => $data['year'],
+							'format' => $data['format'],
+						);
+
+						$output	= Forminator_Form_Entry_Model::meta_value_to_string( 'date', $meta_value, true ) . '<br/>';
+						$output .= sprintf( esc_html__( 'Format%s %s %s', 'forminator' ), ':', $data['format'], '<br/>' );
+
 					} else {
 						$output = substr( trim( $output ), 0, - 1 );
 					}

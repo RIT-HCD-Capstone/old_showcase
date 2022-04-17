@@ -126,7 +126,6 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 
 		if ( $form_id ) {
 			$custom_form = Forminator_Form_Model::model()->load( $form_id );
-			$setting     = $this->get_form_settings( $custom_form );
 
 			if ( is_object( $custom_form ) ) {
 				$submitted_data = $post_data;
@@ -149,9 +148,6 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 							$forminator_stripe_field = isset( $field_classes[ $field_type ] ) ? $field_classes[ $field_type ] : null;
 
 							if ( $forminator_stripe_field instanceof Forminator_Stripe ) {
-								$currency = Forminator_Field::get_property( 'currency', $field_array, $this->get_default_currency() );
-								$mode     = Forminator_Field::get_property( 'mode', $field_array, 'test' );
-
 								$forminator_stripe_field->update_paymentIntent(
 									$submitted_data['paymentid'],
 									$pseudo_submitted_data[ $field_id ],
@@ -529,7 +525,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 					} elseif ( isset( $upload_data['success'] ) && false === $upload_data['success'] ) {
 						$error = isset( $upload_data['message'] ) ? $upload_data['message'] : $this->get_invalid_form_message( $setting, $form_id );
 
-						return self::return_error( $error );
+						self::$submit_errors[][ $field->slug ] = $error;
 					} else {
 						// no file uploaded for this field_id.
 						$field_data = '';
@@ -582,7 +578,8 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 				if ( ! empty( $field_data['return'] ) ) {
 					unset( $field_data['return'] );
 
-					return $field_data;
+					$field_data_array[] = $field_data;
+					continue;
 				}
 
 				/**
@@ -680,38 +677,16 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 			}
 		}
 
-		/**
-		* Get saved postdata fields data and replace upload tags with uploaded data
-		* move to function ++++
-		*/
-		if ( ! empty( $postdata_fields ) ) {
-			$postdata_return = $this->create_post_from_postdata( $postdata_fields, $upload_in_customfield );
-
-			foreach ( $postdata_return as $postdata ) {
-				if ( 'success' === $postdata['type'] ) {
-
-					foreach ( $field_data_array as $field_key => $field_datum ) {
-						if ( $field_datum['name'] === $postdata['field_id'] ) {
-							$field_data_array[ $field_key ] = array(
-								'name'  => $postdata['field_id'],
-								'value' => $postdata['field_data'],
-							);
-						}
-					}
-				} else {
-					self::$submit_errors[][ $field->slug ] = $postdata['value'];
-				}
-			}
-		}
-
 		self::$info = array(
-			'calculation_fields' => $calculation_fields,
-			'stripe_fields'      => $stripe_fields,
-			'paypal_fields'      => $paypal_fields,
-			'field_data_array'   => $field_data_array,
-			'submitted_data'     => $submitted_data,
-			'select_field_value' => $select_field_value,
-			'product_fields'     => $product_fields,
+			'calculation_fields'    => $calculation_fields,
+			'stripe_fields'         => $stripe_fields,
+			'paypal_fields'         => $paypal_fields,
+			'field_data_array'      => $field_data_array,
+			'submitted_data'        => $submitted_data,
+			'select_field_value'    => $select_field_value,
+			'product_fields'        => $product_fields,
+			'postdata_fields'       => $postdata_fields,
+			'upload_in_customfield' => $upload_in_customfield,
 		);
 	}
 
@@ -769,9 +744,11 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		try {
 			$intent = $field_object->get_paymentIntent( $field_data_array, $submitted_data );
 
-			if ( ! is_wp_error( $intent ) ) {
-				$result = $intent->confirm();
+			if ( is_wp_error( $intent ) ) {
+				return $intent;
 			}
+
+			$result = $intent->confirm();
 		} catch ( Exception $e ) {
 			// Delete entry if paymentIntent confirmation is not successful
 			$entry->delete();
@@ -830,7 +807,9 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 * @return array
 	 */
 	private static function handle_stripe( $custom_form, $submitted_data, $pseudo_submitted_data, $field_data_array, $entry ) {
-		if ( ! self::$info['stripe_fields'] ) {
+		$stripe = new Forminator_Gateway_Stripe();
+
+		if ( ! $stripe->is_ready() || ! self::$info['stripe_fields'] ) {
 			return $field_data_array;
 		}
 
@@ -964,7 +943,6 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	public function handle_form( $form_id, $preview = false ) {
 		self::$module_id       = $form_id;
 		$submitted_data        = $this->_post_data;
-		$pseudo_submitted_data = array();
 
 		/** @var Forminator_Form_Model $custom_form */
 		$custom_form = Forminator_Form_Model::model()->load( $form_id );
@@ -1117,6 +1095,35 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 			return self::return_error( $field_data_array->get_error_message() );
 		}
 
+		/**
+		 * Get saved postdata fields data and replace upload tags with uploaded data
+		 * move to function ++++
+		 */
+		if ( ! empty( self::$info['postdata_fields'] ) ) {
+			$postdata_return = $this->create_post_from_postdata( self::$info['postdata_fields'], self::$info['upload_in_customfield'] );
+
+			if ( isset( $postdata_return['type'] ) && 'error' === $postdata_return['type'] ) {
+				return self::return_error( $postdata_return['value'] );
+			}
+
+			foreach ( $postdata_return as $postdata ) {
+
+				if ( 'success' === $postdata['type'] ) {
+
+					foreach ( $field_data_array as $field_key => $field_datum ) {
+						if ( $field_datum['name'] === $postdata['field_id'] ) {
+							$field_data_array[ $field_key ] = array(
+								'name'  => $postdata['field_id'],
+								'value' => $postdata['field_data'],
+							);
+						}
+					}
+				} else {
+					return self::return_error( $postdata['value'] );
+				}
+			}
+		}
+
 		$field_data_array_for_registration = $field_data_array;
 		$field_data_array                  = self::remove_password( $field_data_array );
 
@@ -1160,19 +1167,19 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 
 		$entry->set_fields( $added_data_array );
 
+		//ADDON after_entry_saved.
+		$this->attach_addons_after_entry_saved( $entry, $custom_form );
+
+		// After $entry->set_fields() to get all data for {all_fields}.
+
 		// If it's registration form.
 		$registration = self::maybe_registration( $setting, $custom_form, $submitted_data, $entry, $field_data_array_for_registration, $pseudo_submitted_data );
 		if ( is_wp_error( $registration ) ) {
 			return self::return_error( $registration->get_error_message() );
 		} elseif ( $registration ) {
-			//Do not send emails later
+			// Do not send emails later.
 			$custom_form->notifications = array();
 		}
-
-		//ADDON after_entry_saved.
-		$this->attach_addons_after_entry_saved( $entry, $custom_form );
-
-		// After $entry->set_fields() to get all data for {all_fields}.
 
 		// send email.
 		if ( 'leads' !== $form_type ) {
@@ -1216,7 +1223,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	}
 
 	/**
-	 * Set behaviour settings
+	 * Set behavior settings
 	 *
 	 * @param array  $setting Module settings.
 	 * @param array  $submitted_data Submitted data.
@@ -1922,22 +1929,25 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		if ( $custom_form->has_calculation_field() ) {
 			foreach ( $fields as $field ) {
 				$field_array = $field->to_formatted_array();
-				$field_id    = Forminator_Field::get_property( 'element_id', $field_array );
 				$field_type  = isset( $field_array['type'] ) ? $field_array['type'] : '';
 
-				if ( 'calculation' === $field_type ) {
-
-					$forminator_calculation_field = isset( $field_classes[ $field_type ] ) ? $field_classes[ $field_type ] : null;
-					if ( $forminator_calculation_field instanceof Forminator_Calculation ) {
-						try {
-							$converted_formula = $forminator_calculation_field->get_converted_formula( $submitted_data, $pseudo_submitted_data, $field_array, $custom_form, self::$hidden_fields );
-							$result            = $forminator_calculation_field->get_calculated_value( $converted_formula, $submitted_data, $field_array );
-						} catch ( Forminator_Calculator_Exception $e ) {
-							$result = 0.0;
-						}
-						$pseudo_submitted_data[ $field_id ] = $result;
-					}
+				if ( 'calculation' !== $field_type ) {
+					continue;
 				}
+
+				$field_id                     = Forminator_Field::get_property( 'element_id', $field_array );
+				$forminator_calculation_field = isset( $field_classes[ $field_type ] ) ? $field_classes[ $field_type ] : null;
+				if ( ! ( $forminator_calculation_field instanceof Forminator_Calculation ) ) {
+					continue;
+				}
+
+				try {
+					$converted_formula = $forminator_calculation_field->get_converted_formula( $submitted_data, $pseudo_submitted_data, $field_array, $custom_form, self::$hidden_fields );
+					$result            = $forminator_calculation_field->get_calculated_value( $converted_formula, $submitted_data, $field_array );
+				} catch ( Forminator_Calculator_Exception $e ) {
+					$result = 0.0;
+				}
+				$pseudo_submitted_data[ $field_id ] = $result;
 			}
 		}
 

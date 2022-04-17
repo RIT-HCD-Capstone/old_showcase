@@ -181,6 +181,7 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 					}
 				}
 			}
+
 			$common_fields = array_merge( $common_fields, $extra_field );
 			foreach ( $common_fields as $common_field ) {
 				// not setup.
@@ -197,6 +198,14 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 					} elseif ( self::element_is_stripe( $element_id ) ) {
 						$meta_value    = self::find_meta_value_from_entry_fields( $element_id, $form_entry_fields );
 						$element_value = Forminator_Form_Entry_Model::meta_value_to_string( 'stripe', $meta_value );
+					} elseif ( self::element_is_datepicker( $element_id ) ) {
+						$hs_field_type = $api->get_property( 'fieldType', $common_field, $args );
+
+						if ( 'date' === $hs_field_type ) {
+							$element_value = self::get_date_in_ms( $element_id, $submitted_data[ $element_id ], $form_id );
+						} else {
+							$element_value = self::get_field_value( $element_id, $submitted_data[ $element_id ] );
+						}
 					} elseif ( isset( $submitted_data[ $element_id ] ) && ! empty( $submitted_data[ $element_id ] ) ) {
 						$element_value = self::get_field_value( $element_id, $submitted_data[ $element_id ] );
 					}
@@ -208,6 +217,7 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 				// processed.
 				unset( $fields_map[ $common_field ] );
 			}
+
 			/**
 			 * Filter arguments to passed on to Contact Sync HubSpot API
 			 *

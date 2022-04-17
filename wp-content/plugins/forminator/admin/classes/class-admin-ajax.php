@@ -1192,7 +1192,9 @@ class Forminator_Admin_AJAX {
 		// Validate nonce
 		forminator_validate_ajax( 'forminator_save_import_' . $slug );
 
-		$import_data = Forminator_Core::sanitize_array( json_decode( wp_unslash( $_POST['importable'] ), true ) );
+		$importable = json_decode( html_entity_decode( wp_unslash( $_POST[ 'importable'] ) ), true );
+
+		$import_data = Forminator_Core::sanitize_array( $importable );
 
 		// hook custom data here.
 		$import_data = apply_filters( 'forminator_' . $slug . '_import_data', $import_data );
@@ -2135,7 +2137,7 @@ class Forminator_Admin_AJAX {
 
 			Forminator_Form_Entry_Model::delete_by_form( $form_id );
 
-			$file = forminator_plugin_dir() . 'admin/views/poll/entries/content-none.php';
+			$file = forminator_plugin_dir() . 'admin/views/common/entries/content-none.php';
 
 			ob_start();
 			/** @noinspection PhpIncludeInspection */

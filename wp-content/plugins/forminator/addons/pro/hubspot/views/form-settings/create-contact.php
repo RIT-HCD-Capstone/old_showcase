@@ -1,5 +1,5 @@
 <?php
-// defaults.
+// defaults
 $vars = array(
 	'error_message' => '',
 	'name'          => '',
@@ -281,11 +281,20 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 				if( $('.custom-field:visible').length < 1 ) {
 					$('#custom-field').show();
 				} else {
-					var clone_field = $('#custom-field').clone();
+					var custom_field = $('#custom-field');
+					custom_field.find( '.sui-select' ).each(function(){
+						if ($(this).data('select2')) {
+							$(this).SUIselect2('destroy');
+						} 
+					});
+					var clone_field = custom_field.clone();
 					$('.add-additional-field').before( clone_field );
 					clone_field.find('.select2').remove();
 					clone_field.find('select.sui-select').val('').removeAttr('selected');
 					clone_field.find( '.sui-select' ).SUIselect2({
+						dropdownCssClass: 'sui-variables-dropdown sui-color-accessible'
+					});
+					custom_field.find( '.sui-select' ).SUIselect2({
 						dropdownCssClass: 'sui-variables-dropdown sui-color-accessible'
 					});
 				}

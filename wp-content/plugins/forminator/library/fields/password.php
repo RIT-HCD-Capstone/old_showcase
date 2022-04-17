@@ -507,6 +507,19 @@ class Forminator_Password extends Forminator_Field {
 				);
 			}
 		}
+
+		if ( $is_confirm && ! empty( $data ) && $post_data[ $id ] !== $post_data[ 'confirm_' . $id ] ) {
+			$validation_message_not_match 		  = self::get_property( 'validation_message', $field, '' );
+			$validation_message_not_match_message = apply_filters(
+				'forminator_confirm_password_field_not_match_validation_message',
+				! empty( $validation_message_not_match ) ? $validation_message_not_match : __( 'Your passwords don\'t match.', 'forminator' ),
+				$id,
+				$field
+			);
+
+			$this->validation_message[ $id ] = $validation_message_not_match_message;
+			$this->validation_message[ 'confirm_' . $id ] = $validation_message_not_match_message;
+		}
 	}
 
 	/**

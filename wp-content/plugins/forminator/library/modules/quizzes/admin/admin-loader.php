@@ -543,7 +543,7 @@ class Forminator_Quiz_Admin extends Forminator_Admin_Module {
 			'font_color'                   => __( 'Font color', 'forminator' ),
 			'browse'                       => __( 'Browse', 'forminator' ),
 			'clear'                        => __( 'Clear', 'forminator' ),
-			'results_behav'                => __( 'Results behaviour', 'forminator' ),
+			'results_behav'                => __( 'Results behavior', 'forminator' ),
 			'rb_description'               => __( 'Pick if you want to reveal the correct answer as user finishes question, or only after the whole quiz is completed.', 'forminator' ),
 			'reveal'                       => __( 'When to reveal correct answer', 'forminator' ),
 			'after'                        => __( 'After user picks answer', 'forminator' ),

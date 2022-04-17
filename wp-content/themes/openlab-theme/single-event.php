@@ -38,7 +38,7 @@ get_header();
 		<div class="action-events">
 			<div id="item-body">
 				<div class="submenu">
-					<div class="submenu-text pull-left bold"><?php esc_html_e( 'Calendar:', 'commons-in-a-box' ); ?></div>
+					<div class="submenu-text pull-left bold"><?php esc_html_e( 'Calenar:', 'commons-in-a-box' ); ?></div>
 					<ul class="nav nav-inline"><!--
 						<?php $menu_items = openlab_calendar_submenu(); ?>
 						<?php foreach ( $menu_items as $item ) : ?>

@@ -280,7 +280,7 @@ class Forminator_Addon_Zapier_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 
 		// make sure its `status`, because we only add this.
 		// when its `status` then its single connection (backward compat on dev).
-		// when its status-$MULTI_ID its multiple connection its default behaviour.
+		// when its status-$MULTI_ID its multiple connection its default behavior.
 		if ( 'status' !== $addon_meta_data['name'] ) {
 			if ( stripos( $addon_meta_data['name'], 'status-' ) === 0 ) {
 				return $this->on_render_entry_multi_connection( $addon_meta_datas );

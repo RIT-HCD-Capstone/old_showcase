@@ -390,8 +390,16 @@ class Forminator_Core {
             'options_bulk_editor',
             'label',
             'value',
+            'importable',
 		);
-		if ( in_array( $current_key, $allow_html, true ) || 0 === strpos( $current_key, 'html-' ) ) {
+		if (
+			in_array( $current_key, $allow_html, true ) ||
+			0 === strpos( $current_key, 'html-' ) ||
+			0 === strpos( $current_key, 'textarea-' ) ||
+			false !== strpos( $current_key, '-post-title' ) ||
+			false !== strpos( $current_key, '-post-content' ) ||
+			false !== strpos( $current_key, '-post-excerpt' )
+		) {
 			return wp_kses_post( $data );
 		}
 		if ( 'custom_css' === $current_key ) {

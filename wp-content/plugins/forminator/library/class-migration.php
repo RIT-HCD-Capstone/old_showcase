@@ -72,6 +72,13 @@ class Forminator_Migration {
 		 */
 		$settings = self::migrate_pagination_form_settings( $settings, $fields );
 
+		/**
+		 * Migrate Data Storage settings
+		 *
+		 * @since 1.15.12
+		 */
+		$settings = self::migrate_data_storage_settings( $settings, $fields );
+
 		return $settings;
 	}
 
@@ -232,6 +239,13 @@ class Forminator_Migration {
 			$settings = self::migrate_padding_border_settings_1_6_1( $settings );
 		}
 
+		/**
+		 * Migrate Data Storage settings
+		 *
+		 * @since 1.15.12
+		 */
+		$settings = self::migrate_data_storage_settings( $settings );
+
 		return $settings;
 	}
 
@@ -259,6 +273,13 @@ class Forminator_Migration {
 			 */
 			$settings = self::migrate_share_settings_1_6_2( $settings );
 		}
+
+		/**
+		 * Migrate Data Storage settings
+		 *
+		 * @since 1.15.12
+		 */
+		$settings = self::migrate_data_storage_settings( $settings );
 
 		return $settings;
 	}
@@ -1030,6 +1051,42 @@ class Forminator_Migration {
 		}
 
 		return $field;
+	}
+
+	/**
+	 *  Migrate Data storage setting - Enabled by default
+	 *
+	 * @param $settings
+	 *
+	 * @since 1.15.12
+	 *
+	 * @return mixed
+	 */
+	public static function migrate_data_storage_settings( $settings ) {
+		if (
+			(
+				! isset( $settings['store'] ) &&
+				! isset( $settings['store_submissions'] )
+			) ||
+			(
+				isset( $settings['store'] ) &&
+				! filter_var( $settings['store'], FILTER_VALIDATE_BOOLEAN )
+			)
+		) {
+
+			$settings['store_submissions'] = '1';
+
+		} elseif (
+			isset( $settings['store'] ) &&
+			filter_var( $settings['store'], FILTER_VALIDATE_BOOLEAN )
+		) {
+
+			$settings['store_submissions'] = '';
+		}
+
+		unset( $settings['store'] );
+
+		return $settings;
 	}
 }
 

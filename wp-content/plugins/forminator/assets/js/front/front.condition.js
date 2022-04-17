@@ -253,6 +253,8 @@
                 if ( typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor ) {
                     value = tinyMCE.activeEditor.getContent();
                 }
+			} else if ( this.field_has_inputMask( $element ) ) {
+				value = $element.inputmask( 'unmaskedvalue' );
 			}
 			if (!value) return "";
 
@@ -298,7 +300,7 @@
                  formattedDate = new Date(value);
             }
 
-				value = {'year':formattedDate.getFullYear(), 'month':this.calendar.months[formattedDate.getMonth()].toLowerCase(), 'date':formattedDate.getDate(), 'day':this.calendar.days[formattedDate.getDay()].toLowerCase() };
+				value = {'year':formattedDate.getFullYear(), 'month':formattedDate.getMonth(), 'date':formattedDate.getDate(), 'day':formattedDate.getDay() };
 
 			} else {
 
@@ -312,7 +314,7 @@
 					if( fake_field === true ) {
 						return formattedDate;
 					}
-					value = {'year':formattedDate.getFullYear(), 'month':this.calendar.months[formattedDate.getMonth()].toLowerCase(), 'date':formattedDate.getDate(), 'day':this.calendar.days[formattedDate.getDay()].toLowerCase() };
+					value = {'year':formattedDate.getFullYear(), 'month':formattedDate.getMonth(), 'date':formattedDate.getDate(), 'day':formattedDate.getDay() };
 				}
 
 			}
@@ -321,6 +323,20 @@
 
 			return value;
 
+		},
+
+		field_has_inputMask: function ( $element ) {
+			var hasMask = false;
+
+			$element.each(function () {
+				if ( undefined !== $( this ).attr( 'data-inputmask' ) ) {
+					hasMask = true;
+					//break
+					return false;
+				}
+			});
+
+			return hasMask;
 		},
 
 		field_is_radio: function ($element) {
@@ -580,6 +596,40 @@
 
 			if(typeof value2 === 'string'){
 				value2 = value2.toLowerCase();
+
+				if(operator === 'month_is' || operator === 'month_is_not'){
+					var months = {
+						'jan':0,
+						'feb':1,
+						'mar':2,
+						'apr':3,
+						'may':4,
+						'jun':5,
+						'jul':6,
+						'aug':7,
+						'sep':8,
+						'oct':9,
+						'nov':10,
+						'dec':11
+					};
+					if($.inArray(value2, months)){
+						value2 = months[ value2 ];
+					}
+				}
+				if(operator === 'day_is' || operator === 'day_is_not'){
+					var days = {
+						'su':0,
+						'mo':1,
+						'tu':2,
+						'we':3,
+						'th':4,
+						'fr':5,
+						'sa':6
+					};
+					if($.inArray(value2, days)){
+						value2 = days[ value2 ];
+					}
+				}
 			}
 
 			switch (operator) {
@@ -796,6 +846,8 @@
 			}
 
 			this.$el.trigger('forminator:field:condition:toggled');
+
+			this.toggle_confirm_password( $element_id );
 		},
 
 		clear_value: function(element_id, e) {
@@ -962,6 +1014,18 @@
                   'padding-top': labelPaddingTop + 'px'
                 });
             }
+		},
+
+        // Maybe toggle confirm password field if necessary
+		toggle_confirm_password: function ( $element ) {
+			if ( 0 !== $element.length && $element.attr( 'id' ) && -1 !== $element.attr( 'id' ).indexOf( 'password' ) ) {
+				var column = $element.closest( '.forminator-col' );
+				if ( column.hasClass( 'forminator-hidden' ) ) {
+					column.parent( '.forminator-row' ).next( '.forminator-row' ).addClass( 'forminator-hidden' );
+				} else {
+					column.parent( '.forminator-row' ).next( '.forminator-row' ).removeClass( 'forminator-hidden' );
+				}
+			}
 		},
 	});
 

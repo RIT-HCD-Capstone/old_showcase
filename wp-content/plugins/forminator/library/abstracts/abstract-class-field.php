@@ -832,8 +832,6 @@ abstract class Forminator_Field {
 	 * @return bool
 	 */
 	public function is_hidden( $field, $form_data, $pseudo_submitted_data, $form_object = false, $hidden_fields = array(), $extra_conditions = array() ) {
-		$conditions = self::get_property( 'conditions', $field, array() );
-
 		if ( ! empty( $extra_conditions ) ) {
 			$conditions       = isset( $extra_conditions['conditions'] ) ? $extra_conditions['conditions'] : array();
 			$condition_rule   = isset( $extra_conditions['condition_rule'] ) ? $extra_conditions['condition_rule'] : 'all';
@@ -866,21 +864,18 @@ abstract class Forminator_Field {
 			// Increase conditions count
 			$conditions_count ++;
 
-			// Check for parent conditions
-			if ( $form_object ) {
-				$parent_field      = $form_object->get_field( $element_id );
-				$parent_conditions = self::get_property( 'conditions', $parent_field, array() );
+			// Check parent conditions only if the current condition is matched.
+			if ( $is_condition_fulfilled && $form_object ) {
+				$parent_field  = $form_object->get_field( $element_id );
+				$parent_hidden = self::is_hidden( $parent_field, $form_data, $pseudo_submitted_data, $form_object, $hidden_fields );
 
-				if ( ! empty( $parent_conditions ) && 'any' !== $condition_rule ) {
-					// Increase conditions count
-					$conditions_count ++;
-					$parent_hidden = self::is_hidden( $parent_field, $form_data, $pseudo_submitted_data, $form_object, $hidden_fields );
-
-					// If parent not hidden increase fulfilled conditions
-					if ( ! $parent_hidden && 'show' === $condition_action ) {
-						$condition_fulfilled ++;
-					}
+				if ( $parent_hidden ) {
+					$condition_fulfilled--;
 				}
+			}
+			// There is no sense to continue checking if at least 1 condition is matched for ANY condition rule.
+			if ( 'any' === $condition_rule && $condition_fulfilled ) {
+				break;
 			}
 		}
 
@@ -910,6 +905,8 @@ abstract class Forminator_Field {
 	 * @return bool
 	 */
 	public static function is_condition_matched( $condition, $form_data, $pseudo_submitted_data ) {
+		$form_id = $form_data['form_id'];
+
 		// empty conditions.
 		if ( empty( $condition ) ) {
 			return false;
@@ -923,6 +920,21 @@ abstract class Forminator_Field {
 			if ( $form_upload_data && isset( $form_upload_data[ $element_id ] ) ) {
 				$field_value = $form_upload_data[ $element_id ];
 			}
+		}
+
+		// If date field is dropdown type
+		if (
+			stripos( $element_id, 'date-' ) !== false &&
+			isset( $form_data[ $element_id . '-month' ] ) &&
+			isset( $form_data[ $element_id . '-day' ] ) &&
+			isset( $form_data[ $element_id . '-year' ] )
+		) {
+			$field_value = $form_data[ $element_id . '-year' ] . '-' . $form_data[ $element_id . '-month' ] . '-' . $form_data[ $element_id . '-day' ];
+			$date_format       = Forminator_API::get_form_field( $form_id, $element_id, false )->date_format;
+			$normalized_format = new Forminator_Date();
+			$normalized_format = $normalized_format->normalize_date_format( $date_format );
+			$date        = date_create_from_format( 'Y-m-d', $field_value );
+			$field_value = date_format( $date, $normalized_format );
 		}
 
 		if ( stripos( $element_id, 'signature-' ) !== false ) {
@@ -946,7 +958,7 @@ abstract class Forminator_Field {
 		} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
 			$is_condition_fulfilled = self::is_condition_fulfilled( $field_value, $condition );
 		} else {
-			$is_condition_fulfilled = self::is_condition_fulfilled( $field_value, $condition, $form_data['form_id'] );
+			$is_condition_fulfilled = self::is_condition_fulfilled( $field_value, $condition, $form_id );
 		}
 
 		return $is_condition_fulfilled;
@@ -1869,8 +1881,18 @@ abstract class Forminator_Field {
 		$separator  = self::get_property( 'separators', $field, 'blank' );
 		$separators = self::forminator_separators( $separator, $field );
 		$data_value = str_replace( $separators['point'], '.', $number );
+		$formatted  = number_format( $data_value, $precision, $separators['point'], $separators['separator'] );
 
-		return number_format( $data_value, $precision, $separators['point'], $separators['separator'] );
+		if ( ! empty( $field['prefix'] ) || ! empty( $field['suffix'] ) ) {
+			// Prefix.
+			$formatted = ( ! empty( $field['prefix'] ) ? $field['prefix'] . ' ' : '' ) . $formatted;
+			// Suffix.
+			$formatted = $formatted . ( ! empty( $field['suffix'] ) ? ' ' . $field['suffix'] : '' );
+		} elseif ( ! empty( $field['currency'] ) ) {
+			$formatted .= ' ' . $field['currency'];
+		}
+
+		return $formatted;
 	}
 
 	/**

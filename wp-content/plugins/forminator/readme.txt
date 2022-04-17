@@ -1,13 +1,13 @@
 === Forminator - Contact Form, Payment Form & Custom Form Builder ===
 Plugin Name: Forminator - Contact Form, Payment Form & Custom Form Builder
-Version: 1.15.11
+Version: 1.15.12
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV
 Tags: forms, contact form, wordpress form plugin, payment form, custom form, form builder, paypal form wordpress, form maker, quiz, quiz builder, order form, stripe payments, paypal payments, stripe form, paypal form
 Requires at least: 5.2
 Tested up to: 5.9
-Stable tag: 1.15.11
+Stable tag: 1.15.12
 Requires PHP: 5.6.20
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -210,6 +210,45 @@ Find out all you need to know by checking out our API documentation [here](https
 9. Allow simple drag and drop multi-file uploads for users.
 
 == Changelog ==
+
+= 1.15.12 =
+
+- Improvement: Update Trello Integration
+- Improvement: Show Localized number in HTML field
+- Improvement: Change dash API function get_membership_type()
+- Improvement: Update SuperSignature library
+- Fix: Form Captcha script impacting on page speed and score.
+- Fix: Remove "Query parameter" from the list of macros inside the "Add form data" button
+- Fix: Missing file uploads after removing a file
+- Fix: all_non_empty_fields doesn't respect decimal settings in number fields
+- Fix: Error in Submissions page when the form has upload field and integrated to Activecampaign or Mailchimp
+- Fix: Visibility conditions don't work on non-English sites
+- Fix: Block Editor Colors replaces the embed_title macro
+- Fix: Date doesn't show in one line in the email when Dropdown mode selected
+- Fix: Hubspot integration is not working for the datepicker
+- Fix: Pagination steps formatting issue
+- Fix: Textarea breaking the lines in the email
+- Fix: E-signature field doesn't work well in mobile
+- Fix: Draft forms/quizzes/polls are included on WP widgets and Submissions page
+- Fix: Upload limit per file doesn't work correctly
+- Fix: E-mail notifications are stripping zeros from decimal values in calculations and don't include the set prefix/suffix
+- Fix: PayPal payment fails with "Error! Invalid payment amount!"
+- Fix: ActiveCampaign sending incorrect data
+- Fix: Stripe payments fails when the calculation of over 1000$
+- Fix: Change "Behaviour" to "Behavior"
+- Fix: Select field - Limit Submission and Ajax Mode issue
+- Fix: Add validation for "Title" in the Postdata field
+- Fix: Form can be submitted when you manually enter the disabled dates
+- Fix: Decimal formatting issue with currency field
+- Fix: Individual form submissions cannot be deleted
+- Fix: Preview doesn't work for the textarea field
+- Fix: Postdata gets submitted when payments are declined in Stripe
+- Fix: Datepicker's year field isn't marked with a red border on validation
+- Fix: {submission_time} macro not working for emails.
+- Fix: Failed to load plugin: WordPress from URL
+- Fix: JS error when Stripe is not configured
+- Fix: Loader icon is missing when opening an add-on modal
+- Fix: Post Data field content editor is duplicated
 
 = 1.15.11 =
 

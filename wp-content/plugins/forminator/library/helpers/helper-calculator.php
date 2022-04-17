@@ -117,10 +117,6 @@ function forminator_calculator_maybe_replace_fields_on_formula( $formula, $submi
 		$full_matches = $matches[0];
 		$field_ids    = $matches[1];
 		foreach ( $matches[2] as $key => $field_type ) {
-			if ( 'calculation' === $field_type && ! $nested_exists ) {
-				$nested_exists = true;
-			}
-
 			if ( ! isset( $full_matches[ $key ] ) ) {
 				continue;
 			}
@@ -149,8 +145,19 @@ function forminator_calculator_maybe_replace_fields_on_formula( $formula, $submi
 				// skip validation, hidden values = 0 or 1.
 				// see Forminator_CForm_Front_Action::replace_hidden_field_values().
 				$value = Forminator_CForm_Front_Action::replace_to( $field_id, $formula );
+			} elseif ( 'calculation' === $field_type && isset( $pseudo_submitted_data[ $field_id ] ) ) {
+				$value = $pseudo_submitted_data[ $field_id ];
 			} else {
 				$value = $field_object->get_calculable_value( $submitted_field_data, $field_settings );
+			}
+
+			if ( 'calculation' === $field_type ) {
+				if ( ! $nested_exists ) {
+					$nested_exists = true;
+				}
+				if ( ! isset( $field_settings['precision'] ) ) {
+					$field_settings['precision'] = 2;
+				}
 			}
 
 			if ( ! isset( $field_settings['precision'] ) ) {

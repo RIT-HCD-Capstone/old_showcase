@@ -205,7 +205,7 @@ class Forminator_Admin_Import_Ninja extends Forminator_Import_Mediator {
 				$settings['submission-behaviour'] = 'behaviour-thankyou';
 				$settings['thankyou-message']     = $action['message'];
 			} elseif ( 'save' === $action['type'] ) {
-				$settings['store'] = $action['active'];
+				$settings['store_submissions'] = $action['active'];
 			}
 		}//endforeach form actions
 

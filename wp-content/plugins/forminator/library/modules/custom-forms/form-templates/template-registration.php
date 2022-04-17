@@ -97,7 +97,7 @@ class Forminator_Template_Registration extends Forminator_Template {
 	public function settings() {
 		global $wp_rewrite;
 
-		$login_url = is_null( $wp_rewrite ) ? site_url( 'wp-login.php', 'login' ) : wp_login_url();
+		$login_url = is_null( $wp_rewrite ) ? '{embed_url}wp-login.php' : wp_login_url();
 
 		return array(
 			'form-type'                        => 'registration',

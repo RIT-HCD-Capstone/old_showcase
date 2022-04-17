@@ -117,8 +117,8 @@ class Forminator_Poll_Admin extends Forminator_Admin_Module {
 		$data['polls'] = array(
 			'poll'                           => __( 'Poll', 'forminator' ),
 
-			// Appearance » Poll results behaviour.
-			'poll_results_behav'             => __( 'Poll results behaviour', 'forminator' ),
+			// Appearance » Poll results behavior.
+			'poll_results_behav'             => __( 'Poll results behavior', 'forminator' ),
 			'link_on'                        => __( 'Link on poll', 'forminator' ),
 			'show_after'                     => __( 'Show after voted', 'forminator' ),
 			'not_show'                       => __( 'Do not show', 'forminator' ),

@@ -1168,6 +1168,9 @@ class Forminator_Date extends Forminator_Field {
 		// Always! (we dont have validate flag on builder) validate date_format.
 		$date_format = self::get_property( 'date_format', $field );
 		$date        = self::parse_date( $data, $date_format );
+		$month = $date['month'];
+		$day   = $date['day'];
+		$year  = $date['year'];
 
 		// strtotime does not recognize all of our date formats so we need to convert all dates to 1 accepted format before processing.
 		if ( 'Y-m-d' !== datepicker_default_format( $date_format ) && ! is_array( $data ) ) {
@@ -1180,15 +1183,32 @@ class Forminator_Date extends Forminator_Field {
 			! $this->check_date( $date['month'], $date['day'], $date['year'] )
 		) {
 
-			$this->validation_message[ $id ] = apply_filters(
-				'forminator_field_date_valid_date_validation_message',
-				__( 'Please enter a valid date.', 'forminator' ),
-				$id,
-				$data,
-				$date_format,
-				$this
-			);
 
+			$year_id = $id . '-year';
+			if ( strlen( $date['year'] ) !== 4 ) {
+
+				$this->validation_message[ $year_id ] = apply_filters(
+					'forminator_field_date_valid_year_validation_message',
+					__( 'Year field is invalid.', 'forminator' ),
+					$year_id,
+					$data,
+					$date_format,
+					$this
+				);
+
+			} else {
+
+				$this->validation_message[ $id ] = apply_filters(
+					'forminator_field_date_valid_date_validation_message',
+					__( 'Please enter a valid date.', 'forminator' ),
+					$id,
+					$data,
+					$date_format,
+					$this
+				);
+
+			}
+			
 		} else {
 
 			if ( 'select' === $date_type ) {
@@ -1232,10 +1252,6 @@ class Forminator_Date extends Forminator_Field {
 					( ! empty( $date['month'] ) || ! empty( $date['day'] ) ) &&
 					! $this->check_date( $date['month'], $date['day'], $date['year'] )
 				) {
-
-					$month = $date['month'];
-					$day   = $date['day'];
-					$year  = $date['year'];
 
 					if ( empty( $month ) ) {
 						$month_id = $id . '-month';
@@ -1342,7 +1358,10 @@ class Forminator_Date extends Forminator_Field {
 					}
 				}
 
-				if ( ! empty( $disabled_dates ) && in_array( $selected_date, $disabled_dates, true ) ) {
+				// Change selected date format to the disabled-date format which is m/d/Y
+				$selected_date_format 	 = date_create_from_format( 'Y/m/d', $selected_date );
+				$formatted_selected_date = date_format( $selected_date_format, 'm/d/Y' );
+				if ( ! empty( $disabled_dates ) && in_array( $formatted_selected_date, $disabled_dates, true ) ) {
 					$this->validation_message[ $id ] = apply_filters(
 						'forminator_field_date_valid_disabled_validation_message',
 						self::get_property( 'restrict_message', $field, __( 'Please select one of the available dates.', 'forminator' ) )

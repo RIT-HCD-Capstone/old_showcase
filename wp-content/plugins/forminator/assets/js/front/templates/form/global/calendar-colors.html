@@ -55,7 +55,7 @@
 	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-calendar--<?php echo $theme; ?> .ui-datepicker-calendar tbody td a.ui-state-default,
 	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-calendar--<?php echo $theme; ?> .ui-datepicker-calendar tbody td.ui-state-disabled span {
 		<?php if ( forminator_array_value_exists( $properties, 'calendar-days-color-static' ) && !empty( $properties['calendar-days-color-static'] ) ) { ?>
-			border-color: <?php echo $properties['calendar-days-color-static'] ?>;
+			border-color: <?php echo $properties['calendar-days-border-static'] ?>;
 		<?php } else { ?>
 			border-color: #E6E6E6;
 		<?php } ?>

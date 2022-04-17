@@ -1,3 +1,4 @@
+<!-- the purpose of this file is to replace 'Open' with 'Public' as the identifier of a badge in the search menu. The value of the badge and its identification elsewhere can be editied in Wordpress. -->
 <?php
 /*
  * Combined because they're on a single line in the interface.

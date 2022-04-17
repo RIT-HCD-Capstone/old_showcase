@@ -847,6 +847,33 @@ abstract class Forminator_Addon_Form_Hooks_Abstract extends Forminator_Addon_Hoo
 	}
 
 	/**
+	 * Check if element_id is Datepicker
+	 *
+	 * @since 1.15.12
+	 *
+	 * @param $element_id
+	 *
+	 * @return bool
+	 */
+	public static function element_is_datepicker( $element_id ) {
+		$is_datepicker = stripos( $element_id, 'date-' ) !== false;
+
+		/**
+		 * Filter date flag of element
+		 *
+		 * @since 1.15.12
+		 *
+		 * @param bool   $is_datepicker
+		 * @param string $element_id
+		 *
+		 * @return bool
+		 */
+		$is_datepicker = apply_filters( 'forminator_addon_element_is_datepicker', $is_datepicker, $element_id );
+
+		return $is_datepicker;
+	}
+
+	/**
 	 * Find stripe fields from entry fields
 	 *
 	 * @since 1.7
@@ -919,7 +946,7 @@ abstract class Forminator_Addon_Form_Hooks_Abstract extends Forminator_Addon_Hoo
 	 * @return bool
 	 */
 	public static function get_field_value( $element_id, $element ) {
-		
+
 		if ( is_array( $element ) ) {
 
 			if ( self::element_is_upload( $element_id ) && isset( $element['file_url'] ) ) {
@@ -949,6 +976,27 @@ abstract class Forminator_Addon_Form_Hooks_Abstract extends Forminator_Addon_Hoo
 		$element_value = apply_filters( 'forminator_addon_element_value', $element_value, $element_id );
 
 		return $element_value;
+	}
+
+	/**
+	 * Return date value as Unix timestamp in milliseconds
+	 *
+	 * @since 1.15.12
+	 *
+	 * @param $element_id
+	 * @param $value
+	 *
+	 * @return bool
+	 */
+	public static function get_date_in_ms( $element_id, $value, $form_id ) {
+		$field 			   = Forminator_API::get_form_field( $form_id, $element_id );
+		$normalized_format = new Forminator_Date();
+		$normalized_format = $normalized_format->normalize_date_format( $field['date_format'] );
+		$date              = date_create_from_format( $normalized_format, $value );
+		$date->setTimezone( timezone_open( 'UTC' ) );
+		$date->modify( 'midnight' );
+
+		return $date->getTimestamp() * 1000;
 	}
 
 }

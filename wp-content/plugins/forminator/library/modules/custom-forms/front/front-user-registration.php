@@ -657,7 +657,7 @@ class Forminator_CForm_Front_User_Registration extends Forminator_User {
 			$user->set_role( $root_role );
 		}
 
-		if ( isset( $settings['registration-password-field'] ) && 'auto' === $settings['registration-password-field'] ) {
+		if ( isset( $setting['registration-password-field'] ) && 'auto' === $setting['registration-password-field'] ) {
 
 			$password  = $password . "\r\n";
 			$password .= '(' . __( 'This password was generated automatically, and it is recommended that you set a new password once you log in to your account.', 'forminator' ) . ")\r\n\r\n";

@@ -1,4 +1,4 @@
-.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-result--retake {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button.forminator-result--retake {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-result-retake-background-static' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-result-retake-background-static'] ?>;
@@ -40,7 +40,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-result--retake:hover {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button.forminator-result--retake:hover {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-result-retake-background-hover' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-result-retake-background-hover'] ?>;
@@ -58,8 +58,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-result--retake:focus,
-.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-result--retake:active {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button.forminator-result--retake:focus,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button.forminator-result--retake:active {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-result-retake-background-active' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-result-retake-background-active'] ?>;

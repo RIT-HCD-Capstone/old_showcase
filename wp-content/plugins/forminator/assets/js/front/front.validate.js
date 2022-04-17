@@ -50,6 +50,10 @@
 			var submitted = false;
 			var $form     = this.$el;
 
+			if ( undefined === $.validator.methods.trim ) {
+				$.validator.addMethod("trim", nativeTrim);
+			}
+
 			$( this.element ).validate({
 
 				// add support for hidden required fields (uploads, wp_editor) when required
@@ -382,9 +386,7 @@
 	$.validator.addMethod("maxwords", function (value, element, param) {
 		return this.optional(element) || value.trim().split(/\s+/).length <= param;
 	});
-	$.validator.addMethod("trim", function (value, element, param) {
-		return true === this.optional(element) || 0 !== value.trim().length;
-	});
+	$.validator.addMethod("trim", nativeTrim);
 	$.validator.addMethod("emailWP", function (value, element, param) {
 		if (this.optional(element)) {
 			return true;
@@ -533,6 +535,10 @@
 
 	function fixDecimals( num, precision ) {
 		return ( Math.floor( num * 100 ) / 100 ).toFixed( precision );
+	}
+
+	function nativeTrim( value, element, param ) {
+		return true === this.optional( element ) || 0 !== value.trim().length;
 	}
 
 })(jQuery, window, document);

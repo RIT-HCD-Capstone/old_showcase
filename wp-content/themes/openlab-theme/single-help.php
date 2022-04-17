@@ -14,7 +14,7 @@ get_header(); ?>
 
 			<?php get_template_part( 'parts/sidebar/help' ); ?>
 
-			</div>
+	</div>
 <?php get_footer();
 /**end layout**/
 ?>

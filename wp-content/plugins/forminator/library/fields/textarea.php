@@ -339,6 +339,8 @@ class Forminator_Textarea extends Forminator_Field {
 	}
 
 	/**
+	 * Sanitization was improved and moved to class-core.php - sanitize_array
+	 *
 	 * Sanitize data
 	 *
 	 * @since 1.0.2

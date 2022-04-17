@@ -1267,9 +1267,9 @@ function openlab_calendar_submenu() {
 		array(
 			'name'  => 'Upcoming',
 			'slug'  => 'upcoming',
-			'link'  => get_site_url() . '/about/calendar/upcoming/',
+			'link'  => get_site_url() . '/about/calendar/upcoming/',//added slash before about
 			'class' => 'upcoming' === $post->post_name ? 'current-menu-item' : '',
-		),
+		), 
 	);
 
 	return $links_out;

@@ -318,7 +318,7 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 	}
 
 	/**
-	 * Get submission behaviour
+	 * Get submission behavior
 	 *
 	 * @since 1.6
 	 *

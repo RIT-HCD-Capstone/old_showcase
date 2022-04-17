@@ -197,19 +197,22 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 
 		$empty_option = __( 'Choose Form', 'forminator' );
 		$method       = 'get_forms';
+		$model       = 'Forminator_Form_Model';
 
 		if ( $form_type === Forminator_Poll_Model::model()->get_post_type() ) {
 			$empty_option = __( 'Choose Poll', 'forminator' );
 			$method       = 'get_polls';
+			$model       = 'Forminator_Poll_Model';
 		} elseif ( $form_type === Forminator_Quiz_Model::model()->get_post_type() ) {
 			$empty_option = __( 'Choose Quiz', 'forminator' );
 			$method       = 'get_quizzes';
+			$model       = 'Forminator_Quiz_Model';
 		}
 
 		echo '<select name="form_id" data-allow-search="1" data-minimum-results-for-search="0" class="' . esc_attr( $classes ) . '" data-search="true" data-search="true" data-placeholder="' . esc_attr( $empty_option ) . '">';
 		echo '<option><option>';
 
-		$forms = Forminator_API::$method( null, 1, 999 );
+		$forms = Forminator_API::$method( null, 1, 999, $model::STATUS_PUBLISH );
 		$forms = apply_filters( 'forminator_entries_get_forms', $forms, $form_type );
 
 		foreach ( $forms as $form ) {

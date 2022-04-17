@@ -770,6 +770,12 @@ class Install {
 					'_wp_page_template' => 'search-results.php',
 				),
 			),
+                        //begin edit
+                        'acknowledgements' => array(
+                                'post_title' => __( 'Acknowledgements', 'commons-in-a-box' ),
+                                'post_content' => '<p>' . __( 'This page can contain the Acknowledgements for your site.' ),
+                        ),
+                        //end edit
 		);
 
 		$page_ids = array();

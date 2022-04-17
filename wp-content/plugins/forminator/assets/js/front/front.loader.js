@@ -158,8 +158,7 @@
 					},
 				}
 			).always(function () {
-				$(document).trigger('after.load.forminator', param.id)
-				;
+				$(document).trigger('after.load.forminator', param.id);
 			});
 		},
 
@@ -284,7 +283,12 @@
 				self.script_on_load();
 			};
 
-			body.appendChild(script);
+			// Check if script is already loaded or not.
+			if ( 0 === $( 'script[src="' + script.src + '"]' ).length ) {
+				body.appendChild(script);
+			} else {
+				self.script_on_load();
+			}
 		},
 
 		script_on_load: function () {

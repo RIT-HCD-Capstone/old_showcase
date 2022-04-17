@@ -185,9 +185,10 @@ function openlab_mu_site_wide_bp_search( $mode = 'desktop', $location ) {
 	if ( 'desktop' === $mode ) {
 
 		$mobile_mup .= <<<HTML
-<div class="search-trigger-wrapper">
-    <button class="search-trigger btn-link" data-mode="desktop" data-location={$location} href="#"><span class="fa fa-search" aria-hidden="true"></span><span class="sr-only">{$button_sr_text}</span></button>
-</div>
+                <div class="search-trigger-wrapper">
+                        <button class="search-trigger btn-link" data-mode="desktop" data-location={$location} href="#"><span class="fa fa-search" aria-hidden="true">
+                        </span><span class="sr-only">{$button_sr_text}</span></button>
+                </div>
 HTML;
 	}
 
@@ -217,10 +218,13 @@ HTML;
     <form action="{$form_action}" method="post" id="search-form-{$mode}-{$location}" class="form-inline">
         <div class="form-group">
 		<label for="search-terms-{$mode}-{$location}" class="screen-reader-text">{$sr_text}</label>
-        <input id="search-terms-{$mode}-{$location}" class="form-control search-terms search-terms-{$mode}" type="text" name="search" placeholder="{$search_placeholder}" />
+                <input id="search-terms-{$mode}-{$location}" class="form-control search-terms search-terms-{$mode}" type="text" name="search" placeholder="{$search_placeholder}" />
 
-        <button class="btn btn-primary top-align search-submit" id="search-submit-{$mode}-{$location}" type="submit"><span class="screen-reader-text">{$sr_text_button}</span><i class="fa fa-search"></i></button>
-        <input type="hidden" id="_bp_search_nonce_{$mode }_{$location}" name="_bp_search_nonce" value="{$nonce}" />
+                <button class="btn btn-primary top-align search-submit" id="search-submit-{$mode}-{$location}" type="submit">
+                        <span class="screen-reader-text">{$sr_text_button}</span>
+                        <i class="fa fa-search"></i>
+                </button>
+                <input type="hidden" id="_bp_search_nonce_{$mode }_{$location}" name="_bp_search_nonce" value="{$nonce}" />
         </div>
     </form><!-- #search-form -->
     </div>

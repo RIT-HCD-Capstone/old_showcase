@@ -100,7 +100,10 @@
 						var file_list = Array.prototype.slice.call( fileList );
 
 						if ( file_list.length > 0 ) {
-							param = self.FileObjectItem(file_list);
+							param = self.FileObjectItem(file_list);	
+							if ( 'submission' === $this.data( 'method' ) ) {
+								$this.prop( 'files', param );
+							} 
 						}
 					}).done(function(){
 						self.uploadingFile = null;

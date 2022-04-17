@@ -1076,8 +1076,8 @@ class Forminator_Poll_Front extends Forminator_Render_Form {
 		$onchart_label = ( isset( $form_settings['onbar_votes'] ) && ! empty( $form_settings['onbar_votes'] ) ) ? $form_settings['onbar_votes'] : '#333333';
 
 		// Tooltips.
-		$tooltips_bg    = ( isset( $form_settings['tooltips_background'] ) && ! empty( $form_settings['tooltips_background'] ) ) ? $form_settings['tooltips_background'] : '#333333';
-		$tooltips_color = ( isset( $form_settings['tooltips_text'] ) && ! empty( $form_settings['tooltips_text'] ) ) ? $form_settings['tooltips_text'] : '#FFFFFF';
+		$tooltips_bg    = ( isset( $form_settings['tooltips_background'] ) && ! empty( $form_settings['tooltips_background'] ) && ! empty( $form_settings['poll-colors']) ) ? $form_settings['tooltips_background'] : '#333333';
+		$tooltips_color = ( isset( $form_settings['tooltips_text'] ) && ! empty( $form_settings['tooltips_text'] ) && ! empty( $form_settings['poll-colors']) ) ? $form_settings['tooltips_text'] : '#FFFFFF';
 		?>
 
 		<script type="text/javascript">

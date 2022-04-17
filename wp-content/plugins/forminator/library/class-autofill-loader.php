@@ -29,7 +29,7 @@ class Forminator_Autofill_Loader {
 
 
 	/**
-	 * In case we want disable addons that have bad pattern or behaviour or still in pipeline
+	 * In case we want disable addons that have bad pattern or behavior or still in pipeline
 	 *
 	 * @since   1.0.5
 	 * @example {['BANNED_PROVIDER_SLUG','BANNED_PROVIDER_SLUG_2']}

@@ -45,7 +45,7 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 		} else {
 			$text = forminator_replace_form_data( $settings[ $option_name ], $data, null, null, true );
 		}
-		$text = forminator_replace_variables( $text, $module->id, $data['current_url'] );
+		$text = forminator_replace_variables( $text, $module->id, $data['current_url'], $data['page_id'] );
 		$text = forminator_replace_custom_form_data( $text, $module, $data, $entry, $this->skip_custom_form_data['admin'] );
 
 		return $text;

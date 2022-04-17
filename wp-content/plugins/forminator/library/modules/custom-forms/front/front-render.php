@@ -2906,7 +2906,8 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
 				if ( 'stripe' === $field['type'] ) {
-					return true;
+					$stripe = new Forminator_Gateway_Stripe();
+					return $stripe->is_ready();
 				}
 			}
 		}

@@ -33,8 +33,7 @@ function openlab_help_loop() {
 			'p'         => $post_id,
 		)
 	);
-
-	while ( $hp_query->have_posts() ) :
+       	while ( $hp_query->have_posts() ) :
 		$hp_query->the_post();
 		?>
 
@@ -267,9 +266,11 @@ function openlab_help_cats_loop() {
 			</div>
 		</div>
 
-	<div id="help-title">
-		<h2 class="page-title clearfix submenu"><div class="submenu-text pull-left bold"><?php esc_html_e( 'Topics:', 'commons-in-a-box' ); ?></div></h2>
-	</div>
+	        <div id="help-title">
+                        <h2 class="page-title clearfix submenu">
+                                <div class="submenu-text pull-left bold"><?php esc_html_e( 'Topics:', 'commons-in-a-box' ); ?></div>
+                        </h2>
+	        </div>
 		<?php
 	else :
 		$head_term = get_term_by( 'id', $parent_term->parent, 'help_category' );
@@ -283,11 +284,11 @@ function openlab_help_cats_loop() {
 			</div>
 		</div>
 
-	<div id="help-title">
-		<h2 class="page-title clearfix submenu">
+	        <div id="help-title">
+		        <h2 class="page-title clearfix submenu">
 				<div class="submenu-text pull-left bold"><?php esc_html_e( 'Topics:', 'commons-in-a-box' ); ?> </div><span><?php echo esc_html( $parent_term->name ); ?></span>
 			</h2>
-	</div>
+	        </div>
 		<?php
 	endif;
 	?>
@@ -461,7 +462,7 @@ function openlab_get_help_search_url() {
 			'numposts'               => 1,
 		)
 	);
-
+ 
 	$url = '';
 	if ( $posts ) {
 		$url = get_permalink( $posts[0] );

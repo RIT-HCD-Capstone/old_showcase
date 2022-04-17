@@ -321,28 +321,11 @@ class Forminator_Calculation extends Forminator_Field {
 	 * @throws Forminator_Calculator_Exception
 	 */
 	public function get_calculated_value( $converted_formula, $submitted_data, $field_settings ) {
-		$has_paypal = false;
 		$precision  = $this->get_calculable_precision( $submitted_data, $field_settings );
-
 		$calculator = new Forminator_Calculator( $converted_formula );
 		$calculator->set_is_throwable( true );
 
-		$result = $calculator->calculate();
-
-		$result = floatval( $result );
-
-		// Check if has paypal.
-		foreach ( $submitted_data as $key => $val ) {
-			if ( false !== strpos( $key, 'paypal-' ) ) {
-				$has_paypal = true;
-			}
-		}
-
-		if ( $has_paypal ) {
-			$result = round( $result, $precision, PHP_ROUND_HALF_DOWN );
-		} else {
-			$result = round( $result, $precision );
-		}
+		$result = round( floatval( $calculator->calculate() ), $precision );
 
 		/**
 		 * Filter Calculated value of calculation field

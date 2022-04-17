@@ -746,7 +746,7 @@ abstract class Forminator_Front_Action {
 	 */
 	protected function is_force_validate_submissions_nonce() {
 		// default is disabled unless `FORMINATOR_FORCE_VALIDATE_SUBMISSIONS_NONCE` = true,.
-		// this behaviour is to support full page cache.
+		// this behavior is to support full page cache.
 		$enabled = ( defined( 'FORMINATOR_FORCE_VALIDATE_SUBMISSIONS_NONCE' ) && FORMINATOR_FORCE_VALIDATE_SUBMISSIONS_NONCE );
 
 		/**

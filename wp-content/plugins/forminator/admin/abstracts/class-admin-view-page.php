@@ -554,18 +554,24 @@ abstract class Forminator_Admin_View_Page extends Forminator_Admin_Page {
 			$this->fields_is_filtered = true;
 		}
 
-		/**
-		 * Start modifying data
-		 */
-		$nonce = filter_input( INPUT_GET, 'forminatorEntryNonce' );
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'forminator' . forminator_get_prefix( static::$module_slug, '', true ) . 'Entries' ) ) {
-			return;
-		}
-
 		$action = Forminator_Core::sanitize_text_field( 'entries-action' );
 		if ( ! $action ) {
 			$action = Forminator_Core::sanitize_text_field( 'entries-action-bottom' );
 		}
+
+		if ( ! empty( $action ) ) {
+			$nonce = filter_input( INPUT_GET, 'forminatorEntryNonce' );
+		} else {
+			$nonce = filter_input( INPUT_POST, 'forminatorEntryNonce' );
+		}
+
+		/**
+		 * Start modifying data
+		 */
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'forminator' . forminator_get_prefix( static::$module_slug, '', true ) . 'Entries' ) ) {
+			return;
+		}
+
 		switch ( $action ) {
 			case 'approve-users':
 				$this->approve_users();
@@ -577,10 +583,11 @@ abstract class Forminator_Admin_View_Page extends Forminator_Admin_Page {
 				break;
 		}
 
-		$forminator_action = filter_input( INPUT_GET, 'forminator_action' );
+		$forminator_action = filter_input( INPUT_POST, 'forminator_action' );
+
 		switch ( $forminator_action ) {
 			case 'delete':
-				$id = filter_input( INPUT_GET, 'id', FILTER_VALIDATE_INT );
+				$id = filter_input( INPUT_POST, 'id', FILTER_VALIDATE_INT );
 				if ( $id ) {
 					$this->delete_action( $id );
 					$this->maybe_redirect_to_referer();

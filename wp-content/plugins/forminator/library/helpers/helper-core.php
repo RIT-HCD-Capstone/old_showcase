@@ -810,7 +810,11 @@ function forminator_get_export_logs( $form_id ) {
 function forminator_get_current_url() {
 	global $wp;
 
-	return add_query_arg( esc_attr( $_SERVER['QUERY_STRING'] ), '', trailingslashit( home_url( $wp->request ) ) );
+	return esc_url( add_query_arg(
+							isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : '',
+							'',
+							trailingslashit( home_url( $wp->request ) )
+						) );
 }
 
 /**
@@ -1451,12 +1455,17 @@ function forminator_membership_status() {
 	if ( is_null( $status ) ) {
 		// Dashboard is active.
 		if ( class_exists( 'WPMUDEV_Dashboard' ) && ! empty( WPMUDEV_Dashboard::$api )
-				&& method_exists( WPMUDEV_Dashboard::$api, 'get_membership_type' )
+				&& ( method_exists( WPMUDEV_Dashboard::$api, 'get_membership_type' )
+				|| method_exists( WPMUDEV_Dashboard::$api, 'get_membership_status' ) )
 				&& method_exists( WPMUDEV_Dashboard::$api, 'get_membership_projects' )
 				&& method_exists( WPMUDEV_Dashboard::$api, 'has_key' )
 				) {
 			// Get membership type.
-			$status = WPMUDEV_Dashboard::$api->get_membership_type();
+			if ( method_exists( WPMUDEV_Dashboard::$api, 'get_membership_status' ) ) {
+				$status = WPMUDEV_Dashboard::$api->get_membership_status();
+			} elseif ( method_exists( WPMUDEV_Dashboard::$api, 'get_membership_type' ) ) {
+				$status = WPMUDEV_Dashboard::$api->get_membership_type();
+			}
 			// Get available projects.
 			$projects = WPMUDEV_Dashboard::$api->get_membership_projects();
 

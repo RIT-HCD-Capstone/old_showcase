@@ -482,8 +482,18 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 			} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
 				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
 			} elseif ( stripos( $element_id, 'question-' ) !== false ) {
-				$is_correct             = self::is_correct_answer( $element_id, $form_data['answers'][ $element_id ], $quiz_model );
+
+				$question_id = array_filter(
+					$form_data['answers'],
+					function ( $key ) use ( $element_id ) {
+						return strpos( $key, $element_id ) !== false;
+					},
+					ARRAY_FILTER_USE_KEY
+				);
+
+				$is_correct  = self::is_correct_answer( $element_id, $form_data['answers'][ key( $question_id ) ], $quiz_model );
 				$is_condition_fulfilled = self::is_condition_fulfilled( $is_correct, $condition );
+
 			} elseif ( stripos( $element_id, 'result-' ) !== false ) {
 				$result_id              = self::get_result_slug( $form_data );
 				$is_condition_fulfilled = self::is_condition_fulfilled( $result_id, $condition );

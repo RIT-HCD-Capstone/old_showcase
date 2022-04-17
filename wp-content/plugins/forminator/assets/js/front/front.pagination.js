@@ -421,10 +421,12 @@
 				this.$el.find('.forminator-button-back').addClass( 'forminator-hidden' );
 				this.$el.find('.forminator-button-next').removeClass('forminator-hidden');
 			} else {
-				this.$el.find('.forminator-button-back').closest( '.forminator-pagination-footer' ).css({
-					'justify-content': 'space-between'
-				});
-				this.$el.find('.forminator-button-back, .forminator-button-next').removeClass('forminator-hidden');
+				if ( this.totalSteps > 1 ) {
+					this.$el.find('.forminator-button-back').closest( '.forminator-pagination-footer' ).css({
+						'justify-content': 'space-between'
+					});
+					this.$el.find('.forminator-button-back, .forminator-button-next').removeClass('forminator-hidden');
+				}
 			}
 
 			if (this.step === this.totalSteps && ! this.finished ) {

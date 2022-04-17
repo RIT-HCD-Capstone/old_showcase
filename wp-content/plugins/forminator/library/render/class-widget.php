@@ -148,7 +148,7 @@ class Forminator_Widget extends WP_Widget {
 				// Add default to prevent issues in some plugins
 				echo '<option value="">' . esc_html__( 'Choose a form', 'forminator' ) . '</option>';
 
-				$modules = Forminator_API::get_forms( null, 1, 999 );
+				$modules = Forminator_API::get_forms( null, 1, 999, Forminator_Form_Model::STATUS_PUBLISH );
 				foreach ( $modules as $module ) {
 					$module = (array) $module;
 
@@ -171,7 +171,7 @@ class Forminator_Widget extends WP_Widget {
 				// Add default to prevent issues in some plugins
 				echo '<option value="">' . esc_html__( 'Choose a poll', 'forminator' ) . '</option>';
 
-				$modules = Forminator_API::get_polls( null, 1, 999 );
+				$modules = Forminator_API::get_polls( null, 1, 999, Forminator_Poll_Model::STATUS_PUBLISH );
 				foreach ( $modules as $module ) {
 					$module = (array) $module;
 
@@ -194,7 +194,7 @@ class Forminator_Widget extends WP_Widget {
 				// Add default to prevent issues in some plugins
 				echo '<option value="">' . esc_html__( 'Choose a quiz', 'forminator' ) . '</option>';
 
-				$modules = Forminator_API::get_quizzes( null, 1, 999 );
+				$modules = Forminator_API::get_quizzes( null, 1, 999, Forminator_Quiz_Model::STATUS_PUBLISH );
 				foreach ( $modules as $module ) {
 					$module = (array) $module;
 
