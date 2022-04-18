@@ -1,5 +1,12 @@
 <?php 
 //add_filter( 'show_admin_bar', '__return_false' );
+add_action( 'admin_head', 'override_admin_bar_css' );
+add_action( 'wp_head', 'override_admin_bar_css' );
+function override_admin_bar_css() {
+        if ( is_admin_bar_showing() ) {
+                
+        }
+}
 
 /*
  * loads openlab-theme-child/style.css after openlab-theme css
