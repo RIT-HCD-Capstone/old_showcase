@@ -6,9 +6,10 @@ Template:       openlab-theme
 Version:        1.0.0
 Description:    This is a child theme. It facilitates optional overriding of CBOX OpenLab code without directly editing it, so when CBOX OpenLab code is updated, desired edits aren't removed (because the child theme isn't updated).
 */
-#main-nav-sec-header {
-        background-color: black; 
-        overflow: hidden;
+
+.m-nav-item a {
+        padding-left:10px;
+        padding-right:10px;
 }
 
 .home-page .row-home-top .login {

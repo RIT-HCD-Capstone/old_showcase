@@ -1,11 +1,111 @@
-<?php 
-//add_filter( 'show_admin_bar', '__return_false' );
-add_action( 'admin_head', 'override_admin_bar_css' );
-add_action( 'wp_head', 'override_admin_bar_css' );
-function override_admin_bar_css() {
-        if ( is_admin_bar_showing() ) {
-                
-        }
+<?php
+function get_child_url() {
+        return 'https://dhssatrit.cad.rit.edu/';
+}
+
+function get_child_template_directory_uri() {
+        return get_child_url() . 'wp-content/themes/openlab-theme-child';
+}
+
+add_action( 'admin_bar_menu', 'custom_wpadminbar', 999 );
+function custom_wpadminbar( $wp_admin_bar ) {
+        $wp_admin_bar->remove_node( 'my-account' );             //removes the "Hi, [user]" subemenu from the admin bar
+        $wp_admin_bar->remove_node( 'bp-register' );            //removes the "Sign Up" from the admin bar
+        //$wp_admin_bar->remove_node( 'my-openlab' );             //removes the "My Profile" submenu from the admin bar
+        $wp_admin_bar->remove_node( 'wpa-logout' );             //removes the first "Logout" from the admin bar
+        $wp_admin_bar->remove_node( 'edit' );                   //removes the edit button from the admin bar
+        $wp_admin_bar->remove_node( 'invites' );                //removes the friend request and invitations submenu from the admin bar
+        $wp_admin_bar->remove_node( 'messages' );               //removes the messages submenu from the admin bar
+        $wp_admin_bar->remove_node( 'activity' );               //removes the activity submenu from the admin bar
+        $wp_admin_bar->remove_node( 'site-name' );              //removes the "DHSS Showcase" submenu from the admin bar
+        $wp_admin_bar->remove_node( 'comments' );               //removes the comments submenu from the admin bar
+        $wp_admin_bar->remove_node( 'new-content' );            //removes the new content submenu from the admin bar
+        $wp_admin_bar->remove_node( 'dashboard-link' );         //removes the Wordpress dashboard link from the mobile admin bar
+        $wp_admin_bar->remove_menu( 'mobile-centered' );        //removes the mobile centered menu from the mobile admin bar
+        $wp_admin_bar->remove_menu( 'my-hamburger-mol' );       //removes the profile-links submenu from the mobile admin bar
+        //$wp_admin_bar->remove_menu( 'my-hamburger' );           //removes the main-nav-links submenu from the mobile admin bar 
+        //$wp_admin_bar->remove_menu( 'top-secondary' );          //removes the "Login" / "Logout" from the admin bar
+        
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'home',
+                'title'         => 'Home',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'projects',
+                'title'         => 'Projects',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() . 'groups/type/project/' ), 
+        ) );
+
+         $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'courses',
+                'title'         => 'Courses',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() . 'groups/type/course/' ), 
+        ) );       
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'members',
+                'title'         => 'Members',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() . 'members/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'tools',
+                'title'         => 'Tools',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() . 'groups/type/club/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'subplans',
+                'title'         => 'Subplans',
+                'meta'          => array ( 'class' => 'hidden-xs', ),
+                'href'          => esc_url( get_child_url() . 'subplans/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'search',
+                'title'         => 'Search',
+                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
+                'href'          => esc_url( get_child_url() . 'search-results/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'calendar',
+                'title'         => 'Calendar',
+                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
+                'href'          => esc_url( get_child_url() . 'about/calendar/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'about',
+                'title'         => 'About',
+                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
+                'href'          => esc_url( get_child_url() . 'about/' ), 
+        ) );
+
+        $wp_admin_bar->add_node( array(
+                'parent'        => 'root-default',
+                'id'            => 'help',
+                'title'         => 'Help',
+                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
+                'href'          => esc_url( get_child_url() . 'blog/help/dhss-showcase-help/' ), 
+        ) );
+
 }
 
 /*
@@ -17,18 +117,9 @@ function my_theme_enqueue_styles() {
                 array( 'main-styles' ), wp_get_theme()->get('Version'));
 }
 
-/*
- * loads openlab-theme-child/openlab-theme-child.js
- */
-add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_scripts', 10 );
-function my_theme_enqueue_scripts() {
-        wp_enqueue_script( 'child-script', get_stylesheet_directory_uri() . '/openlab-theme-child.js', array ( 'jquery' ));
-}
-
 add_action( 'init', 'rm_openlab_do_breadcrumbs' );
 function rm_openlab_do_breadcrumbs() {
         remove_action( 'bp_before_footer', 'openlab_do_breadcrumbs', 5 );
-        //add_action( 'bp_after_header', 'openlab_do_breadcrumbs', 5 );
 }
 
 /*
@@ -133,6 +224,27 @@ function rm_openlab_header_bar() {
 }
 
 /*
+ * yanked from openlab_sitewide_header() of wp-content/plugins/cbox-openlab-core/includes/network-toolbar.php
+ * the purpose of this code is to provide an alternative to that function that doesn't load the search in mobile
+ */
+function openlab_child_sitewide_header( $location = 'header' ) {
+	$logo_url = openlab_get_logo_url();
+	?>
+
+	<div class="header-mobile-wrapper visible-xs">
+		<div class="container-fluid">
+			<div class="navbar-header clearfix">
+				<header class="menu-title pull-left">
+					<a href="<?php echo esc_attr( bp_get_root_domain() ); ?>" title="<?php echo esc_attr( _x( 'Home', 'Home page banner link title', 'commons-in-a-box' ) ); ?>" style="background-image: url('<?php echo esc_url( $logo_url ); ?>');"><span class="screen-reader-text"><?php bp_site_name(); ?></span></a>
+				</header>	
+			</div>
+		</div>
+	</div>
+
+	<?php
+}
+
+/*
  * this function allows us load our own nav bar code, below
  */
 add_action( 'bp_before_header', 'header_bar', 10 );
@@ -142,9 +254,9 @@ function header_bar() {
 
 /*
  * yanked from openlab_main_menu of openlab-theme/lib/theme-hooks.php
- * the purpose of this function is provide code for creating a fixed nav bar
- * and inserting the secondary main nav bar
- * and breadcrumbs
+ * the purpose of this code is to load the secondary menu like the primary menu, putting it on the top nav.
+ * working with custom_wpadminbar(), a contracted display will apparently drop the menu into the header and load the actual main menu (defined in wordpress) in the hamburger
+ * this is done, to avoid overwriting the plugins/cbox-openlab-core/indcludes/network-toolbar.php 
  */
 function main_menu( $location = 'header' ) {
 	$logo_html = openlab_get_logo_html();
@@ -155,7 +267,7 @@ function main_menu( $location = 'header' ) {
 
 	?>
 	<nav style="z-index:1; margin-bottom:0px;" class="navbar navbar-default oplb-bs navbar-location-<?php echo esc_attr( $location ); ?>" role="navigation">
-                <?php /*openlab_do_breadcrumbs();*/ openlab_sitewide_header( $location ); ?>
+                <?php /*openlab_do_breadcrumbs();*/ openlab_child_sitewide_header( $location ); ?>
 		<div style="border-bottom:none;" class="main-nav-wrapper">
 			<div style="padding-left:0px; padding-right:0px;" class="container-fluid" id="main-nav">
 				<div class="navbar-header hidden-xs">
@@ -166,7 +278,7 @@ function main_menu( $location = 'header' ) {
 					<?php
 					// this adds the main menu, controlled through the WP menu interface
 					$args = array(
-						'theme_location' => 'main',
+						'theme_location' => 'mainsec',
 						'container'      => false,
 						'menu_class'     => 'nav navbar-nav',
 						'menu_id'        => 'menu-main-menu-' . $location,
@@ -174,21 +286,24 @@ function main_menu( $location = 'header' ) {
 
 					wp_nav_menu( $args ); 
 					?>
+<!--
 					<div class="navbar-right hidden-xs">
 						<?php //openlab_mu_site_wide_bp_search( 'desktop', $location ); ?>
                                                 <ul class="nav navbar-nav">
                                                         <li>
-                                                        <?php if ( is_user_logged_in() ): ?>
+                                                        <?php //if ( is_user_logged_in() ): ?>
                                                                 <a href="https://dhssatrit.cad.rit.edu/wp-login.php?action=logout&_wpnonce=56b4db4c50&redirect_to=https://dhssatrit.cad.rit.edu">Logout</a>
-                                                        <?php else: ?>
+                                                        <?php //else: ?>
                                                                 <a href="https://dhssatrit.cad.rit.edu/wp-login.php?saml_sso">Login</a>
-                                                        <?php endif; ?>
+                                                        <?php //endif; ?>
                                                         </li>
                                                 </ul>
 					</div> 
+-->
                                 </div>
-                                <div class="navbar-collapse collapse" id="main-nav-sec-<?php echo esc_attr( $location ); ?>">
-                                        <?php
+<!--
+                                <div class="navbar-collapse collapse" id="main-nav-sec-<?php /*echo esc_attr( $location );*/ ?>">
+                                        <?php/*
                                         // this adds the main menu secondary
                                         $args_sec = array (
                                                 'theme_location'        => 'mainsec',
@@ -196,7 +311,7 @@ function main_menu( $location = 'header' ) {
                                                 'menu_class'            => 'nav navbar-nav',
                                                 'menu_id'               => 'menu-main-menu-' . $location,
                                         );
-                                        wp_nav_menu($args_sec);
+                                        wp_nav_menu($args_sec);*/
                                         ?>
                                 </div> 
                                 <script>
@@ -217,6 +332,7 @@ function main_menu( $location = 'header' ) {
                                                 }
                                         }
                                 </script>
+-->
                         </div>   
                 </div> 
         </nav>
@@ -299,7 +415,7 @@ function custom_menu_items( $items, $menu ) {
 		$classes = '';
 
 		if ( is_user_logged_in() ) {
-			$class = '';
+			/*$class = '';
 			if ( bp_is_my_profile() || bp_is_current_action( 'create' ) || is_page( 'my-courses' ) || is_page( 'my-projects' ) || is_page( 'my-clubs' ) ) {
 				$class = 'class="current-menu-item"';
 			}
@@ -311,7 +427,7 @@ function custom_menu_items( $items, $menu ) {
                                 $opl_link_admin = '<li>';
                                 $opl_link_admin .= '<a href="' . esc_attr( 'https://dhssatrit.cad.rit.edu/wp-admin/' ) . '">' . esc_html( 'Dashboard' ) . '</a>';
                                 $opl_link_admin .= '</li>';
-                        }
+                        }*/
 		}
 		return $opl_link . $items . $opl_link_admin;
 	} elseif ( 'aboutmenu' === $menu->theme_location ) {
@@ -489,10 +605,6 @@ function modify_options_nav() {
 	}
 }
 add_action( 'bp_screens', 'modify_options_nav', 1 );
-
-function get_child_template_directory_uri() {
-        return 'https://dhssatrit.cad.rit.edu/wp-content/themes/openlab-theme-child';
-}
 
 /*
  * yanked from openlab_site_footer of openlab-theme/functions.php
