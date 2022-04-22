@@ -25,7 +25,27 @@ function custom_wpadminbar( $wp_admin_bar ) {
         $wp_admin_bar->remove_menu( 'my-hamburger-mol' );       //removes the profile-links submenu from the mobile admin bar
         //$wp_admin_bar->remove_menu( 'my-hamburger' );           //removes the main-nav-links submenu from the mobile admin bar 
         //$wp_admin_bar->remove_menu( 'top-secondary' );          //removes the "Login" / "Logout" from the admin bar
-        
+
+        /*if ( is_user_logged_in() ) {
+                $wp_admin_bar->remove_node( 'top-logout' );
+                $wp_admin_bar->add_node( array(
+                        'parent'        => 'top-secondary',
+                        'id'            => 'bp-logout',
+                        'href'          => add_query_arg( 'redirect_to', bp_get_root_domain(), wp_logout_url() ),
+                        'title'         => 'Log Out',
+                        'meta'          => array( 'class' => 'bold hidden-xs' ),
+                ) );
+        } else {
+                $wp_admin_bar->remove_node( 'bp-login' );
+                $wp_admin_bar->add_node( array(
+                        'parent'        => 'top-secondary',
+                        'id'            => 'top-login',
+                        'href'          => esc_url( 'https://dhssatrit.cad.rit.edu/wp-login.php?saml_sso' ),
+                        'title'         => 'Login',
+                        'meta'          => array( 'class' => 'bold hidden-xs' ),
+                ) );
+        }*/
+
         $wp_admin_bar->add_node( array(
                 'parent'        => 'root-default',
                 'id'            => 'home',
@@ -110,11 +130,13 @@ function custom_wpadminbar( $wp_admin_bar ) {
 
 /*
  * loads openlab-theme-child/style.css after openlab-theme css
+ * loads openlab-theme-child/openlab-theme-child.js
  */
 add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles', 11 );
 function my_theme_enqueue_styles() {
         wp_enqueue_style( 'child-style', get_stylesheet_uri(), 
                 array( 'main-styles' ), wp_get_theme()->get('Version'));
+        wp_enqueue_script( 'my_script', get_stylesheet_directory_uri() . '/openlab-theme-child.js' );
 }
 
 add_action( 'init', 'rm_openlab_do_breadcrumbs' );
@@ -301,38 +323,6 @@ function main_menu( $location = 'header' ) {
 					</div> 
 -->
                                 </div>
-<!--
-                                <div class="navbar-collapse collapse" id="main-nav-sec-<?php /*echo esc_attr( $location );*/ ?>">
-                                        <?php/*
-                                        // this adds the main menu secondary
-                                        $args_sec = array (
-                                                'theme_location'        => 'mainsec',
-                                                'container'             => false,
-                                                'menu_class'            => 'nav navbar-nav',
-                                                'menu_id'               => 'menu-main-menu-' . $location,
-                                        );
-                                        wp_nav_menu($args_sec);*/
-                                        ?>
-                                </div> 
-                                <script>
-                                        window.onscroll = function() { fixMenu() };
-                                        var navbar = document.getElementById( "main-nav-sec-header" );
-                                        var sticky = navbar.offsetTop;
-                                        function fixMenu() {
-                                                if ( window.pageYOffset >= sticky ) {
-                                                        navbar.style["position"] = "fixed";
-                                                        navbar.style["top"] = "0";
-                                                        navbar.style["width"] = "100%";
-                                                        navbar.style["max-width"] = "1155px";
-                                                } else {
-                                                        navbar.style["position"] = "";
-                                                        navbar.style["top"] = "";
-                                                        navbar.style["width"] = "";
-                                                        navbar.style["max-width"] = "";
-                                                }
-                                        }
-                                </script>
--->
                         </div>   
                 </div> 
         </nav>
