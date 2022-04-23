@@ -7,11 +7,6 @@ Version:        1.0.0
 Description:    This is a child theme. It facilitates optional overriding of CBOX OpenLab code without directly editing it, so when CBOX OpenLab code is updated, desired edits aren't removed (because the child theme isn't updated).
 */
 
-.m-nav-item a {
-        padding-left:10px;
-        padding-right:10px;
-}
-
 .home-page .row-home-top .login {
         background: /*#F76902*/#f78b3e;
         border-bottom: 13px solid /*#000000*/#F76902;
@@ -24,15 +19,20 @@ Description:    This is a child theme. It facilitates optional overriding of CBO
         background: black;
 }
 
+.breadcrumb-inline {
+        color:rgb(180,180,180);
+}
+
 #breadcrumb-container {
-	background-color: #000000;
+	background-color: #ffffff;
 }
 	
 #breadcrumb-container .breadcrumb-col .breadcrumb-prefix-label {
-        background: #000000;
+        background: #ffffff;
 }
+
 #breadcrumb-container .breadcrumb-col .fa.fa-caret-right {
-        color: #000000;
+        color: #ffffff;
 }
 
 .pagination li a.current,

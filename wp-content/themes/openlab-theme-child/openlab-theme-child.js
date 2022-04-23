@@ -5,6 +5,7 @@ var sticky = null;
 
 window.onload = function() {
         navbar = document.getElementById( "wpadminbar" );
+        navbar.style["background-color"] = "black";
         sticky = navbar.offsetTop;
 }
 

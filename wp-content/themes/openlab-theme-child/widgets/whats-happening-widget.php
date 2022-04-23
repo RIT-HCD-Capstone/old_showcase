@@ -57,11 +57,13 @@ class OpenLab_Child_WhatsHappening_Widget extends WP_Widget {
 		$r = array_merge( $this->default_args, $instance );
 
 		ob_start(); ?>
-
 		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php echo $args['before_widget']; ?>
-
-	<h2 class="title clearfix"><i id="refreshActivity" class="fa fa-refresh pull-right" aria-hidden="true"></i><?php echo esc_html( $r['title'] ); ?></h2>
+        <div class="title-wrapper">
+                <h2 class="title clearfix">
+                        <i id="refreshActivity" class="fa fa-refresh pull-right" aria-hidden="true"></i><?php echo esc_html( $r['title'] ); ?>
+                </h2>
+        </div>
 	<div id="whatsHappening" class="left-block-content whats-happening-wrapper">
 		<div class="activity-list item-list inline-element-list sidebar-sublinks">
 			<?php $activities = openlab_whats_happening_activity_items(); ?>
@@ -101,7 +103,6 @@ class OpenLab_Child_WhatsHappening_Widget extends WP_Widget {
 
 		</div><!-- .activity-list -->
 	</div><!-- #whatsHappening -->
-
 		<?php
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

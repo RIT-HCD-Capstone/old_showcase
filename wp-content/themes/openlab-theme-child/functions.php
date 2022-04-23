@@ -7,12 +7,20 @@ function get_child_template_directory_uri() {
         return get_child_url() . 'wp-content/themes/openlab-theme-child';
 }
 
+function on_homepage() {
+        global $wp;
+        $current_url = home_url( $wp->request ) . '/'; 
+        if ( $current_url == get_child_url() )  { return true; }
+        return false;
+}
+
 add_action( 'admin_bar_menu', 'custom_wpadminbar', 999 );
 function custom_wpadminbar( $wp_admin_bar ) {
         $wp_admin_bar->remove_node( 'my-account' );             //removes the "Hi, [user]" subemenu from the admin bar
         $wp_admin_bar->remove_node( 'bp-register' );            //removes the "Sign Up" from the admin bar
         //$wp_admin_bar->remove_node( 'my-openlab' );             //removes the "My Profile" submenu from the admin bar
         $wp_admin_bar->remove_node( 'wpa-logout' );             //removes the first "Logout" from the admin bar
+        $wp_admin_bar->remove_node( 'updates' );                //removes the updates link from the admin bar
         $wp_admin_bar->remove_node( 'edit' );                   //removes the edit button from the admin bar
         $wp_admin_bar->remove_node( 'invites' );                //removes the friend request and invitations submenu from the admin bar
         $wp_admin_bar->remove_node( 'messages' );               //removes the messages submenu from the admin bar
@@ -45,6 +53,18 @@ function custom_wpadminbar( $wp_admin_bar ) {
                         'meta'          => array( 'class' => 'bold hidden-xs' ),
                 ) );
         }*/
+
+        if ( is_user_logged_in() ) {
+                global $current_user;
+                wp_get_current_user();
+                $wp_admin_bar->add_node( array( 
+                        'parent'        => 'network-menu-mobile-default',
+                        'id'            => 'my-mobile',
+                        'title'         => 'My Profile',
+                        'meta'          => array( 'class' => 'mobile-no-hover' ),
+                        'href'          => esc_url( get_child_url() . 'members/' . $current_user->user_login . '/' ),
+                ) );
+        }
 
         $wp_admin_bar->add_node( array(
                 'parent'        => 'root-default',
@@ -231,8 +251,8 @@ function openlab_child_custom_breadcrumb_args( $args ) {
                 . esc_html__( 'You are here', 'commons-in-a-box' ) . '</div><i class="fa fa-caret-right"></i></div><div class="breadcrumb-inline">';
 	$args['prefix']           = '<div style="margin-top:0px;" id="breadcrumb-container"><div class="breadcrumb-col semibold uppercase"><div class="breadcrumb-wrapper">';
         $args['suffix']           = '</div></div></div></div>';*/
-        $args['prefix']           = '<div style="margin-top:0px;" id="breadcrumb-container"><div class="breadcrumb-col semibold uppercase"><div class="breadcrumb-wrapper">';
-        $args['labels']['prefix'] = '<div style="padding-left:10px;" class="breadcrumb-inline">';	
+        $args['prefix']           = '<div style="margin-top:0px;" id="breadcrumb-container"><div class="breadcrumb-col"><div class="breadcrumb-wrapper">';
+        $args['labels']['prefix'] = '<div style="padding-left:0px; font-size:13px;" class="breadcrumb-inline">';	
         $args['suffix']           = '</div></div></div>';
 	return $args;
 }
@@ -618,40 +638,53 @@ function site_footer() {
 
 <div id="openlab-footer" class="oplb-bs page-table-row">
 	<div class="oplb-bs">
-		<div class="footer-wrapper">
+		<div class="footer-wrapper" style="padding-top: 70px; margin-top: 30px;">
 			<div class="container-fluid footer-desktop">
 				<div class="row row-footer">
-                                        <div id="footer-left" class="footer-left footer-section col-md-10" style="">
-                                                <h1 style="" id="footer-left-heading">DHSS Showcase</h1>
-                                                <div style="">
-                                                        <ul style="list-style:none;">
-                                                                <li><a href="https://dhssatrit.cad.rit.edu/about/">About</a></li>
+                                        <div id="footer-left" class="footer-left footer-section col-md-8" style="vertical-align:top; border-right: 0; max-width:45%; float: left; margin-right: 10%;">
+                                                <img src="https://dhssatrit.cad.rit.edu/wp-content/uploads/2021/03/cropped-DHSS_horizontal_logo-e1643637904315.png" alt="RIT DHSS logo"/>
+                                                <p style="padding-top:10px; padding-left:10px;">
+                                                        The DHSS Showcase is a living archive of the Digital Humanities and Social Sciences BS at RIT. Thank you for visiting :)
+                                                </p>
+					</div>
+
+					<div id="footer-middle" class="footer-middle footer-section col-md-7" style="float:left; vertical-align:top; border-right: 0; margin-right: 15px; padding-left: 0px;"> 
+                                                <style>
+                                                        #footer-middle a { }
+                                                        #footer-middle a:link { text-decoration: none; }
+                                                        #footer-middle a:visited { text-decoration: none; }
+                                                        #footer-middle a:active { text-decoration: none; }
+                                                </style>
+                                                <div style="float:left; margin-right:75px;">
+                                                        <h1>Support</h1>
+                                                        <ul style="padding-left: 0; list-style:none;"> 
+                                                                <li><a href="https://dhssatrit.cad.rit.edu/blog/help/dhss-showcase-help/">Help</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/about/contact-us/">Contact Us</a></li>
-                                                                <li><a href="https://dhssatrit.cad.rit.edu/about/terms-of-use/">Terms of Use</a></li>
-                                                                <li><a href="https://dhssatrit.cad.rit.edu/help/">Help</a></li>
+                                                                <li><a href="https://dhssatrit.cad.rit.edu/about/terms-of-use/">Terms of Use</a></li> 
+                                                                <li><a href="https://dhssatrit.cad.rit.edu/privacy-policy/">Privacy Policy</a></li>
                                                         </ul>
                                                 </div>
-                                                <div style="">
-                                                        <ul style="list-style:none;">
+                                                <div style="float:left;">
+                                                        <h1>DHSS</h1>
+                                                        <ul style="padding-left: 0; list-style:none;">
+                                                                <li><a href="https://dhssatrit.cad.rit.edu/about/">About</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/groups/type/project/">Projects</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/groups/type/course/">Courses</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/members/">Members</a></li>
+                                                                <li><a href="https://dhssatrit.cad.rit.edu/groups/type/club">Tools</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/about/calendar/">Calendar</a></li>
-                                                        </ul>
- 
+                                                                <li><a href="https://dhssatirt.cad.rit.edu/subplans/">Subplans</a></li>
+                                                        </ul> 
                                                 </div>
 					</div>
 
-					<div id="footer-middle" class="footer-middle footer-section col-md-9" style="">
-                                                <div class="cboxol-footer-logo">
-                                                        <a href="https://www.rit.edu/liberalarts/"><img style="" src="<?php echo esc_attr( get_child_template_directory_uri() ); ?>/images/RIT_COLA_lockup.png" alt="RIT College of Liberal Arts lockup"/></a>
-                                                </div>
-					</div>
-
-					<div id="footer-right" class="footer-right footer-section col-md-4">
-						<div class="cboxol-footer-logo">
+					<div id="footer-right" class="footer-right footer-section col-md-4" style="margin-left: 0px; vertical-align: top; float: left;">
+						<div class="cboxol-footer-logo" style="float:left; margin-right: 50px;">
 							<a href="https://commonsinabox.org/"><img style="" src="<?php echo esc_attr( get_template_directory_uri() ); ?>/images/cboxol-logo-noicon.png" alt="<?php esc_attr_e( 'CBOX-OL Logo', 'commons-in-a-box' ); ?>" /></a>
 						</div>
+                                                <div class="cboxol-footer-logo" style="padding-left:5px; float:left; margin-top:25px;">
+                                                        <a href="https://www.rit.edu/liberalarts/"><img style="max-width: 300px;" src="<?php echo esc_attr( get_child_template_directory_uri() ); ?>/images/RIT_COLA_lockup.png" alt="RIT College of Liberal Arts lockup"/></a>
+                                                </div>
 					</div>
 				</div>
 			</div>

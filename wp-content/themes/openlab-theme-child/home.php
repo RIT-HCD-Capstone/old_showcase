@@ -35,7 +35,7 @@ get_header();
 	</div>
 
 	<!-- <div id="home-right" class="col-sm-16"> this does 4 -->
-        <div id="home-left" class="col-sm-8">
+        <div style="float: left;"class="col-sm-8">
 		<!-- <div id="home-group-list-wrapper" class="row"> -->
 
 		<?php the_widget( 'OpenLab_Child_WhatsHappening_Widget' ); //dynamic_sidebar( 'home-main' ); ?>

@@ -23,10 +23,17 @@
 
 		<div class="page-table-row expanded">
 			<?php do_action( 'bp_before_header' ); ?>
-			<div style="margin-top: 20px;" class="container-fluid">
+			<div style="margin-top: 70px;" class="container-fluid">
 				<div id="header" class="row">
 					<?php do_action( 'bp_header' ); ?>
 				</div><!-- #header -->
 
 				<?php do_action( 'bp_after_header' ); ?>
 				<?php do_action( 'bp_before_container' ); ?>
+
+                                <div><?php
+                                        if ( !on_homepage() ) {
+                                                openlab_do_breadcrumbs(); 
+                                        }
+                                ?></div>
+

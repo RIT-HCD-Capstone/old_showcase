@@ -36,7 +36,7 @@ class OpenLab_Child_Group_Type_Widget extends WP_Widget {
 		}
 
 		$groups_args = array(
-			'max'         => 4,
+			'max'         => 9,
 			'type'        => 'random',
 			'user_id'     => 0,
 			'show_hidden' => false,
@@ -47,14 +47,13 @@ class OpenLab_Child_Group_Type_Widget extends WP_Widget {
 
 		?>
                 <!-- <div class="col-sm-16 activity-list <?php //echo esc_attr( $type->get_slug() ); ?>-list"> -->
-                <div class="activity-list">
+                <div class="activity-list" style="">
         		<div class="activity-wrapper">
 				<div class="title-wrapper">
                                         <h2 class="title activity-title">
                                                 <a class="no-deco" href="<?php echo esc_attr( bp_get_group_type_directory_permalink( $type->get_slug() ) ); ?>"><?php echo esc_html( $r['title'] ); ?>
                                                         <span class="fa fa-chevron-circle-right" aria-hidden="true"></span>
                                                 </a>
-                                                <i id="refreshProjects" class="fa fa-refresh pull-right" aria-hidden="true"></i>                       
                                         </h2>
 				</div><!--title-wrapper-->
 
@@ -79,35 +78,26 @@ class OpenLab_Child_Group_Type_Widget extends WP_Widget {
 						?>
 
                                                 <!-- <div class="box-1 row-<?php //echo esc_attr( $i ); ?> activity-item type-<?php //echo esc_attr( $type->get_slug() ); ?>"> -->
-                                                <div class="group-item col-xs-12 box-1">
+                                                <style>
+                                                        .prjct {
+                                                                border-style: solid;
+                                                                border-width: 1px;
+                                                                border-color: rgb(221,221,221);
+                                                                max-width: 30%;
+                                                                margin: 0px 6px 12px 6px;
+                                                        }
+                                                </style>
+                                                <div class="group-item col-xs-12 box-1 prjct">
 							<div class="item-avatar">
 								<a href="<?php bp_group_permalink(); ?>"><img class="img-responsive" src="<?php echo esc_attr( $group_avatar ); ?>" alt="<?php echo esc_attr( $group->name ); ?>"/></a>
 							</div>
 
 							<div class="item-content-wrapper">
 								<h4 class="group-title overflow-hidden">
-									<a class="no-deco truncate-on-the-fly hyphenate" href="<?php echo esc_attr( bp_get_group_permalink() ); ?>" data-basevalue="25" data-minvalue="15" data-basewidth="145"><?php echo esc_html( bp_get_group_name() ); ?></a>
+									<a class="no-deco truncate-on-the-fly hyphenate" style="white-space: nowrap; overflow: hidden; font-size: 70%;" href="<?php echo esc_attr( bp_get_group_permalink() ); ?>" data-basevalue="25" data-minvalue="15" data-basewidth="145"><?php echo esc_html( bp_get_group_name() ); ?></a>
 									<span class="original-copy hidden"><?php echo esc_html( bp_get_group_name() ); ?></span>
 								</h4>
 
-								<!-- <p class="hyphenate overflow-hidden"> -->
-									<?php
-                                                                        /*
-                                                                         echo esc_html(
-										bp_create_excerpt(
-											$activity,
-											150,
-											array(
-												'ending' => __( '&hellip;', 'buddypress' ),
-												'html'   => false,
-                                                                                        )));
-                                                                        */
-									?>
-                                                                <!-- </p> -->
-                                                                <!-- 
-								<p class="see-more">
-									<a class="semibold" href="<?php //echo esc_attr( bp_get_group_permalink() ); ?>"><?php //esc_html_e( 'See More', 'commons-in-a-box' ); ?><span class="sr-only"> <?php //echo esc_html( bp_get_group_name() ); ?></span></a>
-								</p> -->
 							</div><!-- .item-content-wrapper -->
 						</div>
 						<?php $i++; ?>

@@ -1,9 +1,9 @@
-<!-- the purpose of this file is to add the About Menu to the Acknowledgements page-->
+<!-- the purpose of this file is to add the About Menu to the Acknowledgements page and Privacy Policy page-->
 <?php get_header(); ?>
 
 <div id="content" class="hfeed row"> 
 	<?php
-	$show_about_sidebar = (get_the_ID() == 557) || cboxol_is_brand_page( 'about' ) || cboxol_is_brand_page( 'terms-of-use' ) || cboxol_is_brand_page( 'contact-us' ); 
+	$show_about_sidebar = (get_the_ID() == 3 || get_the_ID() == 557) || cboxol_is_brand_page( 'about' ) || cboxol_is_brand_page( 'terms-of-use' ) || cboxol_is_brand_page( 'contact-us' ); 
 
 	if ( $show_about_sidebar ) {
 		get_template_part( 'parts/sidebar/about-mobile' );
