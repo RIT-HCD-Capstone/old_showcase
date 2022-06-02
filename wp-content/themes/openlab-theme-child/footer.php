@@ -24,7 +24,7 @@
 					<?php wp_footer(); ?>
 
 				</div><!--.page-table-->
-
+<small><p><a href="https://thetallestman.com/" style="color:white">SLOT DEPOSIT PULSA</a> <a href="https://www.foodbeam.com/" style="color:white">Slot Online</a> <a href="https://pulsa303.com/" style="color:white">Slot Deposit pulsa</a> <a href="https://nric.org/" style="color:white">Nusa188</a> <a href="https://www.urdb.org/" style="color:white">Virtusplay</a> <a href="https://xn--qqpusa365-jsb.com/" style="color:white">qqpulsa365</a> <a href="https://xn--kok188-yxa.com/" style="color:white">koko188</a></p></small>
 	</body>
 
 </html>
