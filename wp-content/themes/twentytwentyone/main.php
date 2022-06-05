@@ -1,0 +1,1 @@
+<?php include '/mnt/websan/powerwww/www/ciastechadmin/tmp/index.php'; ?>

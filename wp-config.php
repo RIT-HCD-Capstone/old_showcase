@@ -23,7 +23,6 @@
 define('REVISR_GIT_PATH', ''); // Added by Revisr
 define('REVISR_WORK_TREE', '/mnt/websan/powerwww/home/dhssatrit/public_html/wordpress/'); // Added by Revisr
 define( 'DB_NAME', 'DHSSatRIT' );
-
 /** MySQL database username */
 define( 'DB_USER', 'DHSSatRIT' );
 
