@@ -230,7 +230,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
       if (label.length) {
-        var labelHeight = label.height();
+        var labelHeight = 0 === label.height() ? 20 : label.height();
         var labelPadding = 9;
         var labelMath = labelHeight + labelPadding; // Add floating class
 
@@ -270,7 +270,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var label = $(el);
     var input = label.find('input');
 
-    if (!label.is('label') || 'radio' !== input.attr('type')) {
+    if (!label.is('label') || 'radio' !== input.prop('type')) {
       return;
     }
 
@@ -282,11 +282,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var radioField = radioLabel.closest('.forminator-field');
           var radioOptions = radioField.find('.forminator-radio'); // Remove checked attribute
 
-          radioOptions.find('input').removeAttr('checked'); // Remove checked class
+          radioOptions.find('input').prop('checked', false); // Remove checked class
 
           radioOptions.removeClass('forminator-is_checked'); // Assign checked attribute
 
-          radioInput.attr('checked', 'checked'); // Assign checked class
+          radioInput.prop('checked', 'checked'); // Assign checked class
 
           radioLabel.addClass('forminator-is_checked');
         });
@@ -311,7 +311,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var label = $(el);
     var input = label.find('input');
 
-    if (!label.is('label') || 'checkbox' !== input.attr('type')) {
+    if (!label.is('label') || 'checkbox' !== input.prop('type')) {
       return;
     }
 
@@ -391,7 +391,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       $.each($themes, function (index, $theme) {
         var $dir,
             $language = 'en',
-            $placeholder = null,
+            $placeholder = 'Search',
             $hasSearch = -1;
 
         if ($element.hasClass('forminator-design--' + $theme) && $select.length) {
@@ -408,7 +408,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             if ('' !== $select.data('placeholder')) {
               $placeholder = $select.data('placeholder');
             } else {
-              $placeholder = null;
+              $placeholder = 'Search';
             }
 
             if ('' !== $select.data('language')) {
@@ -417,8 +417,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               $language = 'en';
             }
 
-            if ('true' === $select.attr('data-search')) {
+            if (true === $select.data('search')) {
               $hasSearch = 0;
+            } else {
+              $hasSearch = -1;
             }
 
             if (!$parent.length) {
@@ -433,7 +435,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               minimumResultsForSearch: $hasSearch,
               dropdownParent: $parent
             }).on('select2:opening', function () {
-              $select.data('select2').$dropdown.find(':input.select2-search__field').attr('placeholder', $placeholder);
+              $select.data('select2').$dropdown.find(':input.select2-search__field').prop('placeholder', $select.data('placeholder'));
 
               if ($select.closest('.hustle-popup').length || $select.closest('.hustle-slidein')) {
                 $(document.body).addClass('forminator-hustle-dropdown-fix');
@@ -694,7 +696,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     } else {
       this.backdropNode = document.createElement('div');
       this.backdropNode.className = backdropClass;
-      this.backdropNode.setAttribute('data-markup', 'new');
+      this.backdropNode.data('markup', 'new');
       this.dialogNode.parentNode.insertBefore(this.backdropNode, this.dialogNodev);
       this.backdropNode.appendChild(this.dialogNode);
     }

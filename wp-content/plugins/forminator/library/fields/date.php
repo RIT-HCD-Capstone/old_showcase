@@ -112,7 +112,7 @@ class Forminator_Date extends Forminator_Field {
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $settings = array(), $draft_value = null ) {
 
 		$this->field = $field;
 
@@ -133,6 +133,7 @@ class Forminator_Date extends Forminator_Field {
 		$start_of_week   = self::get_property( 'start_of_week', $field, get_option( 'start_of_week' ) );
 		$disabled_dates  = self::get_property( 'disabled-dates', $field, array() );
 		$disabled_range  = self::get_property( 'disable-date-range', $field, array() );
+		$uniq_id		 = '_' . Forminator_CForm_Front::$uid;
 
 		if ( false !== strpos( $date_format, '-' ) ) {
 			$sep = '-';
@@ -270,6 +271,10 @@ class Forminator_Date extends Forminator_Field {
 				$max_year = date( 'Y', strtotime( $end_date ) );
 			}
 
+			if ( isset( $draft_value['value'] ) ) {
+				$default_value = $draft_value['value'];
+			}
+
 			$html .= self::create_input(
 				array(
 					'autocomplete'       => 'off',
@@ -278,7 +283,7 @@ class Forminator_Date extends Forminator_Field {
 					'name'               => $name,
 					'value'              => $default_value,
 					'placeholder'        => $placeholder,
-					'id'                 => 'forminator-field-' . $id . '-picker-' . uniqid(),
+					'id'                 => 'forminator-field-' . $id . '-picker-' . $uniq_id,
 					'class'              => 'forminator-input forminator-datepicker',
 					'data-required'      => $required,
 					'data-format'        => $date_format,
@@ -339,7 +344,12 @@ class Forminator_Date extends Forminator_Field {
 				$default_value = $prefill;
 			}
 
-			if ( $is_prefil_valid ) {
+			if ( isset( $draft_value['value'] ) ) {
+				$parsed_date = $draft_value['value'];
+				$day   = $parsed_date['day'];
+				$month = $parsed_date['month'];
+				$year  = $parsed_date['year'];
+			} elseif ( $is_prefil_valid ) {
 				$day   = $parsed_date['day'];
 				$month = $parsed_date['month'];
 				$year  = $parsed_date['year'];
@@ -372,7 +382,7 @@ class Forminator_Date extends Forminator_Field {
 
 						$day_data = array(
 							'name'        => $id . '-day',
-							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-day',
+							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-day' . $uniq_id,
 							'class'       => 'forminator-select2',
 							'data-format' => $date_format,
 							'data-parent' => $id,
@@ -422,7 +432,7 @@ class Forminator_Date extends Forminator_Field {
 
 						$month_data = array(
 							'name'        => $id . '-month',
-							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-month',
+							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-month' . $uniq_id,
 							'class'       => 'forminator-select2',
 							'data-format' => $date_format,
 							'data-parent' => $id,
@@ -472,7 +482,7 @@ class Forminator_Date extends Forminator_Field {
 
 						$year_data = array(
 							'name'        => $id . '-year',
-							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-year',
+							'id'          => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-year' . $uniq_id,
 							'class'       => 'forminator-select2',
 							'data-format' => $date_format,
 							'data-parent' => $id,
@@ -529,11 +539,17 @@ class Forminator_Date extends Forminator_Field {
 		} elseif ( 'input' === $type ) {
 			$day_value = $month_value = $year_value = '';
 
-			if ( $is_prefil_valid ) {
+			if ( isset( $draft_value['value'] ) ) {
+				$parsed_date = $draft_value['value'];
+				$day_value   = $parsed_date['day'];
+				$month_value = $parsed_date['month'];
+				$year_value  = $parsed_date['year'];
+			} elseif ( $is_prefil_valid ) {
 				$day_value   = $parsed_date['day'];
 				$month_value = $parsed_date['month'];
 				$year_value  = $parsed_date['year'];
 			}
+
 			if ( ! empty( $label ) ) {
 
 				if ( $required ) {
@@ -575,7 +591,7 @@ class Forminator_Date extends Forminator_Field {
 							'min'         => 1,
 							'max'         => 31,
 							'name'        => $id . '-day',
-							'value'       => $day_value,
+							'value'       => esc_attr( $day_value ),
 							'placeholder' => $this->sanitize_value( self::get_property( 'day_placeholder', $field ) ),
 							'id'          => 'forminator-field-' . $id . '-day',
 							'class'       => 'forminator-input',
@@ -634,7 +650,7 @@ class Forminator_Date extends Forminator_Field {
 							'min'         => 1,
 							'max'         => 12,
 							'name'        => $id . '-month',
-							'value'       => $month_value,
+							'value'       => esc_attr( $month_value ),
 							'placeholder' => $this->sanitize_value( self::get_property( 'month_placeholder', $field ) ),
 							'id'          => 'forminator-field-' . $id . '-month',
 							'class'       => 'forminator-input',
@@ -664,9 +680,7 @@ class Forminator_Date extends Forminator_Field {
 								$required,
 								$design
 							);
-
 						} else {
-
 							$html .= self::create_input(
 								$month_data,
 								$this->sanitize_value( self::get_property( 'month_label', $field ) ),
@@ -696,7 +710,7 @@ class Forminator_Date extends Forminator_Field {
 							'id'          => 'forminator-field-' . $id . '-year',
 							'class'       => 'forminator-input',
 							'data-field'  => 'year',
-							'value'       => $year_value,
+							'value'       => esc_attr( $year_value ),
 							'data-format' => $date_format,
 							'data-parent' => $id,
 						);
@@ -1081,9 +1095,8 @@ class Forminator_Date extends Forminator_Field {
 	 *
 	 * @param array        $field
 	 * @param array|string $data
-	 * @param array        $post_data
 	 */
-	public function validate( $field, $data, $post_data = array() ) {
+	public function validate( $field, $data ) {
 		$id              = self::get_property( 'element_id', $field );
 		$start_date_type = self::get_property( 'start-date', $field, '' );
 		$end_date_type   = self::get_property( 'end-date', $field, '' );
@@ -1151,18 +1164,9 @@ class Forminator_Date extends Forminator_Field {
 			return;
 		}
 
-		// subfields `{"year":"","day":"","month":""}`.
-		if ( is_array( $data ) ) {
-			$is_all_empty = true;
-			foreach ( $data as $value ) {
-				if ( ! empty( $value ) ) {
-					$is_all_empty = false;
-					break;
-				}
-			}
-			if ( $is_all_empty ) {
-				return;
-			}
+		if ( isset( $data['year'] ) && isset( $data['day'] ) && isset( $data['month'] )
+				&& empty( $data['year'] ) && empty( $data['day'] ) && empty( $data['month'] ) ) {
+			return;
 		}
 
 		// Always! (we dont have validate flag on builder) validate date_format.
@@ -1175,7 +1179,19 @@ class Forminator_Date extends Forminator_Field {
 		// strtotime does not recognize all of our date formats so we need to convert all dates to 1 accepted format before processing.
 		if ( 'Y-m-d' !== datepicker_default_format( $date_format ) && ! is_array( $data ) ) {
 			$format_date = date_create_from_format( datepicker_default_format( $date_format ), $data );
-			$data        = date_format( $format_date, 'Y-m-d' );
+			if ( $format_date ) {
+				$data = date_format( $format_date, 'Y-m-d' );
+			} else {
+				$this->validation_message[ $id ] = apply_filters(
+					'forminator_field_date_valid_date_validation_message',
+					__( 'Please enter a valid date.', 'forminator' ),
+					$id,
+					$data,
+					$date_format,
+					$this
+				);
+				return;
+			}
 		}
 
 		if (
@@ -1185,7 +1201,7 @@ class Forminator_Date extends Forminator_Field {
 
 
 			$year_id = $id . '-year';
-			if ( strlen( $date['year'] ) !== 4 ) {
+			if ( strlen( $date['year'] ) !== 4 && 'picker' !== $date_type ) {
 
 				$this->validation_message[ $year_id ] = apply_filters(
 					'forminator_field_date_valid_year_validation_message',
@@ -1208,7 +1224,7 @@ class Forminator_Date extends Forminator_Field {
 				);
 
 			}
-			
+
 		} else {
 
 			if ( 'select' === $date_type ) {
@@ -1293,6 +1309,7 @@ class Forminator_Date extends Forminator_Field {
 
 			if ( 'picker' === $date_type ) {
 
+				$custom_form   = forminator_get_model_from_id( Forminator_Front_Action::$module_id );
 				$selected_date = preg_replace( '/(\d+)\D+(\d+)\D+(\d+)/', '$1/$2/$3', $data );
 
 				if ( 'week' === $restrict_type ) {
@@ -1323,10 +1340,18 @@ class Forminator_Date extends Forminator_Field {
 						$start_offset_value    = self::get_property( 'start-offset-value', $field, '0' );
 						$start_offset_duration = self::get_property( 'start-offset-duration', $field, 'days' );
 						if ( 'today' === $start_date_type ) {
-							$start_date = date_i18n( 'm/d/Y', strtotime( $start_offset_operator . $start_offset_value . ' ' . $start_offset_duration, current_time( 'U' ) ) );
+							$start_date = date_i18n( 'Y-m-d', strtotime( $start_offset_operator . $start_offset_value . ' ' . $start_offset_duration, current_time( 'U' ) ) );
 						} else {
-							$start_date_field = isset( $post_data[ $start_date_type ] ) ? $post_data[ $start_date_type ] : '';
-							$start_date       = ! empty( $start_date_field ) ? date_i18n( 'm/d/Y', strtotime( $start_date_field . ' ' . $start_offset_operator . $start_offset_value . ' ' . $start_offset_duration ) ) : '';
+							$start_date_value = isset( Forminator_CForm_Front_Action::$prepared_data[ $start_date_type ] )
+								? Forminator_CForm_Front_Action::$prepared_data[ $start_date_type ] : '';
+							$start_date       = '';
+							if ( ! empty( $start_date_value ) ) {
+								$start_date_field  = $custom_form->get_field( $start_date_type, true );
+								$start_date_format = self::get_property( 'date_format', $start_date_field );
+								$start_date_format = date_create_from_format( datepicker_default_format( $start_date_format ), $start_date_value );
+								$start_date_value  = date_format( $start_date_format, 'Y-m-d' );
+								$start_date        = date_i18n( 'Y-m-d', strtotime( $start_date_value . ' ' . $start_offset_operator . $start_offset_value . ' ' . $start_offset_duration ) );
+							}
 						}
 					}
 					if ( ! empty( $start_date ) && strtotime( $selected_date ) < strtotime( $start_date ) ) {
@@ -1344,10 +1369,18 @@ class Forminator_Date extends Forminator_Field {
 						$end_offset_value    = self::get_property( 'end-offset-value', $field, '0' );
 						$end_offset_duration = self::get_property( 'end-offset-duration', $field, 'days' );
 						if ( 'today' === $end_date_type ) {
-							$end_date = date_i18n( 'm/d/Y', strtotime( $end_offset_operator . $end_offset_value . ' ' . $end_offset_duration, current_time( 'U' ) ) );
+							$end_date = date_i18n( 'Y-m-d', strtotime( $end_offset_operator . $end_offset_value . ' ' . $end_offset_duration, current_time( 'U' ) ) );
 						} else {
-							$end_date_field = isset( $post_data[ $end_date_type ] ) ? $post_data[ $end_date_type ] : '';
-							$end_date       = date_i18n( 'm/d/Y', strtotime( $end_date_field . ' ' . $end_offset_operator . $end_offset_value . ' ' . $end_offset_duration ) );
+							$end_date_value = isset( Forminator_CForm_Front_Action::$prepared_data[ $end_date_type ] )
+								? Forminator_CForm_Front_Action::$prepared_data[ $end_date_type ] : '';
+							$end_date       = '';
+							if ( ! empty( $end_date_value ) ) {
+								$end_date_field  = $custom_form->get_field( $end_date_type, true );
+								$end_date_format = self::get_property( 'date_format', $end_date_field );
+								$end_date_format = date_create_from_format( datepicker_default_format( $end_date_format ), $end_date_value );
+								$end_date_value  = date_format( $end_date_format, 'Y-m-d' );
+								$end_date        = date_i18n( 'Y-m-d', strtotime( $end_date_value . ' ' . $end_offset_operator . $end_offset_value . ' ' . $end_offset_duration ) );
+							}
 						}
 					}
 					if ( ! empty( $end_date ) && strtotime( $selected_date ) > strtotime( $end_date ) ) {

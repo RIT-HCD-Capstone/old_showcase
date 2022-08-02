@@ -85,7 +85,7 @@ class Forminator_Quiz_View_Page extends Forminator_Admin_View_Page {
 	 * @return bool
 	 */
 	public function has_leads() {
-		if ( isset( $this->model->settings['hasLeads'] ) && in_array( $this->model->settings['hasLeads'], array( true, 'true' ), true ) ) {
+		if ( isset( $this->model->settings['hasLeads'] ) && filter_var( $this->model->settings['hasLeads'], FILTER_VALIDATE_BOOLEAN ) ) {
 			return true;
 		}
 
@@ -105,19 +105,6 @@ class Forminator_Quiz_View_Page extends Forminator_Admin_View_Page {
 		}
 
 		return 0;
-	}
-
-	/**
-	 * Get fields table
-	 *
-	 * @since 1.0
-	 * @return array
-	 */
-	public function get_table() {
-		$per_page = $this->get_per_page();
-		$entries  = Forminator_Form_Entry_Model::list_entries( $this->form_id, $per_page, ( $this->get_paged() - 1 ) * $per_page );
-
-		return $entries;
 	}
 
 	/**

@@ -168,7 +168,7 @@ abstract class Forminator_Admin_Page {
 		// Load admin scripts.
 		wp_register_script(
 			'forminator-admin',
-			forminator_plugin_url() . 'build/main.js',
+			forminator_plugin_url() . 'requirejs/main.js',
 			array(
 				'backbone',
 				'underscore',
@@ -405,6 +405,11 @@ abstract class Forminator_Admin_Page {
 		}
 
 		$classes .= $this->get_sui_body_class();
+
+		// if accessibility enabled add sui select accessible class
+		if(get_option( 'forminator_enable_accessibility', false )){
+			$classes .= ' sui-elements-accessible';
+		}
 
 		return $classes;
 

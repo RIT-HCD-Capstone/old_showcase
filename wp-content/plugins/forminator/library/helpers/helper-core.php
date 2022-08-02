@@ -104,13 +104,15 @@ function forminator_ajax_url() {
 
 /**
  * Checks if the AJAX call is valid
+ * For logged-in usage only.
  *
  * @since 1.0
+ * @since 1.17 Added $query_arg
  *
  * @param $action
  */
-function forminator_validate_ajax( $action ) {
-	if ( ! check_ajax_referer( $action, false, false ) || ! forminator_is_user_allowed() ) {
+function forminator_validate_ajax( $action, $query_arg = false ) {
+	if ( ! check_ajax_referer( $action, $query_arg, false ) || ! forminator_is_user_allowed() ) {
 		wp_send_json_error( __( 'Invalid request, you are not allowed to do that action.', 'forminator' ) );
 	}
 }
@@ -149,7 +151,7 @@ function forminator_admin_enqueue_fonts() {
  * @since 1.1 Remove forminator-admin css after migrate to shared-ui
  */
 function forminator_admin_enqueue_styles() {
-	wp_enqueue_style( 'shared-ui', forminator_plugin_url() . 'assets/css/shared-ui.min.css', array(), FORMINATOR_VERSION, false );
+	wp_enqueue_style( 'shared-ui', forminator_plugin_url() . 'build/css/shared-ui.min.css', array(), FORMINATOR_VERSION, false );
 }
 
 /**
@@ -194,7 +196,7 @@ function forminator_sui_scripts() {
 
 	wp_enqueue_script(
 		'shared-ui',
-		forminator_plugin_url() . 'assets/js/shared-ui.min.js',
+		forminator_plugin_url() . 'build/js/shared-ui.min.js',
 		array( 'jquery', 'clipboard' ),
 		$sui_body_class,
 		true
@@ -239,7 +241,7 @@ function forminator_common_admin_enqueue_scripts( $is_new_page = false ) {
 		wp_enqueue_media();
 	}
 
-	wp_enqueue_script( 'forminator-admin-layout', forminator_plugin_url() . 'build/admin/layout.js', array( 'jquery' ), FORMINATOR_VERSION, false );
+	wp_enqueue_script( 'forminator-admin-layout', forminator_plugin_url() . 'requirejs/admin/layout.js', array( 'jquery' ), FORMINATOR_VERSION, false );
 
 	$forminator_data = new Forminator_Admin_Data();
 	$forminator_l10n = new Forminator_Admin_L10n();
@@ -808,13 +810,10 @@ function forminator_get_export_logs( $form_id ) {
  * @return mixed
  */
 function forminator_get_current_url() {
-	global $wp;
+	$url     = wp_get_referer();
+	$post_id = url_to_postid( $url );
 
-	return esc_url( add_query_arg(
-							isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : '',
-							'',
-							trailingslashit( home_url( $wp->request ) )
-						) );
+	return esc_url( get_permalink( $post_id ) );
 }
 
 /**
@@ -977,26 +976,41 @@ function forminator_var_type_cast( $var, $type ) {
  *
  * @return array
  */
-function forminator_get_poll_chart_colors( $poll_id = null ) {
+function forminator_get_poll_chart_colors( $poll_id = null, $accessibility_enabled = false ) {
 
-	$chart_colors = array(
-		'rgba(54, 162, 235, 0.2)', // Blue.
-		'rgba(255, 99, 132, 0.2)', // Red.
-		'rgba(255, 206, 86, 0.2)', // Yellow.
-		'rgba(75, 192, 192, 0.2)', // Green.
-		'rgba(255, 159, 64, 0.2)', // Orange.
-		'rgba(153, 102, 255, 0.2)', // Purple.
-		'rgba(102, 137, 161, 0.2)', // Blue Alt.
-		'rgba(234, 86, 118, 0.2)', // Red Alt.
-		'rgba(216, 220, 106, 0.2)', // Yellow Alt.
-		'rgba(107, 193, 146, 0.2)', // Green Alt.
-		'rgba(235, 130, 88, 0.2)', // Orange Alt.
-		'rgba(153, 93, 129, 0.2)', // Purple Alt.
-		'rgba(0, 0, 0, 0.2)', // Black.
-		'rgba(136, 136, 136, 0.2)', // Black Alt.
-	);
-
-	$chart_colors = apply_filters_deprecated( 'forminator_poll_chart_color', array( $chart_colors ), '1.5.3', 'forminator_poll_chart_colors' );
+	$chart_colors = $accessibility_enabled ? 
+		array(
+			'rgba(137, 137, 137, 0.2)', // Monochrome Blue
+			'rgba(149, 149, 149, 0.2)', // Monochrome Red
+			'rgba(207 ,207 , 207, 0.2)', // Monochrome Yellow.
+			'rgba(156, 156, 156, 0.2)', // Monochrome Green.
+			'rgba(177 ,177 , 177, 0.2)', // Monochrome Orange.
+			'rgba(134 ,134 , 134, 0.2)', // Monochrome Purple.
+			'rgba(129 ,129 , 129, 0.2)', // Monochrome Blue Alt.
+			'rgba(133 ,133 , 133, 0.2)', // Monochrome Red Alt.
+			'rgba(206 ,206 , 206, 0.2)', // Monochrome Yellow Alt.
+			'rgba(162 ,162 , 162, 0.2)', // Monochrome Green Alt.
+			'rgba(156 ,156 , 156, 0.2)', // Monochrome Orange Alt.
+			'rgba(114 ,114 , 114, 0.2)', // Monochrome Purple Alt.
+			'rgba(0, 0, 0, 0.2)', // Monochrome Black.
+			'rgba(136, 136, 136, 0.2)', // Monochrome Black Alt.
+		) :
+		array(
+			'rgba(54, 162, 235, 0.2)', // Blue.
+			'rgba(255, 99, 132, 0.2)', // Red.
+			'rgba(255, 206, 86, 0.2)', // Yellow.
+			'rgba(75, 192, 192, 0.2)', // Green.
+			'rgba(255, 159, 64, 0.2)', // Orange.
+			'rgba(153, 102, 255, 0.2)', // Purple.
+			'rgba(102, 137, 161, 0.2)', // Blue Alt.
+			'rgba(234, 86, 118, 0.2)', // Red Alt.
+			'rgba(216, 220, 106, 0.2)', // Yellow Alt.
+			'rgba(107, 193, 146, 0.2)', // Green Alt.
+			'rgba(235, 130, 88, 0.2)', // Orange Alt.
+			'rgba(153, 93, 129, 0.2)', // Purple Alt.
+			'rgba(0, 0, 0, 0.2)', // Black.
+			'rgba(136, 136, 136, 0.2)', // Black Alt.
+		);
 
 	/**
 	 * Filter chart colors to be used for polls
@@ -1286,11 +1300,13 @@ function forminator_form_types() {
 }
 
 /**
+ * DON'T USE IT!!! It's only for backward compatibility
  * Get prefix based on module slug.
  *
  * @param string $module_slug Module slug.
  * @param string $form_prefix Optional. Prefix before Custom Form type or `post_type` value.
  * @param bool   $ucfirst Optional. With capital the first letter.
+ * @param bool   $plural Optional. Plural or singular.
  * @return string
  */
 function forminator_get_prefix( $module_slug, $form_prefix = '', $ucfirst = false, $plural = false ) {

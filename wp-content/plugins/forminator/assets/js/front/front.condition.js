@@ -42,12 +42,16 @@
 	$.extend(ForminatorFrontCondition.prototype, {
 		init: function () {
 			var self = this,
-				form = this.$el;
+				form = this.$el,
+				$forminatorFields = this.$el.find( ".forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea, .forminator-field-signature")
+				;
+
 			this.add_missing_relations();
 
-			this.$el.find( ".forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea, .forminator-field-signature").on( 'change input', function (e) {
+			$forminatorFields.on( 'change input forminator.change', function (e) {
 				var $element = $(this),
-					element_id = $element.closest('.forminator-col').attr('id');
+					element_id = $element.closest('.forminator-col').attr('id')
+					;
 
 				if (typeof element_id === 'undefined') {
                     /*
@@ -95,10 +99,10 @@
             }
 
 			this.$el.find('.forminator-button.forminator-button-back, .forminator-button.forminator-button-next').on("click", function () {
-				form.find('.forminator-field input:not([type="file"]), .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').trigger( 'change', 'forminator_emulate_trigger' );
+				form.find('.forminator-field input:not([type="file"]), .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').trigger( 'forminator.change', 'forminator_emulate_trigger' );
 			});
 			// Simulate change
-			this.$el.find('.forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').trigger( 'change', 'forminator_emulate_trigger' );
+			this.$el.find('.forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').trigger( 'forminator.change', 'forminator_emulate_trigger' );
 			this.init_events();
 		},
 
@@ -283,22 +287,22 @@
 				value = $element.val();
 				//check if formats are accepted
 				switch ( $element.data('format') ) {
-                 case 'dd/mm/yy':
-                     value = $element.val().split("/").reverse().join("-");
-                     break;
-                 case 'dd.mm.yy':
-                     value = $element.val().split(".").reverse().join("-");
-                     break;
-                 case 'dd-mm-yy':
-                     value = $element.val().split("-").reverse().join("-");
-                     break;
-             }
+					case 'dd/mm/yy':
+						value = $element.val().split("/").reverse().join("-");
+						break;
+					case 'dd.mm.yy':
+						value = $element.val().split(".").reverse().join("-");
+						break;
+					case 'dd-mm-yy':
+						value = $element.val().split("-").reverse().join("-");
+						break;
+             	}
 
-            var formattedDate = new Date();
+            	var formattedDate = new Date();
 
 				if ( '' !== value ) {
-                 formattedDate = new Date(value);
-            }
+					formattedDate = new Date(value);
+				}
 
 				value = {'year':formattedDate.getFullYear(), 'month':formattedDate.getMonth(), 'date':formattedDate.getDate(), 'day':formattedDate.getDay() };
 
@@ -310,10 +314,7 @@
 					day  	 = this.get_form_field_value(parent+'-day');
 
 				if( year !== "" && mnth !== "" && day !== "" ){
-					var formattedDate = new Date(year+'-'+mnth+'-'+day);
-					if( fake_field === true ) {
-						return formattedDate;
-					}
+					var formattedDate = new Date( year + '-' + mnth + '-' + day );
 					value = {'year':formattedDate.getFullYear(), 'month':formattedDate.getMonth(), 'date':formattedDate.getDate(), 'day':formattedDate.getDay() };
 				}
 
@@ -468,8 +469,9 @@
 		// Extension of get_form_field to get value
 		get_form_field_value: function (element_id) {
 			//find element by suffix -field on id input (default behavior)
-			var $form_id = this.$el.data( 'form-id' );
-			var $element = this.$el.find('#forminator-form-' + $form_id + '__field--' + element_id );
+			var $form_id = this.$el.data( 'form-id' ),
+				$uid 	 = this.$el.data( 'uid' ),
+				$element = this.$el.find('#forminator-form-' + $form_id + '__field--' + element_id + '_' + $uid );
 			if ($element.length === 0) {
 				var $element = this.$el.find('#' + element_id + '-field' );
 				if ($element.length === 0) {
@@ -556,11 +558,6 @@
 				operator = condition.operator
 			;
 
-			// remove this along with the function field_is_consent if all goes well after 1.15.3
-			/* if ( this.field_is_consent( condition.field ) ) {
-				value2 = 'true';
-			} */
-
 			if (action === "show") {
 				return this.is_matching(value1, value2, operator) && this.is_hidden(condition.field);
 			} else {
@@ -635,6 +632,10 @@
 			switch (operator) {
 				case "is":
 					if (!isArrayValue) {
+						if ( this.is_numeric( value1 ) && this.is_numeric( value2 ) ) {
+							return Number( value1 ) === Number( value2 );
+						}
+
 						return value1 === value2;
 					} else {
 						return $.inArray(value2, value1) > -1;

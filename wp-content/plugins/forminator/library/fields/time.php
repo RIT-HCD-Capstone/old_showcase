@@ -114,7 +114,7 @@ class Forminator_Time extends Forminator_Field {
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $settings = array(), $draft_value = null ) {
 
 		$this->field = $field;
 
@@ -132,6 +132,8 @@ class Forminator_Time extends Forminator_Field {
 		$increment_hour   = self::get_property( 'increment_hour', $field, 0 );
 		$increment_minute = self::get_property( 'increment_minute', $field, 0 );
 		$required_origin  = $required;
+		$draft_value      = isset( $draft_value['value'] ) ? $draft_value['value'] : '';
+		$uniq_id          = '_' . Forminator_CForm_Front::$uid;
 
 		$default_time_hour   = '';
 		$default_time_minute = '';
@@ -146,8 +148,20 @@ class Forminator_Time extends Forminator_Field {
 		// Parse prefill settings.
 		$prefill = $this->parse_prefill( $field );
 
-		// Check if prefill array is empty.
-		if ( ! empty( $prefill ) ) {
+		if ( ! empty( $draft_value ) ) {
+
+			if ( isset( $draft_value['hours'] ) ) {
+				$default_time_hour = trim( $draft_value['hours'] );
+			}
+
+			if ( isset( $draft_value['minutes'] ) ) {
+				$default_time_minute = trim( $draft_value['minutes'] );
+			}
+
+			if ( isset( $draft_value['ampm'] ) ) {
+				$default_time_ampm = strtolower( trim( $draft_value['ampm'] ) );
+			}
+		} elseif ( ! empty( $prefill ) ) {
 			if ( isset( $prefill['hour'] ) ) {
 				$default_time_hour = $prefill['hour'];
 			}
@@ -207,7 +221,7 @@ class Forminator_Time extends Forminator_Field {
 				);
 
 				$hours ['value'] = '0';
-				if ( ! empty( $default_time_hour ) ) {
+				if ( isset( $default_time_hour ) ) {
 					$hours ['value'] = $default_time_hour;
 				}
 
@@ -224,7 +238,7 @@ class Forminator_Time extends Forminator_Field {
 
 					$hours_data = array(
 						'name'       => $id . '-hours',
-						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-hours',
+						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-hours' . '_' . $uniq_id,
 						'class'      => 'forminator-select2',
 						'data-field' => 'hours',
 					);
@@ -267,7 +281,7 @@ class Forminator_Time extends Forminator_Field {
 				);
 
 				$minutes ['value'] = '0';
-				if ( ! empty( $default_time_minute ) ) {
+				if ( isset( $default_time_minute ) ) {
 					$minutes ['value'] = $default_time_minute;
 				}
 
@@ -283,7 +297,7 @@ class Forminator_Time extends Forminator_Field {
 
 					$minutes_data = array(
 						'name'       => $id . '-minutes',
-						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-minutes',
+						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-minutes' . '_' . $uniq_id,
 						'class'      => 'forminator-select2',
 						'data-field' => 'minutes',
 					);
@@ -318,7 +332,7 @@ class Forminator_Time extends Forminator_Field {
 					 */
 					$ampm = array(
 						'name'       => $id . '-ampm',
-						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-ampm',
+						'id'         => 'forminator-form-' . $settings['form_id'] . '__field--' . $id . '-ampm' . '_' . $uniq_id,
 						'class'      => 'forminator-select2',
 						'data-field' => 'ampm',
 					);
@@ -383,14 +397,8 @@ class Forminator_Time extends Forminator_Field {
 	public function get_hours( $type, $increment_hour, $default_value, $required ) {
 		$array = array();
 		if ( 'twelve' === $type ) {
-			$min = 0;
+			$min = 1;
 			$max = 12;
-			if ( $required && '' === $default_value ) {
-				$array[] = array(
-					'label' => '-',
-					'value' => '',
-				);
-			}
 		} else {
 			$min = 0;
 			$max = 23;
@@ -404,6 +412,23 @@ class Forminator_Time extends Forminator_Field {
 			if ( ! empty( $increment_hour ) ) {
 				$i += $increment_hour - 1;
 			}
+		}
+
+		// 12th option should be the first one for 12h format.
+		if ( 'twelve' === $type ) {
+			$last = array_pop( $array );
+			array_unshift( $array, $last );
+		}
+
+		// Add hyphen option to the beginning of the list.
+		if ( '' === $default_value ) {
+			array_unshift(
+				$array,
+				array(
+					'label' => '-',
+					'value' => '',
+				)
+			);
 		}
 
 		return apply_filters( 'forminator_field_time_get_hours', $array, $this );
@@ -423,15 +448,6 @@ class Forminator_Time extends Forminator_Field {
 	public function get_minutes( $type, $increment_minutes, $default_value, $required ) {
 		$array = array();
 
-		if ( 'twelve' === $type ) {
-			if ( $required && '' === $default_value ) {
-				$array[] = array(
-					'label' => '-',
-					'value' => '',
-				);
-			}
-		}
-
 		for ( $i = 0; $i < 60; $i ++ ) {
 			$array[] = array(
 				'label' => sprintf( '%02d', $i ),
@@ -441,6 +457,17 @@ class Forminator_Time extends Forminator_Field {
 			if ( ! empty( $increment_minutes ) ) {
 				$i += ( $increment_minutes % 60 ) - 1;
 			}
+		}
+
+		// Add hyphen option to the beginning of the list.
+		if ( '' === $default_value ) {
+			array_unshift(
+				$array,
+				array(
+					'label' => '-',
+					'value' => '',
+				)
+			);
 		}
 
 		return apply_filters( 'forminator_field_time_get_minutes', $array, $this );
@@ -648,9 +675,8 @@ class Forminator_Time extends Forminator_Field {
 	 *
 	 * @param array        $field
 	 * @param array|string $data
-	 * @param array        $post_data
 	 */
-	public function validate( $field, $data, $post_data = array() ) {
+	public function validate( $field, $data ) {
 		$isValid       = true;
 		$type          = self::get_property( 'time_type', $field, 'twelve' );
 		$restrict_time = self::get_property( 'restrict_time', $field, 'none' );
@@ -705,7 +731,10 @@ class Forminator_Time extends Forminator_Field {
 			$id,
 			$field
 		);
-		if ( ! is_numeric( $hour ) || ! is_numeric( $minute ) ) {
+		if (
+			( ! is_numeric( $hour ) && '' !== $hour ) ||
+			( ! is_numeric( $minute ) && '' !== $minute )
+		) {
 			if ( ! is_numeric( $hour ) ) {
 				$this->validation_message[ $id . '-hours' ] = $hours_error_message;
 			}
@@ -719,13 +748,28 @@ class Forminator_Time extends Forminator_Field {
 			$max_hour   = 'twelve' === $type ? 12 : 23;
 			$max_minute = $hour > 23 ? 0 : 59;
 
-			if ( 0 === $hour && 'twelve' === $type ) {
-				$max_minute = 0;
-			}
 			if ( $hour < $min_hour || $hour > $max_hour ) {
 				$this->validation_message[ $id . '-hours' ] = $hours_error_message;
 			}
-			if ( $minute > $max_minute ) {
+
+			// In 12-hour format, hours cannot be 0 when minutes is not empty
+			if ( 'twelve' === $type ) {
+				if ( 0 === $hour ) {
+					$max_minute = 0;
+				}
+				if ( $minute > $max_minute && $max_minute > 0 ) {
+					$this->validation_message[ $id . '-minutes' ] = $minutes_error_message;
+				}
+				if ( empty( $hour ) && $minute > 0 ) {
+					$this->validation_message[ $id . '-hours' ] = $hours_error_message;
+				}
+				if ( 0 === $minute && 0 === $hour ) {
+					$this->validation_message[ $id . '-minutes' ] = $minutes_error_message;
+					$this->validation_message[ $id . '-hours' ] = $hours_error_message;
+				}
+			}
+			// In military time, hours and minutes can be 0
+			if ( 'twentyfour' === $type && $minute > $max_minute ) {
 				$this->validation_message[ $id . '-minutes' ] = $minutes_error_message;
 			}
 		}

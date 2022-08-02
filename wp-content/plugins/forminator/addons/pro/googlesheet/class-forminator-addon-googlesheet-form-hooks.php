@@ -229,27 +229,11 @@ class Forminator_Addon_Googlesheet_Form_Hooks extends Forminator_Addon_Form_Hook
 			}
 			$form_entry_fields = $keyed_form_entry_fields;
 
-			// all avail fields on library.
-			$fields      = forminator_fields_to_array();
-			$field_types = array_keys( $fields );
-
-			// sort by length, so stripos will work by traverse from longest field type first.
-			$field_types_strlen = array_map( 'strlen', $field_types );
-			array_multisort( $field_types_strlen, $field_types );
-			$field_types = array_reverse( $field_types );
-
 			$values = array();
 			foreach ( $header_fields as $element_id => $header_field ) {
-				$field_type = '';
+				$field_type = Forminator_Core::get_field_type( $element_id );
 
-				foreach ( $field_types as $type ) {
-					if ( false !== stripos( $element_id, $type . '-' ) ) {
-						$field_type = $type;
-						break;
-					}
-				}
-
-				$meta_value = array();
+				$meta_value = '';
 				// take from entry fields (to be saved).
 				if ( isset( $form_entry_fields[ $element_id ] ) ) {
 					$meta_value = $form_entry_fields[ $element_id ]['value'];
@@ -263,7 +247,11 @@ class Forminator_Addon_Googlesheet_Form_Hooks extends Forminator_Addon_Form_Hook
 
 				$value     = new Forminator_Google_Service_Sheets_ExtendedValue();
 				$cell_data = new Forminator_Google_Service_Sheets_CellData();
-				$value->setStringValue( $form_value );
+				if ( is_numeric( $form_value ) ) {
+					$value->setNumberValue( $form_value );
+				} else {
+					$value->setStringValue( $form_value );
+				}
 				$cell_data->setUserEnteredValue( $value );
 				$values[] = $cell_data;
 			}
