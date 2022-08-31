@@ -122,13 +122,13 @@ function custom_wpadminbar( $wp_admin_bar ) {
                 'href'          => esc_url( get_child_url() . 'search-results/' ), 
         ) );
 
-        $wp_admin_bar->add_node( array(
-                'parent'        => 'root-default',
-                'id'            => 'calendar',
-                'title'         => 'Calendar',
-                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
-                'href'          => esc_url( get_child_url() . 'about/calendar/' ), 
-        ) );
+//        $wp_admin_bar->add_node( array(
+//                'parent'        => 'root-default',
+//                'id'            => 'calendar',
+//                'title'         => 'Calendar',
+//                'meta'          => array ( 'class' => 'visible-xs m-nav-item', ),
+//                'href'          => esc_url( get_child_url() . 'about/calendar/' ), 
+//        ) );
 
         $wp_admin_bar->add_node( array(
                 'parent'        => 'root-default',
@@ -353,54 +353,54 @@ function main_menu( $location = 'header' ) {
  *yanked from openlab_calendar_submenu of openlab-theme/lib/menus.php
  *this function will help add Event Proposal to the Calendar functionality
  */
-function calendar_submenu() {
-	global $post;
-
-	$links_out = array(
-		array(
-			'name'  => 'All Events',
-			'slug'  => 'calendar',
-			'link'  => get_site_url() . '/about/calendar/',
-			'class' => 'calendar' === $post->post_name ? 'current-menu-item' : '',
-		),
-		array(
-			'name'  => 'Upcoming',
-			'slug'  => 'upcoming',
-			'link'  => get_site_url() . '/about/calendar/upcoming/', 
-			'class' => 'upcoming' === $post->post_name ? 'current-menu-item' : '',
-		), 
-	);
-
-        if ( bp_loggedin_user_id() ) {
-                array_push($links_out,
-                        array(
-                                'name'  => 'Event Proposal',
-                                'slug'  => 'event-proposal',
-                                'link'  => get_site_url() . '/about/calendar/event-proposal',
-                                'class' => 'event-proposal' === $post->post_name ? 'current-menu-item' : '',
-                        ),
-                );
-        } 
-
-	return $links_out;
-}
+//function calendar_submenu() {
+//	global $post;
+//
+//	$links_out = array(
+//		array(
+//			'name'  => 'All Events',
+//			'slug'  => 'calendar',
+//			'link'  => get_site_url() . '/about/calendar/',
+//			'class' => 'calendar' === $post->post_name ? 'current-menu-item' : '',
+//		),
+//		array(
+//			'name'  => 'Upcoming',
+//			'slug'  => 'upcoming',
+//			'link'  => get_site_url() . '/about/calendar/upcoming/', 
+//			'class' => 'upcoming' === $post->post_name ? 'current-menu-item' : '',
+//		), 
+//	);
+//
+//        if ( bp_loggedin_user_id() ) {
+//               array_push($links_out,
+//                        array(
+//                                'name'  => 'Event Proposal',
+//                                'slug'  => 'event-proposal',
+//                                'link'  => get_site_url() . '/about/calendar/event-proposal',
+//                                'class' => 'event-proposal' === $post->post_name ? 'current-menu-item' : '',
+//                        ),
+//                );
+//        } 
+//
+//	return $links_out;
+//}
 
 /*
  * yanked from openlab_custom_the_content of openlab-theme/lib/theme-hooks.php
  * runs after openlab_custom_the_content to included the Event Proposal template.
  */
-function custom_the_content( $content ) {
-	global $post;	
-        if ( 'page' === $post->post_type && 'event-proposal' === $post->post_name && bp_loggedin_user_id() ) {
-                
-                $menu_items = calendar_submenu();
-                include locate_template( 'parts/pages/calendar-event-proposal.php' );
-                $content .= ob_get_clean();
-        }
-
-	return $content;
-}
-add_filter( 'the_content', 'custom_the_content' );
+//function custom_the_content( $content ) {
+//	global $post;	
+//        if ( 'page' === $post->post_type && 'event-proposal' === $post->post_name && bp_loggedin_user_id() ) {
+//                
+//                $menu_items = calendar_submenu();
+//                include locate_template( 'parts/pages/calendar-event-proposal.php' );
+//                $content .= ob_get_clean();
+//       }
+//
+//	return $content;
+//}
+//add_filter( 'the_content', 'custom_the_content' );
 
 /* 
  * the purpose of this function is to remove openlab_custom_menu_items function from the wp_nav_menu_items hook, so we can hook our own version below.
@@ -455,35 +455,35 @@ add_filter( 'wp_nav_menu_items', 'custom_menu_items', 10, 2 );
  * yanked from openlab_get_group_activity_events_feed of openlab-theme/lib/group-funcs.php
  * the purpose of this function is to help integrate Event Proposal
  */
-function get_group_activity_events_feed() {
-	$events_out = '';
-
-	// Non-public groups shouldn't show this to non-members.
-	$group = groups_get_current_group();
-	if ( 'public' !== $group->status && empty( $group->user_has_access ) ) {
-		return $events_out;
-	}
-
-	if ( ! function_exists( 'bpeo_get_events' ) || ! openlab_is_calendar_enabled_for_group() ) {
-		return $events_out;
-	}
-
-	$args = array(
-		'event_start_after' => 'today',
-		'bp_group'          => bp_get_current_group_id(),
-		'numberposts'       => 5,
-	);
-
-	$events = eo_get_events( $args );
-
-	$menu_items = calendar_submenu();
-
-	ob_start();
-	include locate_template( 'parts/sidebar/activity-events-feed.php' );
-	$events_out .= ob_get_clean();
-
-	return $events_out;
-}
+//function get_group_activity_events_feed() {
+//	$events_out = '';
+//
+//	// Non-public groups shouldn't show this to non-members.
+//	$group = groups_get_current_group();
+//	if ( 'public' !== $group->status && empty( $group->user_has_access ) ) {
+//		return $events_out;
+//	}
+//
+//	if ( ! function_exists( 'bpeo_get_events' ) || ! openlab_is_calendar_enabled_for_group() ) {
+//		return $events_out;
+//	}
+//
+//	$args = array(
+//		'event_start_after' => 'today',
+//		'bp_group'          => bp_get_current_group_id(),
+//		'numberposts'       => 5,
+//	);
+//
+//	$events = eo_get_events( $args );
+//
+//	$menu_items = calendar_submenu();
+//
+//	ob_start();
+//	include locate_template( 'parts/sidebar/activity-events-feed.php' );
+//	$events_out .= ob_get_clean();
+//
+//	return $events_out;
+//}
 
 /*
 *removes openlab_modify_options_nav defined in openlab-theme/lib/menu from the bp_screens action hook, so we can hook an updated one
@@ -672,7 +672,7 @@ function site_footer() {
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/groups/type/course/">Courses</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/members/">Members</a></li>
                                                                 <li><a href="https://dhssatrit.cad.rit.edu/groups/type/club">Tools</a></li>
-                                                                <li><a href="https://dhssatrit.cad.rit.edu/about/calendar/">Calendar</a></li>
+                                                                <!-- <li><a href="https://dhssatrit.cad.rit.edu/about/calendar/">Calendar</a></li> -->
                                                                 <li><a href="https://dhssatirt.cad.rit.edu/subplans/">Subplans</a></li>
                                                         </ul> 
                                                 </div>

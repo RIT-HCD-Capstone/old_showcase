@@ -11,22 +11,20 @@
  */
 get_header();
 ?>
-
+<!--
 <div id="openlab-main-content" class="clearfix row-home-top">
-        <!--
         <div class="no-gutter no-gutter-right login">
 		<div id="cuny_openlab_jump_start">
 			<?php //get_template_part( 'parts/home/login' ); this does 1?>
 		</div>
 	</div>
 	<div class="fill-gutter fill-gutter-left slider">
-        -->
-        <div class="slider" style="width: 100%;"> <!-- this does 2-->
+        <div class="slider" style="width: 100%;"> this does 2
 		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		<?php echo get_home_slider(); //openlab_get_home_slider(); this does 3?>
-	</div>
+		<?php //echo get_home_slider(); //openlab_get_home_slider(); this does 3?>
+        </div>
 
-</div>
+</div>-->
 <div class="row row-home-bottom">
 	<!-- <div id="home-left" class="col-sm-8"> this does 4 -->
         <div id="home-left" class="col-sm-16">
