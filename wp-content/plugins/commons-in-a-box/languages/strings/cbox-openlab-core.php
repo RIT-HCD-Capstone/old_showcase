@@ -8,68 +8,16 @@
  * Apart from that, this file is not used or loaded anywhere.
  */
 
-__( 'Attribution (CC BY)', 'commons-in-a-box' );
-__( 'Attribution-ShareAlike (CC BY-SA)', 'commons-in-a-box' );
-__( 'Attribution-NoDerivs (CC BY-ND)', 'commons-in-a-box' );
-__( 'Attribution-NonCommercial (CC BY-NC)', 'commons-in-a-box' );
-__( 'Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)', 'commons-in-a-box' );
-__( 'Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)', 'commons-in-a-box' );
-__( 'Public Domain, CC0', 'commons-in-a-box' );
-__( 'Public Domain', 'commons-in-a-box' );
-__( 'Creative Commons License', 'commons-in-a-box' );
-__( 'Learn more.', 'commons-in-a-box' );
-__( 'Link to license', 'commons-in-a-box' );
-
-/* translators: 1. Link to site author; 2. Linked name of CC license. */
-__( 'Except where otherwise noted, this site by %1$s is distributed under the following license: %2$s.', 'commons-in-a-box' );
-
-
-/* translators: Linked  of CC license. */
-__( 'Except where otherwise noted, this site is distributed under the following license: %s', 'commons-in-a-box' );
-
-__( 'License', 'commons-in-a-box' );
-__( 'Title:', 'commons-in-a-box' );
-__( 'Site Author:', 'commons-in-a-box' );
-__( 'Site Author URL:', 'commons-in-a-box' );
-__( 'Choose a License:', 'commons-in-a-box' );
-__( 'Credits', 'commons-in-a-box' );
-__( 'Sharing', 'commons-in-a-box' );
-__( 'Logged-in members can clone.', 'commons-in-a-box' );
-__( 'Group Type Settings', 'commons-in-a-box' );
-__( 'A list of Courses that have contributed to your Course.', 'commons-in-a-box' );
-__( 'Provides a link for others to clone your Course.', 'commons-in-a-box' );
-__( 'Clone this Course', 'commons-in-a-box' );
-__( 'A list of Projects that have contributed to your Project.', 'commons-in-a-box' );
-__( 'Provides a link for others to clone your Project.', 'commons-in-a-box' );
-__( 'Clone this Project', 'commons-in-a-box' );
-__( 'A list of Clubs that have contributed to your Club.', 'commons-in-a-box' );
-__( 'Provides a link for others to clone your Club.', 'commons-in-a-box' );
-__( 'Clone this Club', 'commons-in-a-box' );
-__( 'A list of Portfolios that have contributed to your Portfolio.', 'commons-in-a-box' );
-__( 'Provides a link for others to clone your Portfolio.', 'commons-in-a-box' );
-__( 'Clone this Portfolio', 'commons-in-a-box' );
-__( 'The Add to Portfolio feature saves selected posts, pages, and comments that you have authored on Course, Project, and Club sites directly to your Portfolio site.', 'commons-in-a-box' );
-__( 'Group Creators', 'commons-in-a-box' );
-__( 'This setting enables other faculty to clone your Course. If enabled, other faculty can reuse, remix, transform, and build upon the material in this course. Attribution to original Course authors will be included.', 'commons-in-a-box' );
-__( 'Note: Cloning copies the project home, site set-up, and all documents, files, discussions and posts you\'ve created. Posts will be set to "draft" mode. The clone will not copy membership or member-created documents, files, discussions, comments or posts.', 'commons-in-a-box' );
-__( 'This setting enables other members to clone your Project. If enabled, other members can reuse, remix, transform, and build upon the material in this project. Attribution to original Project authors will be included.', 'commons-in-a-box' );
-__( 'Note: Cloning copies the club home, site set-up, and all documents, files, discussions and posts you\'ve created. Posts will be set to "draft" mode. The clone will not copy membership or member-created documents, files, discussions, comments or posts.', 'commons-in-a-box' );
-__( 'This setting enables other members to clone your Club. If enabled, other members can reuse, remix, transform, and build upon the material in this club. Attribution to original Club authors will be included.', 'commons-in-a-box' );
-__( '"Open" setting for group sites', 'commons-in-a-box' );
-__( 'Open and Cloneable Badges', 'commons-in-a-box' );
-_x( 'Cloneable', 'Cloneable badge name', 'commons-in-a-box' );
-_x( 'Cloneable', 'Cloneable badge short name', 'commons-in-a-box' );
-_x( 'Open', 'Open badge name', 'commons-in-a-box' );
-_x( 'Open', 'Open badge short name', 'commons-in-a-box' );
-__( 'Home', 'commons-in-a-box' );
-__( 'Add to Portfolio', 'commons-in-a-box' );
-__( 'Added to My Portfolio', 'commons-in-a-box' );
-__( 'No academic unit type found', 'commons-in-a-box' );
+_x( 'Plural', 'Academic Unit Type plural label', 'commons-in-a-box' );
+__( 'Used in directory titles.', 'commons-in-a-box' );
+_x( 'Singular', 'Academic Unit Type singular label', 'commons-in-a-box' );
+__( 'Used on group and member profiles.', 'commons-in-a-box' );
+__( 'No academic unit found', 'commons-in-a-box' );
 __( 'OK', 'commons-in-a-box' );
+__( 'Cannot delete academic unit.', 'commons-in-a-box' );
+__( 'No academic unit type found', 'commons-in-a-box' );
 __( 'Cannot delete type.', 'commons-in-a-box' );
 __( 'No term found by that ID.', 'commons-in-a-box' );
-__( 'No academic unit found', 'commons-in-a-box' );
-__( 'Cannot delete academic unit.', 'commons-in-a-box' );
 __( 'No item type found by that ID.', 'commons-in-a-box' );
 __( 'Type cannot be deleted', 'commons-in-a-box' );
 __( 'Could not create signup code.', 'commons-in-a-box' );
@@ -125,7 +73,6 @@ _x( 'My Portfolio', 'Group Type label', 'commons-in-a-box' );
 _x( 'My Portfolio Site', 'Group Type label', 'commons-in-a-box' );
 __( 'Used as the link to a user\'s own portfolio site.', 'commons-in-a-box' );
 _x( 'Plural', 'Member Type plural label', 'commons-in-a-box' );
-__( 'Used in directory titles.', 'commons-in-a-box' );
 _x( 'Section Code', 'Group Type label', 'commons-in-a-box' );
 __( 'The label for the "Section Code" input when editing Course settings.', 'commons-in-a-box' );
 _x( 'Singular', 'Member Type singular label', 'commons-in-a-box' );
@@ -188,6 +135,7 @@ __( 'Shareable Content Widget Description', 'commons-in-a-box' );
 __( 'Describes the Shareable Content widget.', 'commons-in-a-box' );
 __( 'Clone This Group', 'commons-in-a-box' );
 __( 'Used in the Shareable Content widget.', 'commons-in-a-box' );
+__( 'Add to Portfolio', 'commons-in-a-box' );
 __( 'Used in the "Add to Portfolio" dialog on sites.', 'commons-in-a-box' );
 __( 'Added to my Portfolio', 'commons-in-a-box' );
 
@@ -196,11 +144,8 @@ __( 'Site Template - %s', 'commons-in-a-box' );
 
 __( 'Welcome! This is your first post. Edit or delete it, then start blogging!', 'commons-in-a-box' );
 __( 'Main Menu', 'commons-in-a-box' );
+__( 'Home', 'commons-in-a-box' );
 __( 'sample-page', 'commons-in-a-box' );
-__( 'Signup code is incorrect.', 'commons-in-a-box' );
-_x( 'Plural', 'Academic Unit Type plural label', 'commons-in-a-box' );
-_x( 'Singular', 'Academic Unit Type singular label', 'commons-in-a-box' );
-__( 'Used on group and member profiles.', 'commons-in-a-box' );
 __( 'Students', 'commons-in-a-box' );
 __( 'Student', 'commons-in-a-box' );
 __( 'Faculty', 'commons-in-a-box' );
@@ -253,11 +198,15 @@ __( 'Any course member may connect events to this course.', 'commons-in-a-box' )
 __( 'Only administrators and moderators may connect events to this course.', 'commons-in-a-box' );
 __( 'These settings enable or disable the related links list display on your course home page.', 'commons-in-a-box' );
 __( 'These settings enable or disable the member portfolio list display on your course home page.', 'commons-in-a-box' );
+__( 'This setting enables other faculty to clone your Course. If enabled, other faculty can reuse, remix, transform, and build upon the material in this course. Attribution to original Course authors will be included.', 'commons-in-a-box' );
 __( 'Invite Members to Course', 'commons-in-a-box' );
 __( 'Invite Community Members to Course', 'commons-in-a-box' );
 __( 'Search for Community Members to invite to your course', 'commons-in-a-box' );
 __( 'By default, you are the sole faculty member associated with this Course. You may add or remove faculty once your Course has more members.', 'commons-in-a-box' );
 __( 'Course Discussion', 'commons-in-a-box' );
+__( 'A list of Courses that have contributed to your Course.', 'commons-in-a-box' );
+__( 'Provides a link for others to clone your Course.', 'commons-in-a-box' );
+__( 'Clone this Course', 'commons-in-a-box' );
 __( 'Projects', 'commons-in-a-box' );
 __( 'Project', 'commons-in-a-box' );
 __( 'Create Project', 'commons-in-a-box' );
@@ -297,12 +246,16 @@ __( 'Any project member may connect events to this project.', 'commons-in-a-box'
 __( 'Only administrators and moderators may connect events to this project.', 'commons-in-a-box' );
 __( 'These settings enable or disable the related links list display on your project home page.', 'commons-in-a-box' );
 __( 'These settings enable or disable the member portfolio list display on your project home page.', 'commons-in-a-box' );
+__( 'This setting enables other members to clone your Project. If enabled, other members can reuse, remix, transform, and build upon the material in this project. Attribution to original Project authors will be included.', 'commons-in-a-box' );
 __( 'Invite Members to Project', 'commons-in-a-box' );
 __( 'Invite Community Members to Project', 'commons-in-a-box' );
 __( 'Search for Community Members to invite to your project', 'commons-in-a-box' );
 __( 'Project Contact', 'commons-in-a-box' );
 __( 'By default, you are the Project Contact. You may add or remove Project Contacts once your Project has more members.', 'commons-in-a-box' );
 __( 'Project Discussion', 'commons-in-a-box' );
+__( 'A list of Projects that have contributed to your Project.', 'commons-in-a-box' );
+__( 'Provides a link for others to clone your Project.', 'commons-in-a-box' );
+__( 'Clone this Project', 'commons-in-a-box' );
 __( 'Clubs', 'commons-in-a-box' );
 __( 'Club', 'commons-in-a-box' );
 __( 'Create Club', 'commons-in-a-box' );
@@ -342,12 +295,16 @@ __( 'Any club member may connect events to this club.', 'commons-in-a-box' );
 __( 'Only administrators and moderators may connect events to this club.', 'commons-in-a-box' );
 __( 'These settings enable or disable the related links list display on your club home page.', 'commons-in-a-box' );
 __( 'These settings enable or disable the member portfolio list display on your club home page.', 'commons-in-a-box' );
+__( 'This setting enables other members to clone your Club. If enabled, other members can reuse, remix, transform, and build upon the material in this club. Attribution to original Club authors will be included.', 'commons-in-a-box' );
 __( 'Invite Members to Club', 'commons-in-a-box' );
 __( 'Invite Community Members to Club', 'commons-in-a-box' );
 __( 'Search for Community Members to invite to your club', 'commons-in-a-box' );
 __( 'Club Contact', 'commons-in-a-box' );
 __( 'By default, you are the Club Contact. You may add or remove Club Contacts once your Club has more members.', 'commons-in-a-box' );
 __( 'Club Discussion', 'commons-in-a-box' );
+__( 'A list of Clubs that have contributed to your Club.', 'commons-in-a-box' );
+__( 'Provides a link for others to clone your Club.', 'commons-in-a-box' );
+__( 'Clone this Club', 'commons-in-a-box' );
 __( 'Portfolios', 'commons-in-a-box' );
 __( 'About Me', 'commons-in-a-box' );
 __( 'This is a good place to introduce yourself and explain what visitors will find on this site.', 'commons-in-a-box' );
@@ -391,12 +348,16 @@ __( 'Note: Please click the Check button to search for Post and Comment feeds fo
 __( 'Portfolio Site', 'commons-in-a-box' );
 __( 'Portfolio Home', 'commons-in-a-box' );
 __( 'These settings enable or disable the related links list display on your portfolio home page.', 'commons-in-a-box' );
+__( 'The Add to Portfolio feature saves selected posts, pages, and comments that you have authored on Course, Project, and Club sites directly to your Portfolio site.', 'commons-in-a-box' );
 __( 'Invite Members to Portfolio', 'commons-in-a-box' );
 __( 'Invite Community Members to Portfolio', 'commons-in-a-box' );
 __( 'Search for Community Members to invite to your portfolio', 'commons-in-a-box' );
 __( 'Porfolio Contact', 'commons-in-a-box' );
 __( 'By default, you are the Portfolio Contact. You may add or remove Portfolio Contacts once your Portfolio has more members.', 'commons-in-a-box' );
 __( 'Portfolio Discussion', 'commons-in-a-box' );
+__( 'A list of Portfolios that have contributed to your Portfolio.', 'commons-in-a-box' );
+__( 'Provides a link for others to clone your Portfolio.', 'commons-in-a-box' );
+__( 'Clone this Portfolio', 'commons-in-a-box' );
 __( 'Academic', 'commons-in-a-box' );
 __( 'Coursework', 'commons-in-a-box' );
 __( 'Research', 'commons-in-a-box' );
@@ -425,6 +386,10 @@ __( 'Search Results', 'commons-in-a-box' );
 /* translators: 1: TOS URL, 2: TOS page title */
 __( 'By clicking "Complete Sign Up", you are agreeing to the <a href="%1$s">%2$s</a>.', 'commons-in-a-box' );
 
+_x( 'Open', 'Open badge name', 'commons-in-a-box' );
+_x( 'Open', 'Open badge short name', 'commons-in-a-box' );
+_x( 'Cloneable', 'Cloneable badge name', 'commons-in-a-box' );
+_x( 'Cloneable', 'Cloneable badge short name', 'commons-in-a-box' );
 __( 'Use this space to highlight content from around your network.', 'commons-in-a-box' );
 __( 'Featured Item', 'commons-in-a-box' );
 __( 'In The Spotlight', 'commons-in-a-box' );
@@ -453,40 +418,49 @@ __( 'Customize this footer', 'commons-in-a-box' );
 /* translators: link to CBOX OpenLab Brand Settings admin page */
 __( 'You can customize the contents of this footer to meet the needs of your community: see the <a href="%s">Brand Settings documentation</a> for details.', 'commons-in-a-box' );
 
-__( 'Include', 'commons-in-a-box' );
-__( 'Index', 'commons-in-a-box' );
-__( 'Exclude', 'commons-in-a-box' );
+__( 'Signup code is incorrect.', 'commons-in-a-box' );
+__( 'Group Creators', 'commons-in-a-box' );
+__( '"Open" setting for group sites', 'commons-in-a-box' );
+__( 'Group Type Settings', 'commons-in-a-box' );
+__( 'Note: Cloning copies the project home, site set-up, and all documents, files, discussions and posts you\'ve created. Posts will be set to "draft" mode. The clone will not copy membership or member-created documents, files, discussions, comments or posts.', 'commons-in-a-box' );
+__( 'Note: Cloning copies the club home, site set-up, and all documents, files, discussions and posts you\'ve created. Posts will be set to "draft" mode. The clone will not copy membership or member-created documents, files, discussions, comments or posts.', 'commons-in-a-box' );
+__( 'Added to My Portfolio', 'commons-in-a-box' );
+__( 'Open and Cloneable Badges', 'commons-in-a-box' );
+__( 'Credits', 'commons-in-a-box' );
+__( 'Attribution (CC BY)', 'commons-in-a-box' );
+__( 'Attribution-ShareAlike (CC BY-SA)', 'commons-in-a-box' );
+__( 'Attribution-NoDerivs (CC BY-ND)', 'commons-in-a-box' );
+__( 'Attribution-NonCommercial (CC BY-NC)', 'commons-in-a-box' );
+__( 'Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)', 'commons-in-a-box' );
+__( 'Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)', 'commons-in-a-box' );
+__( 'Public Domain, CC0', 'commons-in-a-box' );
+__( 'Public Domain', 'commons-in-a-box' );
+__( 'Creative Commons License', 'commons-in-a-box' );
+__( 'Learn more.', 'commons-in-a-box' );
+__( 'Link to license', 'commons-in-a-box' );
 
-/* translators: A single line translators comment. */
-__( 'A', 'commons-in-a-box' );
-
-
-/* translators: A multiline translators comment. */
-__( 'B', 'commons-in-a-box' );
-
-__( 'String', 'commons-in-a-box' );
-_x( 'String', 'a string', 'commons-in-a-box' );
-_n_noop( '1 Star', '%s Stars', 'commons-in-a-box' );
-_x( 'Member Types', 'Post type general name', 'commons-in-a-box' );
-_x( 'Member Type', 'Post type singular name', 'commons-in-a-box' );
-__( 'Add New Member Type', 'commons-in-a-box' );
-__( 'New Member Type', 'commons-in-a-box' );
-__( 'Edit Member Type', 'commons-in-a-box' );
-__( 'View Member Type', 'commons-in-a-box' );
-__( 'All Member Types', 'commons-in-a-box' );
-__( 'Search Member Types', 'commons-in-a-box' );
-__( 'No member types found.', 'commons-in-a-box' );
-__( 'No member types found in Trash.', 'commons-in-a-box' );
-__( 'No member type exists for this slug.', 'commons-in-a-box' );
-
-/* translators: link to registration settings panel */
-__( 'Member Types are used to organize your site’s users. Members are able to choose their own Member Type according to the rules that you configure on this page, as well as in %s.', 'commons-in-a-box' );
+/* translators: 1. Link to site author; 2. Linked name of CC license. */
+__( 'Except where otherwise noted, this site by %1$s is distributed under the following license: %2$s.', 'commons-in-a-box' );
 
 
-/* translators: link to registration settings panel */
-__( 'Registration settings', 'commons-in-a-box' );
+/* translators: Linked  of CC license. */
+__( 'Except where otherwise noted, this site is distributed under the following license: %s', 'commons-in-a-box' );
 
-__( 'This user does not have a member type.', 'commons-in-a-box' );
+__( 'License', 'commons-in-a-box' );
+__( 'Title:', 'commons-in-a-box' );
+__( 'Site Author:', 'commons-in-a-box' );
+__( 'Site Author URL:', 'commons-in-a-box' );
+__( 'Choose a License:', 'commons-in-a-box' );
+__( 'Sharing', 'commons-in-a-box' );
+__( 'Logged-in members can clone.', 'commons-in-a-box' );
+_x( 'Academic Unit Types', 'Post type general name', 'commons-in-a-box' );
+_x( 'Academic Units', 'Post type general name', 'commons-in-a-box' );
+__( 'Academic Units allow your members to identify themselves and their groups with the appropriate divisions within your institution. Create the top-level unit types that best describe how your institution is organized - for example, Departments that are located within Divisions - and then define the specific units within each type. Members will then be able to associate themselves with these units when editing their profiles or when administering their groups.', 'commons-in-a-box' );
+__( 'Please choose whether this academic unit should be a required or optional choice, or not an available choice for any of the following member types.', 'commons-in-a-box' );
+__( 'No academic unit type found.', 'commons-in-a-box' );
+__( 'No academic unit found.', 'commons-in-a-box' );
+__( 'Please make sure you fill in all required fields before saving.', 'commons-in-a-box' );
+__( '(required)', 'commons-in-a-box' );
 __( 'Member Settings', 'commons-in-a-box' );
 __( 'Group Settings', 'commons-in-a-box' );
 __( 'Academic Units', 'commons-in-a-box' );
@@ -586,89 +560,6 @@ __( 'This page can contain the Terms of Service for your site. Terms of Service 
 __( 'Contact Page', 'commons-in-a-box' );
 __( 'This page can contain contact information for the administrators of your site, which visitors to the site can use when they have questions, comments, or need help.', 'commons-in-a-box' );
 __( 'This placeholder page is used to display search results. This page\'s contents are generated dynamically, but you can edit the page title and slug.', 'commons-in-a-box' );
-__( 'Profile fields can be customized to only be available to specific member types. Use the link below to access the Network Admin Dashboard to be able to specify which fields are available for each member type.', 'commons-in-a-box' );
-__( 'Network Admin > Users > Profile Fields', 'commons-in-a-box' );
-__( 'Red', 'commons-in-a-box' );
-__( 'Blue', 'commons-in-a-box' );
-__( 'Green', 'commons-in-a-box' );
-__( 'Site Logo', 'commons-in-a-box' );
-_x( 'Home', 'Home page banner link title', 'commons-in-a-box' );
-__( 'Open Search', 'commons-in-a-box' );
-__( 'Search', 'commons-in-a-box' );
-__( 'Submit', 'commons-in-a-box' );
-__( 'People', 'commons-in-a-box' );
-__( 'Menu', 'commons-in-a-box' );
-
-/* translators: display name of logged-in user */
-__( 'Hi, %1$s', 'commons-in-a-box' );
-
-__( 'My Profile', 'commons-in-a-box' );
-__( 'Accept', 'commons-in-a-box' );
-__( 'Reject', 'commons-in-a-box' );
-__( 'See More', 'commons-in-a-box' );
-__( 'Activity', 'commons-in-a-box' );
-
-/* translators: user name */
-__( 'Profile picture of %s', 'commons-in-a-box' );
-
-
-/* translators: Site name */
-__( 'Network Admin: %s', 'commons-in-a-box' );
-
-
-/* translators: Network main site name */
-__( 'Global Dashboard: %s', 'commons-in-a-box' );
-
-__( 'Visit Site', 'commons-in-a-box' );
-__( 'Edit Site', 'commons-in-a-box' );
-__( 'Dashboard', 'commons-in-a-box' );
-_x( 'Link', 'add new from admin bar', 'commons-in-a-box' );
-_x( 'User', 'add new from admin bar', 'commons-in-a-box' );
-_x( 'Add New', 'admin bar menu group label', 'commons-in-a-box' );
-_x( 'Dashboard', 'admin bar menu group label', 'commons-in-a-box' );
-
-/* translators: Number of comments awaiting moderation */
-_n_noop( '%s comment awaiting moderation', '%s comments awaiting moderation', 'commons-in-a-box' );
-
-__( 'Comments', 'commons-in-a-box' );
-
-/* translators: user name */
-__( 'Hi, %s', 'commons-in-a-box' );
-
-__( 'My Account', 'commons-in-a-box' );
-__( 'Edit My Profile', 'commons-in-a-box' );
-__( 'Log Out', 'commons-in-a-box' );
-__( 'Sign Up', 'commons-in-a-box' );
-__( 'Group Types allow your site\'s groups to be categorized in various ways. Each group type gets its own directory, and groups of different types may differ in functionality and appearance.', 'commons-in-a-box' );
-_x( 'Group Types', 'Post type general name', 'commons-in-a-box' );
-_x( 'Group Type', 'Post type singular name', 'commons-in-a-box' );
-__( 'Add New Group Type', 'commons-in-a-box' );
-__( 'New Group Type', 'commons-in-a-box' );
-__( 'Edit Group Type', 'commons-in-a-box' );
-__( 'View Group Type', 'commons-in-a-box' );
-__( 'All Group Types', 'commons-in-a-box' );
-__( 'Search Group Types', 'commons-in-a-box' );
-__( 'No group types found.', 'commons-in-a-box' );
-__( 'No group types found in Trash.', 'commons-in-a-box' );
-__( 'No group type found by that slug.', 'commons-in-a-box' );
-__( 'This group does not have a type.', 'commons-in-a-box' );
-__( 'No group type found.', 'commons-in-a-box' );
-__( 'Creator(s)', 'commons-in-a-box' );
-__( 'Creators will be listed in the acknowledgements on the group Profile.', 'commons-in-a-box' );
-__( 'The people listed below will be acknowledged as the group&#8217;s Creators. You can add additional creators by typing their name in the box below and selecting it from the dropdown list.', 'commons-in-a-box' );
-__( 'Add a creator:', 'commons-in-a-box' );
-__( 'Select an OpenLab member', 'commons-in-a-box' );
-__( 'Enter the name of a non-member', 'commons-in-a-box' );
-__( 'Additional Text', 'commons-in-a-box' );
-__( 'Below you can add additional information that will appear in the Acknowledgements section on the group Profile. It will not appear on clones of this group.', 'commons-in-a-box' );
-_x( 'Academic Unit Types', 'Post type general name', 'commons-in-a-box' );
-_x( 'Academic Units', 'Post type general name', 'commons-in-a-box' );
-__( 'Academic Units allow your members to identify themselves and their groups with the appropriate divisions within your institution. Create the top-level unit types that best describe how your institution is organized - for example, Departments that are located within Divisions - and then define the specific units within each type. Members will then be able to associate themselves with these units when editing their profiles or when administering their groups.', 'commons-in-a-box' );
-__( 'Please choose whether this academic unit should be a required or optional choice, or not an available choice for any of the following member types.', 'commons-in-a-box' );
-__( 'No academic unit type found.', 'commons-in-a-box' );
-__( 'No academic unit found.', 'commons-in-a-box' );
-__( 'Please make sure you fill in all required fields before saving.', 'commons-in-a-box' );
-__( '(required)', 'commons-in-a-box' );
 __( 'Acknowledgements: Created by:', 'commons-in-a-box' );
 __( 'It is based on the following:', 'commons-in-a-box' );
 __( 'Acknowledgements: Based on the following:', 'commons-in-a-box' );
@@ -689,19 +580,7 @@ __( 'Invite Anyone allows community members to invite non-members to your commun
 __( 'OpenLab Badges', 'commons-in-a-box' );
 __( 'Create and manage group badges on the Badges admin page.', 'commons-in-a-box' );
 __( 'OpenLab Badges allows the network administrator to create custom badges that can be awarded to groups. These badges are displayed in group directories and on group home pages, and can be used to find and filter groups in the directories.', 'commons-in-a-box' );
-
-/* translators: portfolio owner's display name */
-__( '%s\'s Portfolio', 'commons-in-a-box' );
-
 __( 'Group categories make it easier to organize and discover groups. Group administrators can add the categories you create here to their groups, which will then be filterable by category on group directory pages.', 'commons-in-a-box' );
-_x( 'Signup Codes', 'Post type general name', 'commons-in-a-box' );
-__( 'Registration management allows you to control who can create accounts and what types of accounts different types of users can create.', 'commons-in-a-box' );
-__( 'No signup code found.', 'commons-in-a-box' );
-__( 'No email provided.', 'commons-in-a-box' );
-__( 'Please enter a valid email address.', 'commons-in-a-box' );
-__( 'Sorry, that email address is not allowed!', 'commons-in-a-box' );
-__( 'Sorry, that email address is already used!', 'commons-in-a-box' );
-__( 'Click "Complete Sign Up" to continue.', 'commons-in-a-box' );
 
 /* translators: 1. Link to author, 2. Link to post, 3. Link to group */
 __( '%1$s wrote a new blog post %2$s in the group %3$s', 'commons-in-a-box' );
@@ -754,26 +633,113 @@ _n_noop( 'Site name must be at least %s character.', 'Site name must be at least
 __( 'CBOX OpenLab', 'commons-in-a-box' );
 __( 'Add to Menu', 'commons-in-a-box' );
 _x( 'Custom Link', 'customizer menu type label', 'commons-in-a-box' );
-__( 'Username', 'commons-in-a-box' );
-__( 'Password', 'commons-in-a-box' );
-__( 'Keep Me Logged In', 'commons-in-a-box' );
-__( 'Log In', 'commons-in-a-box' );
-__( 'Forgot Password?', 'commons-in-a-box' );
-__( 'Posted a comment on a PressForward feed item.', 'commons-in-a-box' );
-__( 'PressForward Comments', 'commons-in-a-box' );
+__( 'Group Types allow your site\'s groups to be categorized in various ways. Each group type gets its own directory, and groups of different types may differ in functionality and appearance.', 'commons-in-a-box' );
+_x( 'Group Types', 'Post type general name', 'commons-in-a-box' );
+_x( 'Group Type', 'Post type singular name', 'commons-in-a-box' );
+__( 'Add New Group Type', 'commons-in-a-box' );
+__( 'New Group Type', 'commons-in-a-box' );
+__( 'Edit Group Type', 'commons-in-a-box' );
+__( 'View Group Type', 'commons-in-a-box' );
+__( 'All Group Types', 'commons-in-a-box' );
+__( 'Search Group Types', 'commons-in-a-box' );
+__( 'No group types found.', 'commons-in-a-box' );
+__( 'No group types found in Trash.', 'commons-in-a-box' );
+__( 'No group type found by that slug.', 'commons-in-a-box' );
+__( 'This group does not have a type.', 'commons-in-a-box' );
+__( 'No group type found.', 'commons-in-a-box' );
+__( 'Creator(s)', 'commons-in-a-box' );
+__( 'Creators will be listed in the acknowledgements on the group Profile.', 'commons-in-a-box' );
+__( 'The people listed below will be acknowledged as the group&#8217;s Creators. You can add additional creators by typing their name in the box below and selecting it from the dropdown list.', 'commons-in-a-box' );
+__( 'Add a creator:', 'commons-in-a-box' );
+__( 'Select an OpenLab member', 'commons-in-a-box' );
+__( 'Enter the name of a non-member', 'commons-in-a-box' );
+__( 'Additional Text', 'commons-in-a-box' );
+__( 'Below you can add additional information that will appear in the Acknowledgements section on the group Profile. It will not appear on clones of this group.', 'commons-in-a-box' );
+_x( 'Member Types', 'Post type general name', 'commons-in-a-box' );
+_x( 'Member Type', 'Post type singular name', 'commons-in-a-box' );
+__( 'Add New Member Type', 'commons-in-a-box' );
+__( 'New Member Type', 'commons-in-a-box' );
+__( 'Edit Member Type', 'commons-in-a-box' );
+__( 'View Member Type', 'commons-in-a-box' );
+__( 'All Member Types', 'commons-in-a-box' );
+__( 'Search Member Types', 'commons-in-a-box' );
+__( 'No member types found.', 'commons-in-a-box' );
+__( 'No member types found in Trash.', 'commons-in-a-box' );
+__( 'No member type exists for this slug.', 'commons-in-a-box' );
 
-/* translators: 1. commenter link, 2. post link, 3. site link */
-__( '%1$s posted a comment on the feed item %2$s on the site %3$s', 'commons-in-a-box' );
+/* translators: link to registration settings panel */
+__( 'Member Types are used to organize your site’s users. Members are able to choose their own Member Type according to the rules that you configure on this page, as well as in %s.', 'commons-in-a-box' );
 
-__( 'Term meta cannot be added to terms that are shared between taxonomies.', 'commons-in-a-box' );
 
-/* translators: 1. required BP version, 2. required WP version */
-__( 'BP Customizable Group Categories requires at least version %1$s of BuddyPress and version %2$s of WordPress.', 'commons-in-a-box' );
+/* translators: link to registration settings panel */
+__( 'Registration settings', 'commons-in-a-box' );
 
-__( 'BP Customizable Group Categories requires to be activated on the blog where BuddyPress is activated.', 'commons-in-a-box' );
-_x( 'Group Categories', 'taxonomy general name', 'commons-in-a-box' );
-_x( 'Group Tag', 'taxonomy singular name', 'commons-in-a-box' );
-__( 'Category Groups', 'commons-in-a-box' );
+__( 'This user does not have a member type.', 'commons-in-a-box' );
+__( 'Red', 'commons-in-a-box' );
+__( 'Blue', 'commons-in-a-box' );
+__( 'Green', 'commons-in-a-box' );
+__( 'Site Logo', 'commons-in-a-box' );
+_x( 'Home', 'Home page banner link title', 'commons-in-a-box' );
+__( 'Open Search', 'commons-in-a-box' );
+__( 'Search', 'commons-in-a-box' );
+__( 'Submit', 'commons-in-a-box' );
+__( 'People', 'commons-in-a-box' );
+__( 'Menu', 'commons-in-a-box' );
+
+/* translators: display name of logged-in user */
+__( 'Hi, %1$s', 'commons-in-a-box' );
+
+__( 'My Profile', 'commons-in-a-box' );
+__( 'Accept', 'commons-in-a-box' );
+__( 'Reject', 'commons-in-a-box' );
+__( 'See More', 'commons-in-a-box' );
+__( 'Activity', 'commons-in-a-box' );
+
+/* translators: user name */
+__( 'Profile picture of %s', 'commons-in-a-box' );
+
+
+/* translators: Site name */
+__( 'Network Admin: %s', 'commons-in-a-box' );
+
+
+/* translators: Network main site name */
+__( 'Global Dashboard: %s', 'commons-in-a-box' );
+
+__( 'Visit Site', 'commons-in-a-box' );
+__( 'Edit Site', 'commons-in-a-box' );
+__( 'Dashboard', 'commons-in-a-box' );
+_x( 'Link', 'add new from admin bar', 'commons-in-a-box' );
+_x( 'User', 'add new from admin bar', 'commons-in-a-box' );
+_x( 'Add New', 'admin bar menu group label', 'commons-in-a-box' );
+_x( 'Dashboard', 'admin bar menu group label', 'commons-in-a-box' );
+
+/* translators: Number of comments awaiting moderation */
+_n_noop( '%s comment awaiting moderation', '%s comments awaiting moderation', 'commons-in-a-box' );
+
+__( 'Comments', 'commons-in-a-box' );
+
+/* translators: user name */
+__( 'Hi, %s', 'commons-in-a-box' );
+
+__( 'My Account', 'commons-in-a-box' );
+__( 'Edit My Profile', 'commons-in-a-box' );
+__( 'Log Out', 'commons-in-a-box' );
+__( 'Sign Up', 'commons-in-a-box' );
+
+/* translators: portfolio owner's display name */
+__( '%s\'s Portfolio', 'commons-in-a-box' );
+
+__( 'Profile fields can be customized to only be available to specific member types. Use the link below to access the Network Admin Dashboard to be able to specify which fields are available for each member type.', 'commons-in-a-box' );
+__( 'Network Admin > Users > Profile Fields', 'commons-in-a-box' );
+_x( 'Signup Codes', 'Post type general name', 'commons-in-a-box' );
+__( 'Registration management allows you to control who can create accounts and what types of accounts different types of users can create.', 'commons-in-a-box' );
+__( 'No signup code found.', 'commons-in-a-box' );
+__( 'No email provided.', 'commons-in-a-box' );
+__( 'Please enter a valid email address.', 'commons-in-a-box' );
+__( 'Sorry, that email address is not allowed!', 'commons-in-a-box' );
+__( 'Sorry, that email address is already used!', 'commons-in-a-box' );
+__( 'Click "Complete Sign Up" to continue.', 'commons-in-a-box' );
 _x( 'Group Categories', 'admin page title', 'commons-in-a-box' );
 _x( 'Group Categories', 'admin menu title', 'commons-in-a-box' );
 _x( 'All Categories', 'admin page title', 'commons-in-a-box' );
@@ -785,3 +751,37 @@ __( 'Cheatin&#8217; uh?', 'commons-in-a-box' );
 __( 'Invalid taxonomy', 'commons-in-a-box' );
 __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?', 'commons-in-a-box' );
 __( 'An error has occurred. Please reload the page and try again.', 'commons-in-a-box' );
+
+/* translators: 1. required BP version, 2. required WP version */
+__( 'BP Customizable Group Categories requires at least version %1$s of BuddyPress and version %2$s of WordPress.', 'commons-in-a-box' );
+
+__( 'BP Customizable Group Categories requires to be activated on the blog where BuddyPress is activated.', 'commons-in-a-box' );
+_x( 'Group Categories', 'taxonomy general name', 'commons-in-a-box' );
+_x( 'Group Tag', 'taxonomy singular name', 'commons-in-a-box' );
+__( 'Term meta cannot be added to terms that are shared between taxonomies.', 'commons-in-a-box' );
+__( 'Category Groups', 'commons-in-a-box' );
+__( 'Exclude', 'commons-in-a-box' );
+__( 'Include', 'commons-in-a-box' );
+__( 'String', 'commons-in-a-box' );
+_x( 'String', 'a string', 'commons-in-a-box' );
+_n_noop( '1 Star', '%s Stars', 'commons-in-a-box' );
+
+/* translators: A single line translators comment. */
+__( 'A', 'commons-in-a-box' );
+
+
+/* translators: A multiline translators comment. */
+__( 'B', 'commons-in-a-box' );
+
+__( 'Index', 'commons-in-a-box' );
+__( 'Posted a comment on a PressForward feed item.', 'commons-in-a-box' );
+__( 'PressForward Comments', 'commons-in-a-box' );
+
+/* translators: 1. commenter link, 2. post link, 3. site link */
+__( '%1$s posted a comment on the feed item %2$s on the site %3$s', 'commons-in-a-box' );
+
+__( 'Username', 'commons-in-a-box' );
+__( 'Password', 'commons-in-a-box' );
+__( 'Keep Me Logged In', 'commons-in-a-box' );
+__( 'Log In', 'commons-in-a-box' );
+__( 'Forgot Password?', 'commons-in-a-box' );
