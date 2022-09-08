@@ -1,19 +1,16 @@
 //openlab-theme-child.js
 
-/*
- * the following code enables a sticky main navigation bar
- * */
 var navbar = null;
 var sticky = null;
 
-window.onload = function() { 
+window.onload = function() {
         navbar = document.getElementById( "wpadminbar" );
         navbar.style["background-color"] = "black";
         sticky = navbar.offsetTop;
 }
 
-window.onscroll = function() { 
-        if ( !navbar ) { window.scrollTo(0, 0); }
+window.onscroll = function() { fixMenu() };
+function fixMenu() { 
         if ( window.pageYOffset >= sticky ) {
                 navbar.style["position"] = "fixed";
                 navbar.style["top"] = "0";

@@ -58,3 +58,17 @@ Description:    This is a child theme. It facilitates optional overriding of CBO
         background: /*#f76902*/#000000;
         color: #fff;
 }
+
+#footer-middle a { }
+
+#footer-middle a:link { text-decoration: none; }
+
+#footer-middle a:visited { text-decoration: none; }
+
+#footer-middle a:active { text-decoration: none; }
+
+#footer-middle div { float: left; }
+
+#footer-middle ul { padding-left: 0; list-style: none;  }
+
+#openlab-footer { background: black; }
