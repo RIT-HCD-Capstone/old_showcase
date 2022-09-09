@@ -59,6 +59,10 @@ Description:    This is a child theme. It facilitates optional overriding of CBO
         color: #fff;
 }
 
+#footer-right { border-right: 0px;  }
+
+#footer-middle { border-right: 0px; }
+
 #footer-middle a { }
 
 #footer-middle a:link { text-decoration: none; }
@@ -70,5 +74,3 @@ Description:    This is a child theme. It facilitates optional overriding of CBO
 #footer-middle div { float: left; }
 
 #footer-middle ul { padding-left: 0; list-style: none;  }
-
-#openlab-footer { background: black; }

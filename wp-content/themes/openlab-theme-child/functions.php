@@ -1,5 +1,10 @@
 <?php
-//functions.php
+/* functions.php
+ *
+ * the purpose of this file to define functions needed by the OpenLab Child Theme.
+ *
+ * @author Kadin Benjamin ktb1193
+ * */
 
 /* get_child_url
  *
@@ -50,13 +55,13 @@ function site_footer() {
                         <div class="footer-wrapper">
                                 <div class="container-fluid footer-desktop">
                                         <div class="row row-footer">
-                                                <div id="footer-left" class="footer-left footer-section col-md-12">
+                                                <div id="footer-left" class="footer-left footer-section col-md-10">
                                                         <img src="https://dhssatrit.cad.rit.edu/wp-content/uploads/2021/03/cropped-DHSS_horizontal_logo-e1643637904315.png" alt="RIT DHSS logo"/>
                                                         <p>The DHSS Showcase is a living archive of the Digital Humanities and Social Sciences BS at RIT. Thank you for visiting :)
                                                         </p>
                                                 </div>
 
-                                                <div id="footer-middle" class="footer-middle footer-section col-md-8">
+                                                <div id="footer-middle" class="footer-middle footer-section col-md-10">
                                                         <div id="footer-middle-left">
                                                                 <h1>Support</h1>
                                                                 <ul> 
@@ -81,10 +86,11 @@ function site_footer() {
                                                 </div>
 
                                                 <div id="footer-right" class="footer-right footer-section col-md-4">
-                                                        <p><?php esc_html_e( 'Powered by:', 'commons-in-a-box' ); ?></p>
-
                                                         <div class="cboxol-footer-logo">
-                                                                <a href="https://commonsinabox.org/"><img src="<?php echo esc_attr( get_template_directory_uri() ); ?>/images/cboxol-logo-noicon.png" alt="<?php esc_attr_e( 'CBOX-OL Logo', 'commons-in-a-box' ); ?>" /></a>
+                                                                <a href="https://commonsinabox.org/"><img style="" src="<?php echo esc_attr( get_template_directory_uri() ); ?>/images/cboxol-logo-noicon.png" alt="<?php esc_attr_e( 'CBOX-OL Logo', 'commons-in-a-box' ); ?>" /></a>
+                                                        </div>
+                                                        <div class="cboxol-footer-logo">
+                                                                <a href="https://www.rit.edu/liberalarts/"><img style="max-width: 300px;" src="<?php echo esc_attr( get_child_template_directory_uri() ); ?>/images/RIT_COLA_lockup.png" alt="RIT College of Liberal Arts lockup"/></a>
                                                         </div>
                                                 </div>
                                         </div>
