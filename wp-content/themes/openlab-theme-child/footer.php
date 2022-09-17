@@ -1,4 +1,14 @@
-<?php //footer.php ?>
+<?php
+/* footer.php
+ *
+ * the purpose of this file is to define the structure of the site-wide footer.
+ *
+ * @overrides openlab-theme/footer.php
+ *
+ * @author OpenLab Team
+ * @author Kadin Benjamin ktb1193
+ * */
+?>
 					</div><!--end .container-->
 
 					<?php do_action( 'bp_after_container' ); ?>
