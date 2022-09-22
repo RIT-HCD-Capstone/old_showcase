@@ -1,13 +1,4 @@
 <?php
-/* sidebar-group-archive.php
- *
- * the purpose of
- *
- * @overrides openlab-theme/sidebar-group-archive.php
- *
- * @author OpenLab Team
- * @author Kadin Benjamin ktb1193
- * */
 
 $group_type        = bp_get_current_group_directory_type();
 $group_type_object = cboxol_get_group_type( $group_type );
