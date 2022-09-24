@@ -30,11 +30,11 @@ $current_group_types = openlab_get_current_filter( 'group-types' );
 
 <div class="custom-select">
         <label for="bp-group-type-select" class="sr-only"><?php echo esc_html_e( 'Select: Group Type', 'commons-in-a-box' ); ?></label>
-        <select name="group-type" class="last-select" id="bp-group-type-select">
-                <option value="" <?php selected( '', $current_group_types );  ?>><?php esc_html_e( 'Group Type', 'commons-in-a-box' ); ?></option>
+        <select name="group-types[]" class="last-select" id="bp-group-type-select">
+                <option value="" <?php selected( '', $current_group_types ); ?>><?php esc_html_e( 'Group Type', 'commons-in-a-box' ); ?></option>
                 <option value="type_all" <?php selected( 'type-all', $current_group_types ); ?>><?php esc_html_e('All', 'commons-in-a-box' ); ?></option>
                 <?php foreach ( cboxol_get_group_types() as $group_type ): ?>
-                        <option value="<?php echo esc_attr( $group_type->get_slug() ); ?>"><?php echo esc_html( $group_type->get_name() ); ?></option>
+                        <option <?php selected( $current_group_types, $group_type->get_slug() ); ?> value="<?php echo esc_attr( $group_type->get_slug() ); ?>"><?php echo esc_html( $group_type->get_name() ); ?></option>
                 <?php endforeach; ?>
         </select>
 </div>
