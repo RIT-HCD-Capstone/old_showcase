@@ -98,7 +98,7 @@ if ( is_user_logged_in() ) :
 		<?php echo '<h2 class="title"><span class="fa fa-arrow-circle-right"></span> Log in</h2>'; ?>
 		<?php do_action( 'bp_before_sidebar_login_form' ); ?>
 
-		<form name="login-form" class="standard-form" action="<?php echo esc_attr( site_url( 'wp-login.php?saml_sso', 'login_post' ) ); ?>" method="post">
+		<form name="login-form" class="standard-form" action="<?php echo esc_attr( site_url( 'https://dhssatrit.cad.rit.edu/wp-login.php?saml_sso', 'login_post' ) ); ?>" method="post">
 			<label class="sr-only" for="sidebar-user-login"><?php esc_html_e( 'Username', 'commons-in-a-box' ); ?></label>
 			<input class="form-control input" type="text" name="log" id="sidebar-user-login" value="" placeholder="Username" tabindex="0" />
 
