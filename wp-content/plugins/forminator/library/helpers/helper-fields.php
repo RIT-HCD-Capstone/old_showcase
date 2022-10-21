@@ -115,6 +115,7 @@ function forminator_sanitize_field( &$field, $key = null ) {
 
 /**
  * Forminator sanitation for an array
+ * Used for sanitizing form integration settings description field.
  *
  * @param $fields
  *
@@ -129,6 +130,7 @@ function forminator_sanitize_array_field( $fields ) {
 				 || 'variations' === $key
 			     || 'hc_invisible_notice' === $key
 			     || 'sc_message' === $key
+				 || 'ticket_description' === $key
 			) {
 				$value = wp_kses_post( $value );
 			} elseif ( 'card_description' === $key
@@ -369,6 +371,7 @@ function forminator_get_vars( $add_query = false ) {
 		'embed_id'     	  => esc_html__( 'Embed Post/Page ID', 'forminator' ),
 		'embed_title'  	  => esc_html__( 'Embed Post/Page Title', 'forminator' ),
 		'embed_url'    	  => esc_html__( 'Embed URL', 'forminator' ),
+		'login_url'    	  => esc_html__( 'Login URL', 'forminator' ),
 		'user_agent'   	  => esc_html__( 'HTTP User Agent', 'forminator' ),
 		'refer_url'    	  => esc_html__( 'HTTP Refer URL', 'forminator' ),
 		'user_id'      	  => esc_html__( 'User ID', 'forminator' ),
@@ -504,7 +507,7 @@ function forminator_replace_form_data( $content, Forminator_Form_Model $custom_f
 
 	$randomed_field_pattern  = 'field-\d+-\d+';
 	$increment_field_pattern = sprintf( '(%s)-\d+', implode( '|', $field_types ) );
-	$pattern                 = '/\{((' . $randomed_field_pattern . ')|(' . $increment_field_pattern . '))(\-[A-Za-z-_]+)?\}/';
+	$pattern                 = '/\{((' . $randomed_field_pattern . ')|(' . $increment_field_pattern . '))(\-[A-Za-z0-9-_]+)?\}/';
 	$print_value             = ! empty( $custom_form->settings['print_value'] )
 			? filter_var( $custom_form->settings['print_value'], FILTER_VALIDATE_BOOLEAN ) : false;
 	// Find all field ID's.
@@ -525,7 +528,8 @@ function forminator_replace_form_data( $content, Forminator_Form_Model $custom_f
 				if ( ! is_null( $field_value ) ) {
 					$form_fields   = $custom_form ? $custom_form->get_fields() : array();
 					$fields_slugs  = wp_list_pluck( $form_fields, 'slug' );
-					$field_key     = array_search( $element_id, $fields_slugs, true );
+					$parent_id     = preg_replace( '/(-[^-]+)-[^-]+$/', '$1', $element_id );
+					$field_key     = array_search( $parent_id, $fields_slugs, true );
 					$field_options = false !== $field_key && ! empty( $form_fields[ $field_key ]->raw['options'] )
 							? wp_list_pluck( $form_fields[ $field_key ]->options, 'label', 'value' )
 							: array();
@@ -650,19 +654,42 @@ function forminator_replace_custom_form_data( $content, Forminator_Form_Model $c
 function forminator_get_formatted_form_entry( Forminator_Form_Model $custom_form, Forminator_Form_Entry_Model $entry, $exclude_empty = false ) {
 	$ignored_field_types = Forminator_Form_Entry_Model::ignored_fields();
 
-	/**
-	 * Filter form fields before displaying
-	 *
-	 * @since 1.11
-	 *
-	 * @param array $form_fields
-	 * @param Forminator_Form_Model $custom_form
-	 *
-	 * @return array
-	 */
-	$form_fields = apply_filters( 'forminator_custom_form_before_form_fields', $custom_form->get_fields(), $custom_form, Forminator_CForm_Front_Action::$prepared_data );
+	$html        = forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty );
+	$filter_name = $exclude_empty ? 'forminator_get_formatted_form_non_empty_entry' : 'forminator_get_formatted_form_entry';
+
+	return apply_filters( $filter_name, $html, $custom_form, Forminator_CForm_Front_Action::$prepared_data, $entry, $ignored_field_types );
+}
+
+/**
+ * Prepare Html Formatted of form entry for email notification
+ *
+ * @param Forminator_Form_Model       $custom_form
+ * @param Forminator_Form_Entry_Model $entry
+ * @param boolean                     $exclude_empty Exclude empty form entry.
+ *
+ * @return string
+ */
+function forminator_prepare_formatted_form_entry( Forminator_Form_Model $custom_form, Forminator_Form_Entry_Model $entry, $exclude_empty, $form_fields = null, $repeater_suffix = '' ) {
+	$ignored_field_types = Forminator_Form_Entry_Model::ignored_fields();
+
 	if ( is_null( $form_fields ) ) {
-		$form_fields = array();
+		$rendering_group = false;
+		/**
+		 * Filter form fields before displaying
+		 *
+		 * @since 1.11
+		 *
+		 * @param array $form_fields
+		 * @param Forminator_Form_Model $custom_form
+		 *
+		 * @return array
+		 */
+		$form_fields = apply_filters( 'forminator_custom_form_before_form_fields', $custom_form->get_fields(), $custom_form, Forminator_CForm_Front_Action::$prepared_data );
+		if ( is_null( $form_fields ) ) {
+			$form_fields = array();
+		}
+	} else {
+		$rendering_group = true;
 	}
 	$html = '<br/><ol>';
 
@@ -671,7 +698,7 @@ function forminator_get_formatted_form_entry( Forminator_Form_Model $custom_form
 		$field_type     = $field_array['type'];
 		$field_id       = Forminator_Field::get_property( 'element_id', $field_array );
 
-		if ( in_array( $field_id, Forminator_CForm_Front_Action::$hidden_fields, true ) ) {
+		if ( in_array( $field_id, Forminator_CForm_Front_Action::$hidden_fields, true ) || ! empty( $form_field->parent_group ) && ! $rendering_group ) {
 			continue;
 		}
 
@@ -696,20 +723,39 @@ function forminator_get_formatted_form_entry( Forminator_Form_Model $custom_form
 			$html .= '<ol>';
 		} elseif ( in_array( $field_type, $ignored_field_types, true ) ) {
 			continue;
+		} elseif ( 'group' === $field_type ) {
+			$label = $form_field->get_label_for_entry();
+			if ( ! empty( $label ) ) {
+				$html .= '<b>' . $label . '</b><br/>';
+			}
+
+			$group_fields = $custom_form->get_grouped_fields( $field_id );
+
+			$html .= '<hr>';
+			$html .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields );
+			$html .= '<hr>';
+
+			$original_keys = wp_list_pluck( $group_fields, 'slug' );
+			$repeater_keys = forminator_get_cloned_field_keys( $entry, $original_keys );
+
+			foreach ( $repeater_keys as $repeater_slug ) {
+				$html .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields, $repeater_slug );
+				$html .= '<hr>';
+			}
 		} else {
-			$slug = $form_field->slug;
+			$slug = $form_field->slug . $repeater_suffix;
 			if ( strpos( $slug, 'radio' ) !== false
 					|| strpos( $slug, 'select' ) !== false
 					|| strpos( $slug, 'checkbox' ) !== false
 					) {
-				$value = forminator_replace_form_data( '{' . $form_field->slug . '}', $custom_form, $entry, true );
+				$value = forminator_replace_form_data( '{' . $slug . '}', $custom_form, $entry, true );
 			} else {
 				$value = render_entry( $entry, $slug, $field_array, '', $exclude_empty );
 			}
 			/**
 			 * Filter value of a field that is not saved in DB
 			 */
-			$value = apply_filters( 'forminator_custom_form_after_render_value', $value, $custom_form, $form_field->slug, Forminator_CForm_Front_Action::$prepared_data );
+			$value = apply_filters( 'forminator_custom_form_after_render_value', $value, $custom_form, $slug, Forminator_CForm_Front_Action::$prepared_data );
 			if ( ! $exclude_empty || ! empty( $value ) ) {
 				$html .= '<li>';
 				$label = $form_field->get_label_for_entry();
@@ -726,9 +772,7 @@ function forminator_get_formatted_form_entry( Forminator_Form_Model $custom_form
 	}
 	$html .= '</ol><br/>';
 
-	$filter_name = $exclude_empty ? 'forminator_get_formatted_form_non_empty_entry' : 'forminator_get_formatted_form_entry';
-
-	return apply_filters( $filter_name, $html, $custom_form, Forminator_CForm_Front_Action::$prepared_data, $entry, $ignored_field_types );
+	return $html;
 }
 
 /**
@@ -909,6 +953,32 @@ function forminator_get_formatted_line_break() {
 }
 
 /**
+ * Get loggin URL
+ *
+ * @param string $embed_url Current URL.
+ * @return string
+ */
+function forminator_get_login_url( $embed_url ) {
+	if ( class_exists( 'Mask_Login' )
+			&& method_exists( 'Mask_Login', 'is_active' )
+			&& method_exists( 'Mask_Login', 'get_new_login_url' )
+	) {
+		$mask_login = new Mask_Login();
+		if ( $mask_login->is_active() ) {
+			$login_url = $mask_login->get_new_login_url();
+		}
+	}
+
+	if ( empty( $login_url ) ) {
+		global $wp_rewrite;
+
+		$login_url = is_null( $wp_rewrite ) ? $embed_url . 'wp-login.php' : wp_login_url();
+	}
+
+	return apply_filters( 'forminator_login_url', $login_url, $embed_url );
+}
+
+/**
  * Return filtered editor content with replaced variables
  *
  * @since 1.0
@@ -934,6 +1004,7 @@ function forminator_replace_variables( $content, $id = false, $entry = null ) {
 			$post_id = url_to_postid( $embed_url );
 		}
 		$refer_url = forminator_get_referer_url( $embed_url );
+		$login_url = forminator_get_login_url( $embed_url );
 
 		$variables = array(
 			// Handle User IP Address variable.
@@ -957,6 +1028,8 @@ function forminator_replace_variables( $content, $id = false, $entry = null ) {
 			'{user_agent}'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? esc_html( $_SERVER['HTTP_USER_AGENT'] ) : '',
 			// Handle site url variable.
 			'{site_url}'           => site_url(),
+			// Handle login url variable.
+			'{login_url}'          => $login_url,
 			// Handle HTTP Refer URL variable.
 			'{refer_url}'          => $refer_url,
 			'{http_refer}'         => $refer_url,
@@ -2106,6 +2179,25 @@ function datepicker_default_format( $format ) {
 }
 
 /**
+ * Reformat date
+ *
+ * @since 1.18.0
+ *
+ * @param string $date_value - The date.
+ * @param string $date_format - The current date format.
+ * @param string $new_format - The new date format.
+ *
+ * @return string
+ */
+function forminator_reformat_date( $date_value, $date_format, $new_format ) {
+	$date = new Forminator_Date();
+	$date_format = $date->normalize_date_format( $date_format );
+	$date = date_create_from_format( $date_format, $date_value );
+
+	return date_format( $date, $new_format );
+}
+
+/**
  * Get entry field value helper
  *
  * @since 1.14
@@ -2128,6 +2220,10 @@ function forminator_get_entry_field_value( $entry, $mapper, $sub_meta_key = '', 
 		} else {
 			$value = '';
 		}
+	} elseif ( 'group' === $mapper['type'] ) {
+		$meta_value = $entry->get_meta( $sub_meta_key, '' );
+		$field_type = Forminator_Core::get_field_type( $sub_meta_key );
+		$value      = Forminator_Form_Entry_Model::meta_value_to_string( $field_type, $meta_value, $allow_html, $truncate );
 	} else {
 		$meta_value = $entry->get_meta( $mapper['meta_key'], '' );
 		// meta_key based.
@@ -2310,11 +2406,40 @@ function forminator_trim_array ( $value ) {
 		if ( is_array( $val ) ) {
 			$value[$key] = forminator_trim_array( $val );
 		} else {
-			$value[$key] = wp_unslash( trim( $val ) );
+			$value[$key] = strtolower( wp_unslash( trim( $val ) ) );
 		}
 	}
 
 	return $value;
+}
+
+/**
+ * Get cloned fields keys
+ *
+ * @param object $entry Entry object.
+ * @param string $original_keys All field slugs of the current group field.
+ * @return array
+ */
+function forminator_get_cloned_field_keys( $entry, $original_keys ) {
+	if ( empty( $entry->meta_data ) ) {
+		return array();
+	}
+
+	$field_ids = implode( '|', $original_keys );
+
+	$all_suffixes = preg_filter( '/^(' . $field_ids . ')(-[^-]+)$/', '$2', array_keys( $entry->meta_data ) );
+	// Exclude reserved suffixes for complex fields.
+	$repeater_suffixes = array_diff(
+		$all_suffixes,
+		array_map(
+			function( $s ) {
+				return '-' . $s;
+			},
+			$entry::field_suffix()
+		)
+	);
+
+	return array_unique( $repeater_suffixes );
 }
 
 /**

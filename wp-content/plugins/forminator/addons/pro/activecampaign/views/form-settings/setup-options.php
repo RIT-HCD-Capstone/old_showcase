@@ -139,7 +139,7 @@ foreach ( $template_vars as $key => $val ) {
 				<span class="sui-description">
 					<?php
 					esc_html_e(
-						'When the instant responders option is enabled, ActiveCampaign will send any instant responders setup when the contact is added to the list.
+						'When the instant responders option is enabled, ActiveCampaign will send any instant responders set up when the contact is added to the list.
 						This option is not available to users on a free trial.',
 						'forminator'
 					);

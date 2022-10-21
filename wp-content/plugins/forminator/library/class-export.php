@@ -453,7 +453,7 @@ class Forminator_Export {
 
 				if ( $has_leads && $leads_id ) {
 					$form_model = Forminator_Base_Form_Model::get_model( $leads_id );
-					if ( is_object( $model ) ) {
+					if ( is_object( $form_model ) ) {
 						$mappers = $this->get_custom_form_export_mappers( $form_model );
 						foreach ( $mappers as $mapper ) {
 							if ( 'entry_time_created' === $mapper['type'] ) {
@@ -654,24 +654,7 @@ class Forminator_Export {
 								$data[] = '';
 							}
 						} else {
-							// meta_key based.
-							$meta_value = $entry->get_meta( $mapper['meta_key'], '' );
-							if ( ! isset( $mapper['sub_metas'] ) ) {
-								$data[] = Forminator_Form_Entry_Model::meta_value_to_string( $mapper['type'], $meta_value );
-							} else {
-
-								// sub_metas available.
-								foreach ( $mapper['sub_metas'] as $sub_meta ) {
-									$sub_key = $sub_meta['key'];
-									if ( isset( $meta_value[ $sub_key ] ) && ! empty( $meta_value[ $sub_key ] ) ) {
-										$value      = $meta_value[ $sub_key ];
-										$field_type = $mapper['type'] . '.' . $sub_key;
-										$data[]     = Forminator_Form_Entry_Model::meta_value_to_string( $field_type, $value );
-									} else {
-										$data[] = '';
-									}
-								}
-							}
+							$data = self::add_meta_value( $data, $mapper, $entry );
 						}
 					}
 
@@ -719,6 +702,53 @@ class Forminator_Export {
 		}
 
 		return $export_result;
+	}
+
+	/**
+	 * Add meta value
+	 *
+	 * @param array  $data Saved data.
+	 * @param array  $mapper Mapper.
+	 * @param object $entry Entry object.
+	 * @return array Updated data.
+	 */
+	private static function add_meta_value( $data, $mapper, $entry ) {
+		$copies = array_filter(
+			$entry->meta_data,
+			function( $key ) use ( $mapper ) {
+				return strpos( $key, $mapper['meta_key'] . '-' ) === 0 || $mapper['meta_key'] === $key;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		$temp_data = array();
+		foreach ( $copies as $slug => $copy ) {
+			// meta_key based.
+			$meta_value = $entry->get_meta( $slug, '' );
+			if ( ! isset( $mapper['sub_metas'] ) ) {
+				$temp_data[ $mapper['type'] ][] = Forminator_Form_Entry_Model::meta_value_to_string( $mapper['type'], $meta_value );
+			} else {
+
+				// sub_metas available.
+				foreach ( $mapper['sub_metas'] as $sub_meta ) {
+					$sub_key = $sub_meta['key'];
+					if ( ! empty( $meta_value[ $sub_key ] ) ) {
+						$value      = $meta_value[ $sub_key ];
+						$field_type = $mapper['type'] . '.' . $sub_key;
+
+						$temp_data[ $sub_key ][] = Forminator_Form_Entry_Model::meta_value_to_string( $field_type, $value );
+					} else {
+						$temp_data[ $sub_key ][] = '';
+					}
+				}
+			}
+		}
+
+		foreach ( $temp_data as $t_data ) {
+			$data[] = implode( ' / ', $t_data );
+		}
+
+		return $data;
 	}
 
 	/**
@@ -847,19 +877,48 @@ class Forminator_Export {
 	 */
 	private function get_custom_form_export_mappers( $model ) {
 		/** @var  Forminator_Form_Model $model */
-		$fields         = $model->get_real_fields();
-		$visible_fields = filter_input( INPUT_GET, 'field', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$fields = $model->get_grouped_real_fields();
 
-		/** @var  Forminator_Form_Field_Model $fields */
-		$mappers = array(
+		$field_mappers = self::get_mappers( $fields, $model );
+		$mappers       = array_merge(
 			array(
-				// read form model's property.
-				'property' => 'time_created', // must be on export.
-				'label'    => __( 'Submission Time', 'forminator' ),
-				'type'     => 'entry_time_created',
+				array(
+					// read form model's property.
+					'property' => 'time_created', // must be on export.
+					'label'    => __( 'Submission Time', 'forminator' ),
+					'type'     => 'entry_time_created',
+				),
 			),
+			$field_mappers
 		);
 
+		/**
+		 * Filter column mappers to be used on export custom form
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param array $mappers
+		 * @param int $form_id
+		 * @param Forminator_Form_Model $model
+		 *
+		 * @return array
+		 */
+		$mappers = apply_filters( 'forminator_custom_form_export_mappers', $mappers, $model->id, $model );
+
+		return $mappers;
+	}
+
+	/**
+	 * Get mappers
+	 *
+	 * @param array  $fields Fields array.
+	 * @param object $model Model object.
+	 * @param object $group_field Group field.
+	 * @return array
+	 */
+	private static function get_mappers( $fields, $model, $group_field = null ) {
+		$visible_fields = filter_input( INPUT_GET, 'field', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$mappers        = array();
 		foreach ( $fields as $field ) {
 			$field_type = $field->__get( 'type' );
 
@@ -874,6 +933,10 @@ class Forminator_Export {
 			$mapper['meta_key'] = $field->slug;
 			$mapper['label']    = $field->get_label_for_entry();
 			$mapper['type']     = $field_type;
+
+			if ( $group_field ) {
+				$mapper['label'] = $group_field->get_label_for_entry() . ' - ' . $mapper['label'];
+			}
 
 			// fields that should be displayed as multi column (sub_metas).
 			if ( 'name' === $field_type ) {
@@ -1025,25 +1088,17 @@ class Forminator_Export {
 					'key'   => 'subscription_id',
 					'label' => $mapper['label'] . ' - ' . __( 'Manage', 'forminator' ),
 				);
+			} elseif ( 'group' === $field_type ) {
+				$group_fields  = $model->get_grouped_real_fields( $field->slug );
+				$group_mappers = self::get_mappers( $group_fields, $model, $field );
+				$mappers       = array_merge( $mappers, $group_mappers );
+				continue;
 			}
 
 			if ( ! empty( $mapper ) ) {
 				$mappers[] = $mapper;
 			}
 		}
-
-		/**
-		 * Filter column mappers to be used on export custom form
-		 *
-		 * @since 1.6.3
-		 *
-		 * @param array $mappers
-		 * @param int $form_id
-		 * @param Forminator_Form_Model $model
-		 *
-		 * @return array
-		 */
-		$mappers = apply_filters( 'forminator_custom_form_export_mappers', $mappers, $model->id, $model );
 
 		return $mappers;
 	}

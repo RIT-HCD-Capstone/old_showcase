@@ -138,6 +138,9 @@ class Forminator_Addon_Loader {
 		$active_addons = array_unique( $active_addons );
 
 		$this->activated_addons = $active_addons;
+		if ( in_array( 'zapier', $active_addons, true ) ) {
+			add_action( 'forminator_addons_loaded', array( $this, 'update_zapier_to_webhook' ) );
+		}
 
 		/**
 		 * Initiate standard default error messages
@@ -593,6 +596,22 @@ class Forminator_Addon_Loader {
 		foreach ( $unavailable_addons as $unavailable_addon ) {
 			$this->force_remove_activated_addons( $unavailable_addon );
 		}
+	}
+
+	/**
+	 * Update old Zapier Integration to new Webhook Integration
+	 */
+	public function update_zapier_to_webhook() {
+		// Activate Webhook Integration.
+		$this->add_activated_addons( 'webhook' );
+
+		// Rename module Zapier settings.
+		global $wpdb;
+		$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = 'forminator_addon_webhook_form_settings' WHERE meta_key = 'forminator_addon_zapier_form_settings'" );
+		$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = 'forminator_addon_webhook_poll_settings' WHERE meta_key = 'forminator_addon_zapier_poll_settings'" );
+		$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = 'forminator_addon_webhook_quiz_settings' WHERE meta_key = 'forminator_addon_zapier_quiz_settings'" );
+
+		$this->force_remove_activated_addons( 'zapier' );
 	}
 
 	/**

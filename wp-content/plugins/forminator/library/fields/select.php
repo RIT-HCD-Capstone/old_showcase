@@ -113,12 +113,13 @@ class Forminator_Select extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$i             = 1;
@@ -469,11 +470,14 @@ class Forminator_Select extends Forminator_Field {
 	 */
 	public function sanitize( $field, $data ) {
 		$original_data = $data;
+
 		// Sanitize.
 		if ( is_array( $data ) ) {
-			$data = forminator_sanitize_array_field( $data );
+			foreach ( $data as $key => $val ) {
+				$data[ $key ] = trim( wp_kses_post( $val ) );
+			}
 		} else {
-			$data = forminator_sanitize_field( $data );
+			$data = trim( wp_kses_post( $data ) );
 		}
 
 		return apply_filters( 'forminator_field_single_sanitize', $data, $field, $original_data );

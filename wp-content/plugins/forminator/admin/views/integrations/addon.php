@@ -77,7 +77,7 @@ if ( ! empty( $show_pro_info ) && $show_pro_info ) {
 
 $advertising = false;
 
-if ( 'zapier' === $addon['slug'] ) {
+if ( 'webhook' === $addon['slug'] ) {
 	$advertising = true;
 }
 

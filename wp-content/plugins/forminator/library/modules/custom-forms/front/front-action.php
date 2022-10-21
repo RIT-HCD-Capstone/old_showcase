@@ -52,6 +52,20 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 */
 	private static $instance = null;
 
+	/**
+	 * Flag if form has upload field
+	 *
+	 * @var false
+	 */
+	private static $has_upload = false;
+
+	/**
+	 * Flag if form has payment fields
+	 *
+	 * @var false
+	 */
+	private static $has_payment = false;
+
 	public function __construct() {
 		parent::__construct();
 
@@ -59,6 +73,9 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		if ( ! empty( self::$entry_type ) ) {
 			add_action( 'wp_ajax_forminator_pp_create_order', array( $this, 'create_paypal_order' ) );
 			add_action( 'wp_ajax_nopriv_forminator_pp_create_order', array( $this, 'create_paypal_order' ) );
+
+			add_action( 'wp_ajax_forminator_multiple_file_upload', array( $this, 'multiple_file_upload' ) );
+			add_action( 'wp_ajax_nopriv_forminator_multiple_file_upload', array( $this, 'multiple_file_upload' ) );
 		}
 
 		add_action( 'wp_ajax_forminator_email_draft_link', array( $this, 'submit_email_draft_link' ) );
@@ -98,11 +115,16 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 
 			$amount = $data['form_data']['purchase_units'][0]['amount']['value'];
 			$data['form_data']['purchase_units'][0]['amount']['value'] = number_format( (float) $amount, 2, '.', '' );
+			$data = $this->get_temporary_country_code( $data );
 
 			$paypal = new Forminator_PayPal_Express();
 
 			$request = array_merge( array( 'intent' => 'CAPTURE' ), $data['form_data'] );
 			$request = apply_filters( 'forminator_paypal_create_order_request', $request, $data );
+
+			if ( empty( $request['payer'] ) ) {
+				unset( $request['payer'] );
+			}
 
 			$order = $paypal->create_order( $request, $data['mode'] );
 
@@ -147,6 +169,41 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	}
 
 	/**
+	 * Add a temporary country code based on currency to prevent errors.
+	 * Set country code to Austria if currency is Euro,
+	 * else remove the last letter from currency code to get temporary country code.
+	 *
+	 * This only prevents error from Paypal in case the country is not enabled/required in the Address field.
+	 * Users will be able to choose the country again in Paypal window or credit card form.
+	 *
+	 * @param array $data Data for paypal order
+	 *
+	 * @return array
+	 */
+	private function get_temporary_country_code( $data ) {
+		if ( isset( $data['form_data']['payer']['address'] ) ) {
+			if (
+				empty( $data['form_data']['payer']['address'] ) ||
+				(
+					isset( $data['form_data']['payer']['address']['country_code'] ) &&
+					empty( $data['form_data']['payer']['address']['country_code'] )
+				)
+			) {
+				$currency = $data['form_data']['purchase_units'][0]['amount']['currency_code'];
+				if ( 'EUR' === $currency ) {
+					$country_code = 'AT';
+				} else {
+					$country_code = substr( $currency, 0, -1 );
+				}
+
+				$data['form_data']['payer']['address']['country_code'] = $country_code;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Get default currency
 	 *
 	 * @return string
@@ -169,9 +226,14 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 */
 	private static function check_captcha() {
 		// Ignore captcha re-check if we have Stripe field.
-		if ( self::$is_draft || ! empty( self::$info['stripe_field'] ) ) {
+		if (
+			self::$is_draft ||
+			! empty( self::$info['stripe_field'] ) ||
+			self::is_in_hidden_fields( 'stripe-' )
+		) {
 			return;
 		}
+
 		$form_id           = self::$module_id;
 		$field_captcha_obj = Forminator_Core::get_field_object( 'captcha' );
 		if ( self::$info['captcha_settings'] && $field_captcha_obj ) {
@@ -204,6 +266,23 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 				throw new Exception( $valid_response[ $field_id ] );
 			}
 		}
+	}
+
+	/**
+	 * Check if field is in $hidden_fields array
+	 *
+	 * @param string $field Field slug excluding the iterator.
+	 *
+	 * @return bool
+	 */
+	private static function is_in_hidden_fields( $field ) {
+		foreach ( self::$hidden_fields as $val ) {
+			if ( false !== strpos( $val, $field ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -346,7 +425,8 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 */
 	private static function prepare_fields_info() {
 		self::check_fields_visibility();
-		self::$is_leads = isset( self::$module_settings['form-type'] ) && 'leads' === self::$module_settings['form-type'];
+		self::$is_leads    = isset( self::$module_settings['form-type'] ) && 'leads' === self::$module_settings['form-type'];
+		self::$has_payment = empty( self::$info['stripe_field'] ) && empty( self::$info['paypal_field'] ) ? false : true;
 
 		$fields = self::get_fields();
 		foreach ( $fields as $field_index => $field ) {
@@ -368,7 +448,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 *
 	 * @param int    $field_index Int key.
 	 * @param object $field Forminator_Form_Field_Model.
-	 * @return type
+	 * @return null
 	 */
 	private static function set_field_data_array( $field_index, $field ) {
 		$field_array = $field->to_formatted_array();
@@ -384,10 +464,37 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 
 		// is conditionally hidden or certain field types - go to next field.
 		if ( ! $field_id || in_array( $field_id, self::$hidden_fields, true )
-				|| in_array( $field_type, array( 'stripe', 'paypal', 'calculation' ), true ) ) {
+				|| in_array( $field_type, array( 'stripe', 'paypal', 'calculation', 'group' ), true ) ) {
 			return;
 		}
 
+		self::set_field_data( $field_id, $field_array, $field_index );
+		if ( empty( $field->parent_group ) ) {
+			return;
+		}
+
+		$cloned_suffixes = ! empty( self::$prepared_data[ $field->parent_group . '-copies' ] )
+				? self::$prepared_data[ $field->parent_group . '-copies' ] : array();
+
+		foreach ( $cloned_suffixes as $cloned_suffix ) {
+			$element_id                  = $field_array['element_id'] . '-' . $cloned_suffix;
+			$clonned_field               = $field_array;
+			$clonned_field['element_id'] = $element_id;
+
+			self::set_field_data( $element_id, $clonned_field, $field_index );
+		}
+	}
+
+	/**
+	 * Set field data
+	 *
+	 * @param string $field_id Field slug.
+	 * @param array  $field_array Field settings.
+	 * @param int    $field_index Field index.
+	 * @return null
+	 */
+	private static function set_field_data( $field_id, $field_array, $field_index ) {
+		$field_type     = $field_array['type'];
 		$form_field_obj = Forminator_Core::get_field_object( $field_type );
 		if ( isset( self::$prepared_data[ $field_id ] ) ) {
 			$field_data = self::$prepared_data[ $field_id ];
@@ -767,8 +874,10 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 				}
 			}
 
+			self::process_uploads( 'upload' );
 			self::handle_stripe( $entry );
 			self::handle_paypal( $entry );
+			self::process_uploads( 'transfer' );
 			self::maybe_create_post();
 
 			// save field_data_array with password field for registration forms.
@@ -863,6 +972,37 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	}
 
 	/**
+	 * Get post data fields and replace calculation fields placeholders in Custom Fields
+	 *
+	 * @return array
+	 */
+	private static function get_post_data_fields() {
+		// Get saved postdata fields data.
+		$postdata_fields = self::get_specific_field_data( 'postdata' );
+		if ( empty( $postdata_fields ) ) {
+			return;
+		}
+
+		// Replace calculation fields placeholders in Custom Fields.
+		foreach ( $postdata_fields as $field_key => $field ) {
+			if ( empty( $field['field_array']['options'] ) || ! is_array( $field['field_array']['options'] ) ) {
+				continue;
+			}
+			$custom_fields = wp_list_pluck( $field['field_array']['options'], 'value' );
+			foreach ( $custom_fields as $cf_key => $cf_value ) {
+				if ( strpos( $cf_value, '{calculation-' ) === false ) {
+					continue;
+				}
+				$value = forminator_replace_form_data( $cf_value, self::$module_object );
+
+				$postdata_fields[ $field_key ]['value']['post-custom'][ $cf_key ]['value'] = $value;
+			}
+		}
+
+		return $postdata_fields;
+	}
+
+	/**
 	 * Maybe create post
 	 */
 	private static function maybe_create_post() {
@@ -871,7 +1011,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		}
 
 		// Get saved postdata fields data and replace upload tags with uploaded data.
-		$postdata_fields = self::get_specific_field_data( 'postdata' );
+		$postdata_fields = self::get_post_data_fields();
 		if ( empty( $postdata_fields ) ) {
 			return;
 		}
@@ -1060,7 +1200,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 			// replace misc data vars with value.
 			$redirect_url                   = forminator_replace_variables( $redirect_url, self::$module_id );
 			$newtab                         = forminator_replace_variables( $newtab, self::$module_id );
-			self::$response_attrs['url']    = esc_url_raw( $redirect_url );
+			self::$response_attrs['url']    = $redirect_url;
 			self::$response_attrs['newtab'] = esc_html( $newtab );
 		}
 
@@ -1216,7 +1356,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	}
 
 	/**
-	 * Multiple File upload
+	 * Multiple File upload for ajax multi-upload
 	 */
 	public function multiple_file_upload() {
 		$this->init_properties();
@@ -1540,6 +1680,11 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 					}
 				}
 
+				$copies = array();
+				if ( ! empty( $field->parent_group ) && ! empty( self::$prepared_data[ $field->parent_group . '-copies' ] ) ) {
+					$copies = self::$prepared_data[ $field->parent_group . '-copies' ];
+				}
+
 				// - old build_pseudo_submitted_data //
 				$submitted_field_data = isset( self::$prepared_data[ $field_id ] ) ? self::$prepared_data[ $field_id ] : null;
 				$calculable_value     = $field_object::get_calculable_value( $submitted_field_data, $field_settings );
@@ -1566,9 +1711,20 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 						$visible_fields[ $field_id ] = $calculable_value === $field_object::FIELD_NOT_CALCULABLE ? $submitted_field_data : $calculable_value;
 
 						$visible_fields = self::prepare_subfields( $visible_fields, $field_settings, $field_object );
-						$method         = 'handle_' . $field_type . '_field';
+						if ( ! empty( $field->parent_group ) && ! empty( self::$prepared_data[ $field->parent_group . '-copies' ] ) ) {
+							foreach ( self::$prepared_data[ $field->parent_group . '-copies' ] as $g_prefix ) {
+								$visible_fields = self::prepare_subfields( $visible_fields, $field_settings, $field_object, $g_prefix );
+							}
+						}
+
+						$method = 'handle_' . $field_type . '_field';
 						if ( method_exists( self::class, $method ) ) {
 							self::$method( $field_settings );
+							foreach ( $copies as $slug ) {
+								$cloned_field_settings                = $field_settings;
+								$cloned_field_settings['element_id'] .= '-' . $slug;
+								self::$method( $cloned_field_settings );
+							}
 						}
 					}
 					continue;
@@ -1598,6 +1754,13 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 				);
 
 				self::$info['field_data_array'][] = $calculation_entry_data;
+
+				foreach ( $copies as $slug ) {
+					self::$prepared_data[ $field_id . '-' . $slug ] = $result;
+					$cloned_calculation_entry_data                  = $calculation_entry_data;
+					$cloned_calculation_entry_data['name']         .= '-' . $slug;
+					self::$info['field_data_array'][]               = $cloned_calculation_entry_data;
+				}
 			}
 		} while ( $unspecified && $previous_unspecified !== $unspecified );
 
@@ -1655,9 +1818,11 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 	 * @param array  $visible_fields Visible fields.
 	 * @param array  $field_settings Field settings.
 	 * @param object $field_object Field object.
+	 * @param string $group_prefix Group prefix.
 	 */
-	private static function prepare_subfields( $visible_fields, $field_settings, $field_object ) {
-		$field_id = Forminator_Field::get_property( 'element_id', $field_settings );
+	private static function prepare_subfields( $visible_fields, $field_settings, $field_object, $group_prefix = '' ) {
+		$base_id  = Forminator_Field::get_property( 'element_id', $field_settings );
+		$field_id = $base_id . ( $group_prefix ? '-' . $group_prefix : '' );
 		if ( isset( self::$prepared_data[ $field_id ] ) ) {
 			return $visible_fields;
 		}
@@ -1665,7 +1830,7 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		$field_suffix = Forminator_Form_Entry_Model::field_suffix();
 
 		foreach ( $field_suffix as $suffix ) {
-			$mod_field_id = $field_id . '-' . $suffix;
+			$mod_field_id = $base_id . '-' . $suffix . ( $group_prefix ? '-' . $group_prefix : '' );
 			if ( isset( self::$prepared_data[ $mod_field_id ] ) ) {
 				// Add subfield to $visible_fields array.
 				$visible_fields[ $mod_field_id ]             = self::$prepared_data[ $mod_field_id ];
@@ -1717,7 +1882,10 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 				$value = $visible_fields[ $field_id ];
 			}
 
-			$converted_formula = str_replace( $full_matches[ $key ], '(' . ( $value ) . ')', $converted_formula );
+			// Replace only the first occurence.
+			$find_str          = $full_matches[ $key ];
+			$replace_with      = '(' . ( $value ) . ')';
+			$converted_formula = implode( $replace_with, explode( $find_str, $converted_formula, 2 ) );
 		}
 
 		// - old get_calculated_value //
@@ -1852,45 +2020,108 @@ class Forminator_CForm_Front_Action extends Forminator_Front_Action {
 		$upload_method = Forminator_Field::get_property( 'upload-method', $field_settings, 'ajax' );
 		$field_id      = Forminator_Field::get_property( 'element_id', $field_settings );
 
-		$form_field_obj   = Forminator_Core::get_field_object( 'upload' );
 		$form_upload_data = isset( self::$prepared_data['forminator-multifile-hidden'] )
-			? json_decode( stripslashes( self::$prepared_data['forminator-multifile-hidden'] ), true )
+			? self::$prepared_data['forminator-multifile-hidden']
 			: array();
 
-		/** @var  Forminator_Upload $form_field_obj */
 		if ( 'multiple' === $file_type && 'ajax' === $upload_method ) {
-			$upload_multiple_data = isset( $form_upload_data[ $field_id ] ) ? $form_upload_data[ $field_id ] : array();
-			$upload_data          = $form_field_obj->handle_ajax_multifile_upload( $upload_multiple_data, $field_settings );
-		} elseif ( 'multiple' === $file_type && 'submission' === $upload_method ) {
-			$upload_multiple_data = isset( $_FILES[ $field_id ] ) ? $_FILES[ $field_id ] : array();
-			$upload_data          = $form_field_obj->handle_submission_multifile_upload( $field_settings, $upload_multiple_data );
+			$upload_data = isset( $form_upload_data[ $field_id ] ) ? $form_upload_data[ $field_id ] : array();
 		} else {
-			$upload_data = $form_field_obj->handle_file_upload( $field_settings );
+			$upload_data = isset( $_FILES[ $field_id ] ) ? $_FILES[ $field_id ] : array();
 		}
-		if ( isset( $upload_data['success'] ) && $upload_data['success'] ) {
+
+		if ( ! empty( $upload_data ) ) {
+			self::$has_upload                         = true;
 			self::$prepared_data[ $field_id ]['file'] = $upload_data;
-
-			// If upload is successful, add the upload data to custom field if tag is present.
-			if ( ! empty( self::$info['upload_in_customfield'] ) ) {
-				$file_url = $upload_data['file_url'];
-				if ( 'multiple' === $file_type ) {
-					$file_url = implode( ', ', $upload_data['file_url'] );
-				}
-
-				foreach ( self::$info['upload_in_customfield'] as $cf_key => $cf ) {
-					if ( $field_id === $cf['upload_id'] ) {
-						self::$info['upload_in_customfield'][ $cf_key ]['uploads'] = $file_url;
-					}
-				}
-			}
-		} elseif ( isset( $upload_data['success'] ) && false === $upload_data['success'] ) {
-			$error = isset( $upload_data['message'] ) ? $upload_data['message'] : self::get_invalid_form_message();
-
-			self::$submit_errors[][ $field_id ] = $error;
 		} else {
-			// no file uploaded for this field_id.
 			self::$prepared_data[ $field_id ] = '';
 		}
+	}
+
+	/**
+	 * Upload or transfer uploads
+	 * For single and multiple-on-submit uploads,
+	 * we upload directly when form doesnt have any payment fields.
+	 * If form has payment fields, uploads go to forminator_temp folder first
+	 * so that when there is an error, the uploads in the forminator_temp folder
+	 * can be cleared after 24hrs.
+	 * @param string $mode - upload/transfer
+	 */
+	private static function process_uploads( $mode ) {
+		if ( self::$is_draft || ! self::$has_upload ) {
+			return;
+		}
+
+		$fields = self::$info['field_data_array'];
+		foreach ( $fields as $key => $field ) {
+			if ( ! isset( $field['field_type'] ) || 'upload' !== $field['field_type'] ) {
+				continue;
+			}
+
+			$field_id       = $field['name'];
+			$field_settings = $field['field_array'];
+			$file_type      = Forminator_Field::get_property( 'file-type', $field_settings, 'single' );
+			$upload_method  = Forminator_Field::get_property( 'upload-method', $field_settings, 'ajax' );
+			$form_field_obj = Forminator_Core::get_field_object( 'upload' );
+
+			if ( 'upload' === $mode ) {
+
+				if ( 'multiple' === $file_type && 'ajax' === $upload_method ) {
+					continue;
+				} elseif ( 'multiple' === $file_type && 'submission' === $upload_method ) {
+					$form_upload_data = isset( $_FILES[ $field_id ] ) ? $_FILES[ $field_id ] : array();
+					$upload_data      = $form_field_obj->handle_submission_multifile_upload( $field_settings, $form_upload_data, self::$has_payment );
+				} elseif ( 'single' === $file_type ) {
+					$upload_data = $form_field_obj->handle_file_upload(
+						$field_settings,
+						array(),
+						self::$has_payment ? 'upload' : 'submit'
+					);
+				}
+
+			} elseif ( 'transfer' === $mode ) {
+				$form_upload_data = $field['value'];
+
+				if ( 'multiple' === $file_type && 'ajax' === $upload_method ) {
+					$upload_data = $form_field_obj->handle_ajax_multifile_upload( $form_upload_data, $field_settings );
+				} elseif (
+					self::$has_payment &&
+					( 'single' === $file_type || ( 'multiple' === $file_type && 'ajax' !== $upload_method ) )
+				) {
+					$upload_data = $form_field_obj->transfer_upload( $form_upload_data, $field_settings );
+				}
+			}
+
+			if ( isset( $upload_data['success'] ) && $upload_data['success'] ) {
+				self::$prepared_data[ $field_id ]['file']                = $upload_data;
+				self::$info['field_data_array'][ $key ]['value']['file'] = $upload_data;
+
+				if ( 'transfer' === $mode ) {
+					// If upload is successful, add the upload data to custom field if tag is present.
+					if ( ! empty( self::$info['upload_in_customfield'] ) ) {
+						$file_url = $upload_data['file_url'];
+						if ( 'multiple' === $file_type ) {
+							$file_url = implode( ', ', $upload_data['file_url'] );
+						}
+
+						foreach ( self::$info['upload_in_customfield'] as $cf_key => $cf ) {
+							if ( $field_id === $cf['upload_id'] ) {
+								self::$info['upload_in_customfield'][ $cf_key ]['uploads'] = $file_url;
+							}
+						}
+					}
+				}
+			} elseif ( isset( $upload_data['success'] ) && false === $upload_data['success'] ) {
+				$error = isset( $upload_data['message'] ) ? $upload_data['message'] : self::get_invalid_form_message();
+
+				self::$submit_errors[][ $field_id ] = $error;
+			} else {
+				// no file uploaded for this field_id.
+				self::$prepared_data[ $field_id ] = '';
+			}
+		}
+
+		self::check_errors();
 	}
 
 	/**

@@ -196,8 +196,19 @@ abstract class Forminator_Mail {
 		if ( ! empty( $recipients ) ) {
 			foreach ( $recipients as $key => $recipient ) {
 				$recipient = $this->get_recipient( $recipient, $module, $entry, $lead_model );
-				if ( is_email( $recipient ) ) {
-					$email[] = $recipient;
+				if( false !== strpos( $recipient, ',' ) ) {
+					$emails = array_map( 'trim', explode( ',', $recipient ) );
+					if( ! empty( $emails ) ) {
+						foreach ( $emails as $email_key => $email_recipient ) {
+							if ( is_email( $email_recipient ) ) {
+								$email[] = $email_recipient;
+							}
+						}
+					}
+				} else {
+					if ( is_email( $recipient ) ) {
+						$email[] = $recipient;
+					}
 				}
 			}
 		}

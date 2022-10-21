@@ -44,71 +44,87 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 
 		echo $this->lead_wrapper_start(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$version     = FORMINATOR_VERSION;
-		$module_type = 'quiz';
+		if ( $this->model->form_is_visible( $is_preview ) ) {
+			$version     = FORMINATOR_VERSION;
+			$module_type = 'quiz';
 
-		if ( $data && ! empty( $data ) ) {
-			// New form, we have to update the form id.
-			$has_id = filter_var( $id, FILTER_VALIDATE_BOOLEAN );
+			if ( $data && ! empty( $data ) ) {
+				// New form, we have to update the form id.
+				$has_id = filter_var( $id, FILTER_VALIDATE_BOOLEAN );
 
-			if ( ! $has_id && isset( $data['settings']['form_id'] ) ) {
-				$id = $data['settings']['form_id'];
-			}
-
-			$this->model = Forminator_Quiz_Model::model()->load_preview( $id, $data );
-			// its preview!
-			$this->model->id = $id;
-
-			// If this module haven't been saved, the preview will be of the wrong module.
-			// if ( ! isset( $data['settings']['quiz_title'] ) || $data['settings']['quiz_title'] !== $this->model->settings['quiz_title'] ) {.
-			// echo $this->message_save_to_preview();.
-
-			// return;.
-			// }
-		}
-
-		$this->maybe_define_cache_constants();
-
-		// TODO: make preview and ajax load working similar.
-		$is_ajax_load = $this->is_ajax_load( $is_preview );
-
-		// Load assets conditionally.
-		$assets = new Forminator_Assets_Enqueue_Quiz( $this->model, $is_ajax_load );
-		$assets->enqueue_styles();
-		$assets->enqueue_scripts();
-
-		if ( $is_ajax_load ) {
-			$this->generate_render_id( $id );
-			$this->get_form_placeholder( esc_attr( $id ), true );
-
-			return;
-		}
-
-		if ( $this->is_displayable( $is_preview ) ) {
-
-			$this->generate_render_id( $id );
-
-			echo $this->get_html( $hide, $is_preview ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-			if ( is_admin() || $is_preview ) {
-				$this->print_styles();
-			}
-
-			$google_fonts = $this->get_google_fonts();
-
-			foreach ( $google_fonts as $font_name ) {
-				if ( ! empty( $font_name ) ) {
-					wp_enqueue_style( 'forminator-font-' . sanitize_title( $font_name ), 'https://fonts.googleapis.com/css?family=' . $font_name, array(), '1.0' );
+				if ( ! $has_id && isset( $data['settings']['form_id'] ) ) {
+					$id = $data['settings']['form_id'];
 				}
+
+				$this->model = Forminator_Quiz_Model::model()->load_preview( $id, $data );
+				// its preview!
+				$this->model->id = $id;
+
+				// If this module haven't been saved, the preview will be of the wrong module.
+				// if ( ! isset( $data['settings']['quiz_title'] ) || $data['settings']['quiz_title'] !== $this->model->settings['quiz_title'] ) {.
+				// echo $this->message_save_to_preview();.
+
+				// return;.
+				// }
 			}
 
-			add_action( 'wp_footer', array( $this, 'forminator_render_front_scripts' ), 9999 );
+			$this->maybe_define_cache_constants();
+
+			// TODO: make preview and ajax load working similar.
+			$is_ajax_load = $this->is_ajax_load( $is_preview );
+
+			// Load assets conditionally.
+			$assets = new Forminator_Assets_Enqueue_Quiz( $this->model, $is_ajax_load );
+			$assets->enqueue_styles();
+			$assets->enqueue_scripts();
+
+			if ( $is_ajax_load ) {
+				$this->generate_render_id( $id );
+				$this->get_form_placeholder( esc_attr( $id ), true );
+
+				return;
+			}
+
+			if ( $this->is_displayable( $is_preview ) ) {
+
+				$this->generate_render_id( $id );
+
+				echo $this->get_html( $hide, $is_preview ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+				if ( is_admin() || $is_preview ) {
+					$this->print_styles();
+				}
+
+				$google_fonts = $this->get_google_fonts();
+
+				foreach ( $google_fonts as $font_name ) {
+					if ( ! empty( $font_name ) ) {
+						wp_enqueue_style( 'forminator-font-' . sanitize_title( $font_name ), 'https://fonts.bunny.net/css?family=' . $font_name, array(), '1.0' );
+					}
+				}
+
+				add_action( 'wp_footer', array( $this, 'forminator_render_front_scripts' ), 9999 );
+			}
+
+			if ( $this->has_lead() && ! $is_preview ) {
+				$custom_form_view = Forminator_CForm_Front::get_instance();
+				$custom_form_view->display( $this->get_leads_id(), $is_preview, $data, true, $this->model );
+			}
+
+		} else {
+			$form_settings = $this->get_form_settings();
+			?>
+            <div class="forminator-quiz">
+				<?php
+				if ( isset( $form_settings['expire_message'] ) && '' !== $form_settings['expire_message'] ) {
+					$message = $form_settings['expire_message'];
+					?>
+                    <label class="forminator-label--info"><span><?php echo esc_html( $message ); ?></span></label>
+				<?php } ?>
+            </div>
+			<?php
 		}
 
-		if ( $this->has_lead() && ! $is_preview ) {
-			$custom_form_view = Forminator_CForm_Front::get_instance();
-			$custom_form_view->display( $this->get_leads_id(), $is_preview, $data, true, $this->model );
-		}
 		echo wp_kses_post( $this->lead_wrapper_end() );
 
 	}
@@ -1075,7 +1091,7 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 		foreach ( $google_fonts as $font_name ) {
 			if ( ! empty( $font_name ) ) {
 				$this->styles[ 'forminator-font-' . sanitize_title( $font_name ) ] =
-					array( 'src' => 'https://fonts.googleapis.com/css?family=' . $font_name );
+					array( 'src' => 'https://fonts.bunny.net/css?family=' . $font_name );
 			}
 		}
 	}

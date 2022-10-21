@@ -32,7 +32,7 @@
 	<div class="sui-box-footer" style="padding-top: 0; border-top: 0;">
 
 		<a
-			href="https://wpmudev.com/project/forminator-pro/?utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_dashboard_upsellwidget_button"
+			href="<?php echo esc_url( forminator_get_link( 'plugin', 'forminator_dashboard_upsellwidget_button' ) ); ?>"
 			class="sui-button sui-button-purple"
 			target="_blank"
 		>

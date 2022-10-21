@@ -1,13 +1,13 @@
 === Forminator - Contact Form, Payment Form & Custom Form Builder ===
 Plugin Name: Forminator - Contact Form, Payment Form & Custom Form Builder
-Version: 1.17.2
+Version: 1.19.0
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV
 Tags: forms, contact form, wordpress form plugin, payment form, custom form, form builder, paypal form wordpress, form maker, quiz, quiz builder, order form, stripe payments, paypal payments, stripe form, paypal form
 Requires at least: 5.2
 Tested up to: 6.0
-Stable tag: 1.17.2
+Stable tag: 1.19.0
 Requires PHP: 5.6.20
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -210,6 +210,113 @@ Find out all you need to know by checking out our API documentation [here](https
 9. Allow simple drag and drop multi-file uploads for users.
 
 == Changelog ==
+
+= 1.19.0 ( 2022-10-20 ) =
+
+- New: Field group
+- New: Repeater for field group
+- Improvement: Replace Google fonts with Bunny fonts for GDPR compliance
+- Improvement: Change "Setup" to "Set Up" in all modal windows
+- Fix: When high contrast mode is enabled, the dropdown form selector displays as usual
+- Fix: Bulk Actions do not have Publish/Unpublish options
+- Fix: Field value is empty when the condition includes a checkbox with capital letters
+- Fix: Recaptcha issue with Complianz plugin
+- Fix: Issues with dropdown values
+- Fix: Issues with quizzes on mobile
+- Fix: Poll Result does not display after submission
+- Fix: Some languages have misaligned fields
+- Fix: Accessibility issue in Forminator Export Area
+- Fix: Windows high contrast mode accessibility issue
+- Fix: Signature field breaks PayPal
+- Fix: UI issues when high contrast mode is enabled
+- Fix: Receive multiple submissions when clicking the submit button several times
+- Fix: Emails added in the email notification tab are deleted when Save and Continue is disabled
+- Fix: CSV export file size is 3 bytes despite having entries
+
+= 1.18.2 ( 2022-09-30 ) =
+
+- Improvement: Membership detection
+
+= 1.18.1 ( 2022-09-15 ) =
+
+- New: Forminator Reports to help with tracking performance of forms, polls, and quizzes
+- Add: Admin email Macro {admin_email}
+- Improvement: Form fields now have a unique ID. This unique ID is also added as data-uid attribute to the form tag, so If you currently have scripts that use field ID's, these will need to be updated now
+- Improvement: Convert Zapier integration to Webhook integration
+- Improvement: Additional appearance settings for Input Border Radius and Hover Colours
+- Improvement: Replace Select placeholder default "null" to "Search"
+- Fix: Checkboxes and selects do not save multiple selections separately
+- Fix: A float cannot be used as a number if inline validation is disabled
+- Fix: The time picker checks on time limits in real-time
+- Fix: The checkbox fields aren't showing up as checked
+- Fix: Conditions apply when the visibility rules are set to Hidden
+- Fix: Validation of email fields is not disabled
+- Fix: Safari does not support e-signature
+- Fix: Conditions not working for the address field
+- Fix: Can't clear date limits for the Datepicker field
+- Fix: Error when Site Registration is enabled on the registration form
+- Fix: Issue with ACF and file upload field in the registration form
+- Fix: Going out of range for the number field when using the up/down arrow keys
+- Fix: Selecting a default future date does not show the correct date for specific date formats
+- Fix: Visibility conditions don't work when adding the Stripe field and not connecting it
+- Fix: A calculation field's 'hidden' setting is overridden if a 'visibility' condition has been set previously and not deleted
+- Fix: The PayPal and Stripe fields do not appear in Divi's popup
+- Fix: Issue with Stripe 3D secure payment
+- Fix: Load form Ajax conflict with SEOpress plugin
+- Fix: the e-signature is not saved after submission
+- Fix: PayPal displays an error when two different forms with PayPal buttons are added to the same page
+- Fix: Max and Min Limits are not working when setting a number field as required
+- Fix: Address field does not work with query parameters
+- Fix: Stripe field doesn't exist error
+- Fix: Values for select fields are not saved when visibility is dependent on a checkbox
+- Fix: Error when input field visibility is dependent on a select box
+- Fix: Limit validation fails for the Currency field when using some formatting separators
+- Fix: Form Email Routing does not work with recipients added from Select or Radio buttons
+- Fix: Visibility conditions fail for a Textarea field dependant on Currency and Calculations fields
+- Fix: Failing to validate numeric fields in some cases
+- Fix: The country flags are broken in the phone field on mobile devices
+- Fix: The country code does not appear for the default country
+- Fix: Symbols do not work with Stripe metadata
+- Fix:  Checkbox pre-selected option is removed when its visibility is dependent on another field
+- Fix: The year select dropdown displays the current year instead of "Select year" when the Datepicker field type is set to dropdown and the Year Range 'To' filed is set to a future date
+- Fix: Stripe field does not work with visibility conditions
+- Fix: Removing a custom error message doesn't revert to the default one
+- Fix: The pre-populate function only works if the query variable is after the selected option
+- Fix: Comma or Separators in Fields cause some problems
+- Fix: Stripe Font is not Displaying Correctly
+- Fix: Stripe failing with 0 balance form
+- Fix: No value is passed when the calculation field is mapped to a custom field and submitted
+- Fix: Error when having null values for hidden fields set as required
+- Fix: Conflict with Ultimate Member plugin
+- Fix: Textarea field label issue with RTL
+- Fix: The fields are not prefilled via the URL query when setting the Name field to Multiple
+- Fix: Number and Text fields do not display 0 on the front end when 0 is set as the default value
+- Fix: Some fields are cut off when adding a Page Break
+- Fix: The Select Field requires a placeholder if set as required
+- Fix: Names and values of select/radio fields do not sync
+- Fix: Recaptcha does not work in Divi's popup
+- Fix:  Removing spaces before a tag in the Text field description
+- Fix: Returning an empty array or WP_Error object in the get_forms() method of the Forminator API
+- Fix: HTML Validator posts errors coming from Forminator
+- Fix: Upload file issue on mobile applications
+- Fix: The description field in HubSpot does not work
+- Fix: Fields are missing in email notifications
+- Fix: The pagination progress bar and next button disappear from the form
+- Fix: Calculation field decimal separator causes an infinite loop in JS
+- Fix: Posts are created when the inline validation option is disabled
+- Fix: Form is not submitting with Stripe field in the same row with other fields
+- Fix: Trello integration does not add cards
+- Fix: Browser console error when adding the same form twice on the same page
+- Fix: PayPal does not work when Pre-fill Billing Details is disabled
+- Fix: Incorrect Country flag showing up in Phone field
+- Fix: PayPal module doesn't show up when pagination is enabled
+- Fix: Recaptcha and hCaptcha verification fail if Stripe field is hidden
+- Fix: Forminator will only add the associated ticket to Hubspot If the contact belongs to a list
+- Fix: Quiz ActiveCampaign integration issue
+- Fix: Active Campaign integration doesn't show the correct fields
+- Fix: Mailchimp submission error with radio type
+- Fix: Consent filed label always shows an asterisk even if it is not required
+- Fix: The number field in the stripe description create a fatal error
 
 = 1.17.2 ( 2022-07-27 ) =
 

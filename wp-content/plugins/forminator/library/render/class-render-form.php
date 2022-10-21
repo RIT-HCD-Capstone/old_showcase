@@ -139,8 +139,8 @@ abstract class Forminator_Render_Form {
 	 * @since 1.0
 	 */
 	public function __construct() {
-		self::$uid = uniqid();
-		$this->is_admin = is_admin();
+		self::$uid      = uniqid();
+		$this->is_admin = is_admin() && ! wp_doing_ajax() || defined( 'REST_REQUEST' ) && REST_REQUEST;
 		$this->init();
 	}
 
@@ -206,20 +206,20 @@ abstract class Forminator_Render_Form {
 	 * Generate render_id for current form
 	 * represented as integer, start from 0
 	 *
-	 * @param int $id Module id.
+	 * @param int  $id Module id.
 	 * @param ?int $forced_render_id Optional. The render id to force for module id.
 	 */
 	public function generate_render_id( $id, $forced_render_id = null ) {
 		// set render_id for mapping Front End with its form.
-        if ( ! is_numeric( $forced_render_id ) ) {
-	        if ( ! isset( self::$render_ids[ $id ] ) ) {
-		        self::$render_ids[ $id ] = 0;
-	        } else {
-		        self::$render_ids[ $id ] ++;
-	        }
-        } else {
-	        self::$render_ids[ $id ] = intval( $forced_render_id );
-        }
+		if ( ! is_numeric( $forced_render_id ) ) {
+			if ( ! isset( self::$render_ids[ $id ] ) ) {
+				self::$render_ids[ $id ] = 0;
+			} else {
+				self::$render_ids[ $id ] ++;
+			}
+		} else {
+			self::$render_ids[ $id ] = intval( $forced_render_id );
+		}
 
 		// Add other plugin classes here that causes additional render_id.
 		if ( self::$render_ids[ $id ] > 0 && class_exists( 'DiviOverlaysCore' ) ) {
@@ -265,10 +265,10 @@ abstract class Forminator_Render_Form {
 		$html          = '';
 		$forminator_ui = '';
 
-		$data_design 	   = '';
-		$data_grid   	   = '';
-		$draft_page  	   = '';
-		$maybe_draft 	   = '';
+		$data_design = '';
+		$data_grid   = '';
+		$draft_page  = '';
+		$maybe_draft = '';
 
 		$form_type         = $this->get_form_type();
 		$form_fields       = $this->get_fields();
@@ -279,7 +279,7 @@ abstract class Forminator_Render_Form {
 		$track_views       = $this->can_track_views();
 		$fields_type_class = $this->get_fields_type_class();
 		$design_class      = $this->get_form_design_class();
-		$form_uid      	   = 'data-uid="' . esc_attr( self::$uid ) . '"';
+		$form_uid          = 'data-uid="' . esc_attr( self::$uid ) . '"';
 
 		// If rendered on Preview, the array is empty and sometimes PHP notices show up.
 		if ( $this->is_admin && ( empty( self::$render_ids ) || ! $id ) ) {
@@ -302,15 +302,15 @@ abstract class Forminator_Render_Form {
 
 		if ( 'custom-form' === $form_type ) {
 			$is_draft_enabled = isset( $form_settings['use_save_and_continue'] ) ? filter_var( $form_settings['use_save_and_continue'], FILTER_VALIDATE_BOOLEAN ) : false;
-			$maybe_draft 	  = $this->set_draft_data( $is_draft_enabled );
-			$data_grid   	  = 'data-grid="' . $this->get_fields_style() . '"';
+			$maybe_draft      = $this->set_draft_data( $is_draft_enabled );
+			$data_grid        = 'data-grid="' . $this->get_fields_style() . '"';
 
 			if ( $is_draft_enabled ) {
 				$extra_classes .= ' draft-enabled';
 			}
 
 			if ( $this->has_pagination() ) {
-				$draft_page	= $this->get_draft_page();
+				$draft_page = $this->get_draft_page();
 			}
 		}
 
@@ -455,7 +455,7 @@ abstract class Forminator_Render_Form {
 			$form_view = Forminator_Form_Views_Model::get_instance();
 			$post_id   = $this->get_post_id();
 
-			if ( ! $this->is_admin && ! current_user_can( 'edit_pages' ) ) {
+			if ( ! $this->is_admin ) {
 				$form_view->save_view( $id, $post_id, '' );
 			}
 		}
@@ -517,7 +517,7 @@ abstract class Forminator_Render_Form {
 		$form_uid  = 'data-uid="' . esc_attr( self::$uid ) . '"';
 
 		$html .= sprintf(
-			'<form id="forminator-module-%s" class="forminator-%s forminator-%s-%s" action="" method="post" data-forminator-render="%s" %s>',
+			'<form id="forminator-module-%s" class="forminator-%s forminator-%s-%s" method="post" data-forminator-render="%s" %s>',
 			$id,
 			$form_type,
 			$form_type,
@@ -757,7 +757,7 @@ abstract class Forminator_Render_Form {
 		$class = 'Forminator_' . forminator_get_prefix( static::$module_slug, '', true ) . '_Model';
 
 		if ( $this->model instanceof $class && ( $is_preview || $class::STATUS_PUBLISH === $status ) ) {
-			//$this->generate_render_id( $id );
+			// $this->generate_render_id( $id );
 
 			return true;
 		} else {
@@ -1504,13 +1504,13 @@ abstract class Forminator_Render_Form {
 	 * @param bool  $hide
 	 * @param array $last_submit_data
 	 * @param array $extra extra config to display.
-	 * @param int $quiz_id
-	 * @param int $render_id Optional. The render id to force for module.
+	 * @param int   $quiz_id
+	 * @param int   $render_id Optional. The render id to force for module.
 	 *
 	 * @return array
 	 */
 	public function ajax_display( $id, $is_preview = false, $data = false, $hide = true, $last_submit_data = array(),
-        $extra = array(), $quiz_id = 0, $render_id = 0 ) {
+		$extra = array(), $quiz_id = 0, $render_id = 0 ) {
 		// The first module and preview for it.
 		$id = isset( $id ) ? intval( $id ) : null;
 
@@ -1612,7 +1612,7 @@ abstract class Forminator_Render_Form {
 			$form_view = Forminator_Form_Views_Model::get_instance();
 			$post_id   = $this->get_post_id();
 
-			if ( ! $this->is_admin && ! current_user_can( 'edit_pages' ) ) {
+			if ( ! $this->is_admin ) {
 				$form_view->save_view( $id, $post_id, '' );
 			}
 		}
@@ -1758,23 +1758,23 @@ abstract class Forminator_Render_Form {
 	}
 
 	/**
-     * Returns the render id of a given module.
-     *
-     * @since 1.15.12
-     *
+	 * Returns the render id of a given module.
+	 *
+	 * @since 1.15.12
+	 *
 	 * @param int $module_id Optional. Module id.
 	 *
 	 * @return int The render id.
 	 */
-    public static function get_render_id( $module_id = null ) {
-        if ( is_null( $module_id ) ) {
-            return 0;
-        }
+	public static function get_render_id( $module_id = null ) {
+		if ( is_null( $module_id ) ) {
+			return 0;
+		}
 
-	    $module_id = intval( $module_id );
+		$module_id = intval( $module_id );
 
-        return isset( self::$render_ids[ $module_id ] ) ? self::$render_ids[ $module_id ] : 0;
-    }
+		return isset( self::$render_ids[ $module_id ] ) ? self::$render_ids[ $module_id ] : 0;
+	}
 
 	/**
 	 * Returns all render ids of runtime.
@@ -1799,7 +1799,7 @@ abstract class Forminator_Render_Form {
 			return;
 		}
 
-		$this->draft_id = isset( $_REQUEST['draft'] ) ? filter_var( $_REQUEST['draft'], FILTER_DEFAULT ) : 0 ;
+		$this->draft_id = isset( $_REQUEST['draft'] ) ? filter_var( $_REQUEST['draft'], FILTER_DEFAULT ) : 0;
 		if ( empty( $this->draft_id ) ) {
 			return;
 		}
@@ -1836,9 +1836,9 @@ abstract class Forminator_Render_Form {
 	 *
 	 * @since 1.17.0
 	 *
-	 * @param $module_id	int
-	 * @param $module_type	string
-	 * @param $is_preview	bool
+	 * @param $module_id    int
+	 * @param $module_type  string
+	 * @param $is_preview   bool
 	 *
 	 * @return string
 	 */
@@ -1854,16 +1854,16 @@ abstract class Forminator_Render_Form {
 
 		switch ( $module_type ) {
 			case 'quiz':
-				$wizard_page = 'forminator-' . $this->model->quiz_type .'-wizard';
-				$text = __( 'Edit quiz', 'forminator' );
+				$wizard_page = 'forminator-' . $this->model->quiz_type . '-wizard';
+				$text        = __( 'Edit quiz', 'forminator' );
 				break;
 			case 'poll':
 				$wizard_page = 'forminator-poll-wizard';
-				$text = __( 'Edit poll', 'forminator' );
+				$text        = __( 'Edit poll', 'forminator' );
 				break;
 			default:
 				$wizard_page = 'forminator-cform-wizard';
-				$text = __( 'Edit form', 'forminator' );
+				$text        = __( 'Edit form', 'forminator' );
 				break;
 		}
 		$link = admin_url( 'admin.php?page=' . $wizard_page . '&id=' . $module_id );

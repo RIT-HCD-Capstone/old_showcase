@@ -42,7 +42,7 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 		if ( $full_mode ) {
 			$text = forminator_replace_form_data( $settings[ $option_name ], $module, $entry, true );
 		} else {
-			$text = forminator_replace_form_data( $settings[ $option_name ], null, null, true );
+			$text = forminator_replace_form_data( $settings[ $option_name ] );
 		}
 		$text = forminator_replace_variables( $text, $module->id, $entry );
 		$text = forminator_replace_custom_form_data( $text, $module, $entry, $this->skip_custom_form_data['admin'] );
@@ -68,7 +68,9 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 					! in_array( $field_id, Forminator_CForm_Front_Action::$hidden_fields, true ) ) {
 				$field_slug = isset( $entry->meta_data[ $form_field->slug ] ) ? $entry->meta_data[ $form_field->slug ] : '';
 				if ( ! empty( $field_slug ) && ! empty( $field_slug['value']['file'] ) ) {
-					$email_files = isset( $field_slug['value']['file'] ) ? $field_slug['value']['file']['file_path'] : array();
+					$email_files = isset( $field_slug['value']['file'] ) && isset( $field_slug['value']['file']['file_path'] )
+						? $field_slug['value']['file']['file_path']
+						: array();
 					$files[]     = is_array( $email_files ) ? $email_files : array( $email_files );
 				}
 			}
@@ -107,6 +109,7 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 		}
 
 		$files = $this->get_files( $custom_form, $entry );
+		$entry = $this->maybe_remove_stripe_quantity( $entry );
 
 		/**
 		 * Message data filter
@@ -233,7 +236,7 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 	 */
 	private function prepare_headers( $notification, $custom_form, $data, $entry ) {
 
-		$from_name = $this->replace_placeholders( $notification, 'from-name', $custom_form, $entry );
+		$from_name = $this->replace_placeholders( $notification, 'from-name', $custom_form, $entry, true );
 		if ( empty( $from_name ) ) {
 			$from_name = $this->sender_name;
 		}
@@ -595,5 +598,31 @@ class Forminator_CForm_Front_Mail extends Forminator_Mail {
 	 */
 	public function is_routing( $condition, $module ) {
 		return Forminator_Field::is_condition_matched( $condition );
+	}
+
+	/**
+	 * Remove Stripe quantity if payment_type is single/One time
+	 *
+	 * @since 1.19.0
+	 *
+	 * @param $entry Forminator_Form_Entry_Model
+	 *
+	 * @return Forminator_Form_Entry_Model
+	 */
+	public function maybe_remove_stripe_quantity( $entry ) {
+		if ( isset( $entry->meta_data ) ) {
+			foreach ( $entry->meta_data as $key => $val ) {
+				if ( 0 === strpos( $key, 'stripe-' ) && ! empty( $val ) && ! empty( $val['value'] ) ) {
+					if (
+						isset( $val['value']['payment_type'] ) &&
+						strtolower( __( 'One Time', 'forminator' ) ) === strtolower( $val['value']['payment_type'] )
+					) {
+						unset( $entry->meta_data[ $key ]['value']['quantity'] );
+					}
+				}
+			}
+		}
+
+		return $entry;
 	}
 }

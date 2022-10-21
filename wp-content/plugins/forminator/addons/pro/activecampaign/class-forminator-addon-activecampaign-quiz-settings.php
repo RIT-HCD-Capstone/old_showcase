@@ -70,7 +70,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 	}
 
 	/**
-	 * Setup Connection Name
+	 * Set up Connection Name
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -170,7 +170,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 	}
 
 	/**
-	 * Setup Contact List
+	 * Set up Contact List
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -312,7 +312,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 
 
 	/**
-	 * Setup fields map
+	 * Set up fields map
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -340,12 +340,11 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 			if ( 'email' === $form_field['type'] ) {
 				$email_fields[] = $form_field;
 			}
-
 		}
 
 		$quiz_questions = $this->get_quiz_fields();
 		$quiz_fields    = array(
-			'quiz-name'       => __( 'Quiz Name', 'forminator' ),
+			'quiz-name' => __( 'Quiz Name', 'forminator' ),
 		);
 		foreach ( $quiz_questions as $quiz_question ) {
 			// collect element ids.
@@ -355,10 +354,10 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
 			$quiz_fields['correct-answers'] = __( 'Correct Answers', 'forminator' );
 			$quiz_fields['total-answers']   = __( 'Total Answers', 'forminator' );
-			array_push( $forminator_quiz_element_ids,'quiz-name','correct-answers', 'total-answers' );
+			array_push( $forminator_quiz_element_ids, 'quiz-name', 'correct-answers', 'total-answers' );
 		} elseif ( 'nowrong' === $this->quiz->quiz_type ) {
 			$quiz_fields['result-answers'] = __( 'Result Answer', 'forminator' );
-			array_push( $forminator_quiz_element_ids,'quiz-name', 'result-answers' );
+			array_push( $forminator_quiz_element_ids, 'quiz-name', 'result-answers' );
 		}
 
 		$forminator_field_element_ids = array_merge( $forminator_field_element_ids, $forminator_quiz_element_ids );
@@ -388,13 +387,22 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 
 		try {
 
-			$ac_api      = $this->addon->get_api();
-			$list_detail = $ac_api->get_list( $list_id );
+			$ac_api = $this->addon->get_api();
+			$lists_request = $ac_api->get_lists();
+			$custom_fields = array();
 
-			//get global fields assigned to the form as well as explecit field
-			if ( ! empty( $this->custom_fields ) && is_array( $this->custom_fields ) ) {
-				foreach ( $this->custom_fields as $field ) {
-					$fields[ $field->id ] = $field->title;
+			foreach ( $lists_request as $list ) {
+				if ( $list_id === $list->id ) {
+					if ( ! empty( $list->fields ) ) {
+						$custom_fields = $list->fields;
+					}
+				}
+			}
+
+			// get global fields assigned to the form as well as explecit field
+			if ( ! empty( $custom_fields ) ) {
+				foreach ( $custom_fields as $custom_field ) {
+					$fields[ $custom_field->id ] = $custom_field->title;
 				}
 			}
 
@@ -507,7 +515,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 	}
 
 	/**
-	 * Setup options
+	 * Set up options
 	 *
 	 * Contains :
 	 * - Double opt-in quiz,
@@ -674,7 +682,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 	}
 
 	/**
-	 * Check if setup options completed
+	 * Check if set up options completed
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *

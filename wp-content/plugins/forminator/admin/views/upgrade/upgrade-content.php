@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<p><?php esc_html_e( 'Plus - you\'ll get a WPMU DEV membership, which includes our award-winning Smush Pro image optimization plugin, white label reporting, unlimited usage of all our premium plugins, managed hosting credits, and more.', 'forminator' ); ?></p>
 
-					<a href="https://wpmudev.com/project/forminator-pro/?utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_propage_topbutton" target="_blank" class="sui-button sui-button-lg sui-button-purple">
+					<a href="<?php echo esc_url( forminator_get_link( 'plugin', 'forminator_propage_topbutton' ) ); ?>" target="_blank" class="sui-button sui-button-lg sui-button-purple">
 						<?php esc_html_e( 'Try Forminator Pro for Free Today', 'forminator' ); ?>
 					</a>
 
@@ -110,13 +110,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="sui-upgrade-page-cta__inner">
 				<h2><?php esc_html_e( 'Join 896,671 Happy Members', 'forminator' ); ?></h2>
 				<p><?php esc_html_e( '97% of customers are happy with WPMU DEV\'s service, and it\'s a great time to join them. As a Forminator user, you\'ll get a free trial period, so you can see what all the fuss is about. ', 'forminator' ); ?></p>
-				<a href="https://premium.wpmudev.org/project/forminator-pro/?utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_propage_bottombutton" class="sui-button sui-button-lg sui-button-purple" style="color: white;" target="_blank">
+				<a href="<?php echo esc_url( forminator_get_link( 'plugin', 'forminator_propage_bottombutton' ) ); ?>" class="sui-button sui-button-lg sui-button-purple" style="color: white;" target="_blank">
 					<?php esc_html_e( 'Get Forminator Pro, and get a better WordPress', 'forminator' ); ?>
 				</a>
 				<button type="button" class="sui-button sui-button-lg sui-button-purple sui-hidden-desktop">
 					<?php esc_html_e( 'Get Forminator Pro and get a better WordPress', 'forminator' ); ?>
 				</button>
-				<a href="https://wpmudev.com/project/forminator-pro/?utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_propage_bottombutton" target="_blank">
+				<a href="<?php echo esc_url( forminator_get_link( 'plugin', 'forminator_propage_bottombutton' ) ); ?>" target="_blank">
 					<?php esc_html_e( 'Try Pro for Free Today', 'forminator' ); ?>
 				</a>
 			</div>

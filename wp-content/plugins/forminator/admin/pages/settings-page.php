@@ -161,6 +161,10 @@ class Forminator_Settings_Page extends Forminator_Admin_Page {
 			'form-border-width',
 			'form-border-style',
 
+			'field-border',
+			'field-border-radius',
+			'field-border-width',
+
 			'fields-style',
 
 			'use-custom-css',

@@ -48,7 +48,7 @@ class Forminator_Page_Break extends Forminator_Field {
 	/**
 	 * @var string
 	 */
-	public $icon = 'sui-icon-pagination';
+	public $icon = 'sui-icon forminator-icon-pagination';
 
 	/**
 	 * Forminator_Pagination constructor.

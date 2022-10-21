@@ -1,9 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'poll-colors' ) ) { ?>
 
-	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input,
-	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:hover,
-	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:focus,
-	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:active {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input {
 		<?php if ( forminator_array_value_exists( $properties, 'forminator-poll-input-border_static' ) && !empty( $properties['forminator-poll-input-border_static'] ) ) { ?>
 			border-color: <?php echo $properties['forminator-poll-input-border_static'] ?>;
 		<?php } else { ?>
@@ -16,6 +13,23 @@
 		<?php } ?>
 		<?php if ( forminator_array_value_exists( $properties, 'input_text' ) && !empty( $properties['input_text'] ) ) { ?>
 			color: <?php echo $properties['input_text'] ?>;
+		<?php } else { ?>
+			color: #000000;
+		<?php } ?>
+	}
+
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:hover {
+		<?php if ( forminator_array_value_exists( $properties, 'input_text_hover' ) && !empty( $properties['input_text_hover'] ) ) { ?>
+			color: <?php echo $properties['input_text_hover'] ?>;
+		<?php } else { ?>
+			color: #000000;
+		<?php } ?>
+	}
+
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:focus,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-input:active {
+		<?php if ( forminator_array_value_exists( $properties, 'input_text_active' ) && !empty( $properties['input_text_active'] ) ) { ?>
+			color: <?php echo $properties['input_text_active'] ?>;
 		<?php } else { ?>
 			color: #000000;
 		<?php } ?>

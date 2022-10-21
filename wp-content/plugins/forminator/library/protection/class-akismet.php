@@ -88,7 +88,15 @@ class Forminator_Akismet extends Forminator_Spam_Protection {
 					$post_data['comment_author_email'] = $param['value'];
 				}
 				if ( is_array( $param['value'] ) ) {
-					$post_data['content'] .= "\n\n" . implode( ', ', $param['value'] );
+					if (
+						isset( $param['field_type'] ) &&
+						'signature' === $param['field_type'] &&
+						! empty( $param['value']['file']['file_url'] )
+					) {
+						$post_data['content'] .= "\n\n" . $param['value']['file']['file_url'];
+					} else {
+						$post_data['content'] .= "\n\n" . implode( ', ', $param['value'] );
+					}
 				} else {
 					$post_data['content'] .= "\n\n" . $param['value'];
 				}

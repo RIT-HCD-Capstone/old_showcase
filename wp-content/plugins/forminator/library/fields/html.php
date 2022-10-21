@@ -90,18 +90,19 @@ class Forminator_Html extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
+		$settings = $views_obj->model->settings;
 
 		$html    = '';
 		$label   = esc_html( self::get_property( 'field_label', $field ) );
 		$id      = self::get_property( 'element_id', $field );
 		$form_id = false;
 
-		$html .= '<div class="forminator-field forminator-merge-tags">';
+		$html .= '<div class="forminator-field forminator-merge-tags" data-field="' . $id . '">';
 
 		if ( $label ) {
 

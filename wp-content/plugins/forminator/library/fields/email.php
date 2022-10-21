@@ -101,12 +101,13 @@ class Forminator_Email extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -115,7 +116,7 @@ class Forminator_Email extends Forminator_Field {
 		$name        = $id;
 		$design      = $this->get_form_style( $settings );
 		$ariaid      = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$ariareq     = 'false';
 		$placeholder = $this->sanitize_value( self::get_property( 'placeholder', $field ) );
@@ -184,6 +185,8 @@ class Forminator_Email extends Forminator_Field {
 
 		if ( $is_validate ) {
 			$rules .= '"emailWP": true,';
+		} else {
+			$rules .= '"email": false,';
 		}
 
 		$rules .= '},' . "\n";
@@ -287,8 +290,16 @@ class Forminator_Email extends Forminator_Field {
 	 */
 	public function sanitize( $field, $data ) {
 		$original_data = $data;
+		$is_validate   = self::get_property( 'validation', $field );
+
 		// Sanitize email.
-		$data = is_string( $data ) ? sanitize_email( $data ) : '';
+		if ( is_string( $data ) ) {
+			if ( $is_validate ) {
+				$data = sanitize_email( $data );
+			} else {
+				$data = sanitize_text_field( $data );
+			}
+		}
 
 		return apply_filters( 'forminator_field_email_sanitize', $data, $field, $original_data );
 	}

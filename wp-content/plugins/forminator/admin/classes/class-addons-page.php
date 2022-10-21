@@ -358,7 +358,7 @@ class Forminator_Admin_Addons_page {
 		$stripe_addon->is_hidden         = false;
 		$stripe_addon->features          = array(
 			esc_html__( 'Create and manage one-time and recurring Stripe payments in Forminator Pro.', 'forminator' ),
-			esc_html__( 'Setup products in Forminator within minutes.', 'forminator' ),
+			esc_html__( 'Set up products in Forminator within minutes.', 'forminator' ),
 			esc_html__( 'Offer users a trial period for your product before they start paying.', 'forminator' ),
 			esc_html__( 'Use conditional logic to process payments based on form input field values.', 'forminator' ),
 		);

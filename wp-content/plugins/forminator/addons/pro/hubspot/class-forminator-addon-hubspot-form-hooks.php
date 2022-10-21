@@ -4,7 +4,6 @@
  * Class Forminator_Addon_Hubspot_Form_Hooks
  *
  * @since 1.0 HubSpot Addon
- *
  */
 class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Abstract {
 
@@ -145,14 +144,14 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 		if ( empty( $connection_settings['name'] ) ) {
 			$connection_settings['name'] = __( 'HubSpot', 'forminator' );
 		}
-		//check required fields
+		// check required fields
 		try {
 			$api  = $this->addon->get_api();
 			$args = array();
 
 			$list_id = $connection_settings['list_id'];
 
-			$deafult_fields = $connection_settings['fields_map'];
+			$deafult_fields    = $connection_settings['fields_map'];
 			$custom_fields_map = array_filter( $connection_settings['custom_fields_map'] );
 
 			$fields_map = array_merge( $deafult_fields, $custom_fields_map );
@@ -173,10 +172,10 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 				'lastname',
 				'jobtitle',
 			);
-			$extra_field = array();
+			$extra_field   = array();
 			if ( ! empty( $custom_fields_map ) ) {
-				foreach( $custom_fields_map as $custom => $custom_field ) {
-					if( ! empty( $custom ) ) {
+				foreach ( $custom_fields_map as $custom => $custom_field ) {
+					if ( ! empty( $custom ) ) {
 						$extra_field[] = $custom;
 					}
 				}
@@ -223,7 +222,7 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 			 * @param array $form_settings Displayed Form settings.
 			 * @param Forminator_Addon_Hubspot_Form_Settings $form_settings_instance HubSpot Addon Form Settings instance.
 			 */
-			$args = apply_filters(
+			$args       = apply_filters(
 				'forminator_addon_hubspot_create_contact_args',
 				$args,
 				$form_id,
@@ -236,9 +235,12 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 			$contact_id = $api->add_update_contact( $args );
 			// Add contact to contact list.
 			$toObjectId = null;
-			if ( ! empty( $list_id ) && ! empty( $contact_id ) && ! is_object( $contact_id ) && (int) $contact_id > 0 ) {
+			if ( ! empty( $contact_id ) && ! is_object( $contact_id ) && (int) $contact_id > 0 ) {
 				$toObjectId = $contact_id;
-				$api->add_to_contact_list( $contact_id, $args['email'], $list_id );
+
+				if ( ! empty( $list_id ) ) {
+					$api->add_to_contact_list( $contact_id, $args['email'], $list_id );
+				}
 			}
 
 			$create_ticket = isset( $connection_settings['create_ticket'] ) ? $connection_settings['create_ticket'] : '';
@@ -554,7 +556,7 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 	 *
 	 * @param        $addon_meta_data
 	 * @param        $key
-	 * @param string $default
+	 * @param string          $default
 	 *
 	 * @return string
 	 */
@@ -609,7 +611,7 @@ class Forminator_Addon_Hubspot_Form_Hooks extends Forminator_Addon_Form_Hooks_Ab
 	 * @since 1.0 HubSpot Addon
 	 *
 	 * @param Forminator_Form_Entry_Model $entry_model
-	 * @param  array $addon_meta_data
+	 * @param  array                       $addon_meta_data
 	 *
 	 * @return bool
 	 */

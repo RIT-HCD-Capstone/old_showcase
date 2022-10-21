@@ -95,11 +95,11 @@ class Forminator_Hidden extends Forminator_Field {
 	 *
 	 * @since 1.0
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
@@ -107,7 +107,7 @@ class Forminator_Hidden extends Forminator_Field {
 		$placeholder = esc_html( self::get_property( 'placeholder', $field ) );
 		$value       = esc_html( $this->get_value( $field ) );
 
-		return sprintf( '<input type="hidden" id="%s" name="%s" value="%s" />', $id, $name, $value );
+		return sprintf( '<input type="hidden" id="%s" name="%s" value="%s" />', $id . '_' . Forminator_CForm_Front::$uid, $name, $value );
 	}
 
 	/**

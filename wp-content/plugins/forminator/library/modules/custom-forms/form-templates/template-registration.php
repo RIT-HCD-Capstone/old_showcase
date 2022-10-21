@@ -95,14 +95,10 @@ class Forminator_Template_Registration extends Forminator_Template {
 	 * @return array
 	 */
 	public function settings() {
-		global $wp_rewrite;
-
-		$login_url = is_null( $wp_rewrite ) ? '{embed_url}wp-login.php' : wp_login_url();
-
 		return array(
 			'form-type'                        => 'registration',
 			'submission-behaviour'             => 'behaviour-thankyou',
-			'thankyou-message'                 => sprintf( __( 'Account registration successful. Click <a href="%s">here</a> to login to your account.', 'forminator' ), $login_url ),
+			'thankyou-message'                 => __( 'Account registration successful. Click <a href="{login_url}">here</a> to login to your account.', 'forminator' ),
 			'email-thankyou-message'           => __( 'Account registration successful. Please check your email inbox to activate your new account.', 'forminator' ),
 			'manual-thankyou-message'          => __( 'Account registration successful. A website admin must approve your account before you can log in. You’ll receive an email when your account is activated.', 'forminator' ),
 			'submitData'                       => array(

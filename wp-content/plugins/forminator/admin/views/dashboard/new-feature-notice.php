@@ -1,7 +1,8 @@
 <?php
-$current_user = wp_get_current_user();
-$banner_1x    = forminator_plugin_url() . 'assets/images/Feature_highlight_17.png';
-$banner_2x    = forminator_plugin_url() . 'assets/images/Feature_highlight_17@2x.png';
+$url       = 'https://wpmudev.com/docs/wpmu-dev-plugins/forminator/#field-group';
+$user      = wp_get_current_user();
+$banner_1x = forminator_plugin_url() . 'assets/images/new-feature-19.png';
+$banner_2x = forminator_plugin_url() . 'assets/images/new-feature-19@2x.png';
 ?>
 
 <div class="sui-modal sui-modal-md">
@@ -15,7 +16,7 @@ $banner_2x    = forminator_plugin_url() . 'assets/images/Feature_highlight_17@2x
 		aria-labelledby="forminator-new-feature__title"
 	>
 
-		<div class="sui-box forminator-feature-modal" data-prop="forminator_dismiss_feature_1170" data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminator_dismiss_notification' ) ); ?>">
+		<div class="sui-box forminator-feature-modal" data-prop="forminator_dismiss_feature_1190" data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminator_dismiss_notification' ) ); ?>">
 
 			<div class="sui-box-header sui-flatten sui-content-center">
 
@@ -29,27 +30,32 @@ $banner_2x    = forminator_plugin_url() . 'assets/images/Feature_highlight_17@2x
 
 				<button class="sui-button-icon sui-button-white sui-button-float--right forminator-dismiss-new-feature" data-modal-close>
 					<span class="sui-icon-close sui-md" aria-hidden="true"></span>
-					<span class="sui-screen-reader-text">Close this dialog.</span>
+					<span class="sui-screen-reader-text"><?php esc_html_e( 'Close this dialog.', 'forminator' ); ?></span>
 				</button>
 
-				<h3 class="sui-box-title sui-lg" style="overflow: initial; white-space: initial; text-overflow: initial;"><?php esc_html_e( 'Introducing! Save form as Draft', 'forminator' ); ?></h3>
+				<h3 class="sui-box-title sui-lg" style="overflow: initial; white-space: initial; text-overflow: initial;"><?php esc_html_e( 'New: Now You Can Group and Repeat Fields!', 'forminator' ); ?></h3>
 
-				<p class="sui-description"><?php printf( esc_html__( 'Hey! %s, Do you have a multi-page or lengthy form? If you do, you\'ve probably already received complaints from visitors about how long it takes them to fill it out. Now, with the latest version of Forminator, your visitors can save a form as a draft and come back later to finish and submit it.', 'forminator' ), esc_html( ucfirst( $current_user->display_name ) ) ); ?></p>
+				<p class="sui-description">
+					<?php
+					printf(
+						/* translators: 1. User name. 2. Open a tag. 3. Close a tag. */
+						esc_html__( 'Hey %1$s! You asked for it and we\'ve delivered. Take a look at the new Field Group and Repeater options which let you group multiple reusable fields together and collect repeated data like event attendees, education/employment history, address lists, etc. Check out this %2$sTutorial%3$s to learn more about grouping and repeating fields.', 'forminator' ),
+						esc_html( ucfirst( $user->display_name ) ),
+						'<a href="' . esc_url( $url ) . '" target="_blank">',
+						'</a>'
+					);
+					?>
+				</p>
 
 			</div>
 
-			<!--<div class="sui-box-body sui-spacing-top--0">
+<!--			<div class="sui-box-body sui-spacing-top--20">
 
-				<ul>
+				<ul style="margin: 0 0 0 20px; list-style: disc;">
 
-					<li style="margin-bottom: 15px;">
-						<p class="sui-description" style="margin-bottom: 5px;"><strong><?php esc_html_e( 'Conditional After Submission Behavior', 'forminator' ); ?></strong></p>
-						<p class="sui-description"><?php esc_html_e( 'After submission behaviors have a great new feature: you can now choose what happens after users successfully submit a form based on the data they provide. For example, you can redirect users to specific pages or display different submission messages.', 'forminator' ); ?></p>
-					</li>
-
-					<li>
-						<p class="sui-description" style="margin-bottom: 5px;"><strong><?php esc_html_e( 'Support for hCaptcha', 'forminator' ); ?></strong></p>
-						<p class="sui-description"><?php esc_html_e( 'In the latest release, you can choose between reCAPTCHA and hCaptcha to stop pesky robots from submitting form data.', 'forminator' ); ?></p>
+					<li style="margin-bottom: 0;">
+						<h4 style="margin-bottom: 0;"></h4>
+						<p class="sui-description" style="margin-left: -20px;"></p>
 					</li>
 
 				</ul>
@@ -58,7 +64,7 @@ $banner_2x    = forminator_plugin_url() . 'assets/images/Feature_highlight_17@2x
 
 			<div class="sui-box-footer sui-flatten sui-content-center">
 
-				<button class="sui-button forminator-dismiss-new-feature" data-modal-close><?php esc_html_e( 'Ok, Got it!', 'forminator' ); ?></button>
+				<button class="sui-button forminator-dismiss-new-feature" data-modal-close><?php esc_html_e( 'Awesome, Let’s go!', 'forminator' ); ?></button>
 
 			</div>
 

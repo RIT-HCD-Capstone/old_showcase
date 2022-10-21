@@ -14,7 +14,7 @@
 	// as this (slightly) quickens the resolution process and can be more efficiently
 	// minified (especially when both are regularly referenced in your plugin).
 
-	window.paypalHasCondition = false;
+	window.paypalHasCondition = [];
 
 	// Create the defaults once
 	var pluginName = "forminatorFrontCondition",
@@ -45,6 +45,18 @@
 				form = this.$el,
 				$forminatorFields = this.$el.find( ".forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea, .forminator-field-signature")
 				;
+
+			// Duplicate rules for new repeated Group fields.
+			if ( form.hasClass( 'forminator-grouped-fields' ) ) {
+				let suffix = form.data( 'suffix' );
+				$.each( this.settings.fields, function ( key, val ) {
+					let newKey = key + '-' + suffix;
+					if ( ! form.find( '[name="' + newKey + '"]' ).length && ! form.find( '#' + newKey ).length ) {
+						return;
+					}
+					self.settings['fields'][ newKey ] = val;
+				} );
+			}
 
 			this.add_missing_relations();
 
@@ -119,10 +131,13 @@
 					matches = 0 // Number of matches
 				;
 
-				// If paypal has logic set paypalHasCondition to true
+				// If paypal has logic, add form id to paypalHasCondition.
 				if ( 0 === relation.indexOf( 'paypal' ) ) {
-					if ( 0 !== logic.length ) {
-						window.paypalHasCondition = true;
+					if (
+						0 !== logic.length &&
+						! window.paypalHasCondition.includes( self.$el.data( 'form-id' ) )
+					) {
+						window.paypalHasCondition.push( self.$el.data( 'form-id' ) );
 					}
 				}
 
@@ -204,6 +219,12 @@
 							}
 							missedRelations[relatedField].push(key);
 
+						} else {
+							let relations = self.get_relations(relatedField);
+							if ( -1 !== $.inArray( key, relations ) ) {
+								return;
+							}
+							self.settings.relations[relatedField].push( key );
 						}
 					});
 				});
@@ -258,7 +279,7 @@
                     value = tinyMCE.activeEditor.getContent();
                 }
 			} else if ( this.field_has_inputMask( $element ) ) {
-				value = $element.inputmask( 'unmaskedvalue' );
+				value = parseFloat( $element.inputmask('unmaskedvalue').replace(',','.') );
 			}
 			if (!value) return "";
 
@@ -436,26 +457,31 @@
 
 		// used in forminatorFrontCalculate
 		get_form_field: function (element_id) {
+			let $form = this.$el;
+			if ( $form.hasClass( 'forminator-grouped-fields' ) ) {
+				$form = $form.closest( 'form.forminator-ui' );
+			}
+
 			//find element by suffix -field on id input (default behavior)
-			var $element = this.$el.find('#' + element_id + '-field');
+			var $element = $form.find('#' + element_id + '-field');
 			if ($element.length === 0) {
-				$element = this.$el.find('.' + element_id + '-payment');
+				$element = $form.find('.' + element_id + '-payment');
 				if ($element.length === 0) {
 					//find element by its on name (for radio on singlevalue)
-					$element = this.$el.find('input[name="' + element_id + '"]');
+					$element = $form.find('input[name="' + element_id + '"]');
 					if ($element.length === 0) {
 						// for text area that have uniqid, so we check its name instead
-						$element = this.$el.find('textarea[name="' + element_id + '"]');
+						$element = $form.find('textarea[name="' + element_id + '"]');
 						if ($element.length === 0) {
 							//find element by its on name[] (for checkbox on multivalue)
-							$element = this.$el.find('input[name="' + element_id + '[]"]');
+							$element = $form.find('input[name="' + element_id + '[]"]');
 							if ($element.length === 0) {
 								//find element by select name
-								$element = this.$el.find('select[name="' + element_id + '"]');
+								$element = $form.find('select[name="' + element_id + '"]');
 								if ($element.length === 0) {
 									//find element by direct id (for name field mostly)
 									//will work for all field with element_id-[somestring]
-									$element = this.$el.find('#' + element_id);
+									$element = $form.find('#' + element_id);
 								}
 							}
 						}
@@ -758,7 +784,8 @@
 		},
 
 		toggle_field: function (element_id, action, type) {
-			var $element_id = this.get_form_field(element_id),
+			var self = this,
+				$element_id = this.get_form_field(element_id),
 				$column_field = $element_id.closest('.forminator-col'),
 				$hidden_upload = $column_field.find('.forminator-input-file-required'),
 				$hidden_signature = $column_field.find('[id ^=ctlSignature][id $=_data]'),
@@ -784,20 +811,32 @@
 					if ($hidden_signature.length > 0) {
 						$hidden_signature.addClass('do-validate');
 					}
-					if ( 'submit' === element_id ) {
-						$pagination_field.removeClass('forminator-hidden');
-					}
-					if ( 0 === element_id.indexOf( 'paypal' ) ) {
-						$pagination_field.removeClass('forminator-hidden');
-					}
+					setTimeout(
+						function() {
+							if ( 'submit' === element_id ) {
+								$pagination_field.removeClass('forminator-hidden');
+							}
+							if ( 0 === element_id.indexOf( 'paypal' ) ) {
+								self.$el.find( '.forminator-button-submit' ).addClass( 'forminator-hidden' );
+								$pagination_field.removeClass( 'forminator-hidden' );
+							}
+						},
+						100
+					);
 				} else {
 					$column_field.addClass('forminator-hidden');
-					if ( 'submit' === element_id ) {
-						$pagination_field.addClass('forminator-hidden');
-					}
-					if ( 0 === element_id.indexOf( 'paypal' ) ) {
-						$pagination_field.addClass('forminator-hidden');
-					}
+					setTimeout(
+						function() {
+							if ( 'submit' === element_id ) {
+								$pagination_field.addClass('forminator-hidden');
+							}
+							if ( 0 === element_id.indexOf( 'paypal' ) ) {
+								self.$el.find( '.forminator-button-submit' ).removeClass( 'forminator-hidden' );
+								$pagination_field.addClass('forminator-hidden');
+							}
+						},
+						100
+					);
 					if ($hidden_upload.length > 0) {
 						$hidden_upload.removeClass('do-validate');
 					}
@@ -830,6 +869,18 @@
 					if ($row_field.find('> .forminator-col:not(.forminator-hidden)').length === 0) {
 						$row_field.addClass('forminator-hidden');
 					}
+					setTimeout(
+						function() {
+							if ( 'submit' === element_id ) {
+								$pagination_field.addClass('forminator-hidden');
+							}
+							if ( 0 === element_id.indexOf( 'paypal' ) ) {
+								self.$el.find( '.forminator-button-submit' ).removeClass( 'forminator-hidden' );
+								$pagination_field.addClass( 'forminator-hidden' );
+							}
+						},
+						100
+					);
 				} else {
 					$row_field.removeClass('forminator-hidden');
 					$column_field.removeClass('forminator-hidden');
@@ -843,6 +894,18 @@
 					if ($hidden_signature.length > 0) {
 						$hidden_signature.addClass('do-validate');
 					}
+					setTimeout(
+						function() {
+							if ( 'submit' === element_id ) {
+								$pagination_field.removeClass('forminator-hidden');
+							}
+							if ( 0 === element_id.indexOf( 'paypal' ) ) {
+								self.$el.find( '.forminator-button-submit' ).addClass( 'forminator-hidden' );
+								$pagination_field.removeClass( 'forminator-hidden' );
+							}
+						},
+						100
+					);
 				}
 			}
 
@@ -867,10 +930,8 @@
 					$element.removeAttr('checked');
 				} else if (this.field_is_checkbox($element)) {
 					$element.each(function () {
-						if($(this).is(':checked')) {
-							$(this).attr('data-previous-value', value);
-						}
-						$(this).removeAttr('checked');
+						$(this).attr('data-previous-value', value);
+						$(this).prop('checked', false);
 					});
 				} else {
 					$element.attr('data-previous-value', value);
@@ -909,8 +970,8 @@
 
 					if (!value) return;
 
-					if (value.indexOf($(this).val()) >= 0) {
-						$(this).attr("checked", "checked");
+					if (value.indexOf($(this).val().toLowerCase()) >= 0) {
+						$(this).prop( "checked", true );
 					}
 				});
 			} else {

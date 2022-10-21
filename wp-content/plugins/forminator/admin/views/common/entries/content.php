@@ -13,7 +13,7 @@ if ( $count > 0 ) {
 		update_option( 'forminator_submissions_form_id', $form_id );
 	}
 
-	$form_type = get_option( 'forminator_submissions_form_type' );
+	$form_type = get_option( 'forminator_submissions_form_type', 'forminator_forms' );
 	$form_id   = get_option( 'forminator_submissions_form_id' );
 	?>
 

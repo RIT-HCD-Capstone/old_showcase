@@ -1376,7 +1376,7 @@ abstract class Forminator_Addon_Abstract implements Forminator_Addon_Interface {
 		 * Filter settings values of addon to be saved
 		 *
 		 * `$addon_slug` is current slug of addon that will on save.
-		 * Example : `malchimp`, `zapier`, `etc`
+		 * Example : `malchimp`, `webhook`, `etc`
 		 *
 		 * @since 1.1
 		 *

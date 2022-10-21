@@ -64,7 +64,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 	}
 
 	/**
-	 * Setup Connection Name
+	 * Set up Connection Name
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -165,7 +165,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 	}
 
 	/**
-	 * Setup List
+	 * Set up List
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -271,7 +271,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 	}
 
 	/**
-	 * Check if setup list completed
+	 * Check if set up list completed
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -299,7 +299,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 	}
 
 	/**
-	 * Setup fields map
+	 * Set up fields map
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -501,7 +501,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 	}
 
 	/**
-	 * Setup options
+	 * Set up options
 	 *
 	 * Contains :
 	 * - ad_tracking

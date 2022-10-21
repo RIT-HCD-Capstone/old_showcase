@@ -115,12 +115,13 @@ class Forminator_Password extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -128,7 +129,7 @@ class Forminator_Password extends Forminator_Field {
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
 		$ariaid      = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$ariareq     = 'false';
 		$default     = self::get_property( 'default', $field, false );
@@ -196,7 +197,7 @@ class Forminator_Password extends Forminator_Field {
 		if ( $is_confirm ) {
 			$id   = $this->confirm_prefix . '_' . self::get_property( 'element_id', $field );
 			$name = $id;
-			$id   = 'forminator-field-' . $id;
+			$id   = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 
 			$confirm_password_label       = self::get_property( 'confirm-password-label', $field, '' );
 			$confirm_password_placeholder = self::get_property( 'confirm-password-placeholder', $field );
@@ -355,7 +356,7 @@ class Forminator_Password extends Forminator_Field {
 			}
 			// If 'Validate' is enabled.
 			if ( 'true' === $is_valid ) {
-				$rules .= '"equalTo": "' . $module_selector . ' #forminator-field-' . $this->get_id( $field ) . '",' . "\n";
+				$rules .= '"equalTo": "' . $module_selector . ' #forminator-field-' . $this->get_id( $field ) . '_' . Forminator_CForm_Front::$uid . '",' . "\n";
 			}
 			$rules .= '},';
 		}

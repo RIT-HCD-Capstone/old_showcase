@@ -30,7 +30,6 @@
 				<select
 					name="forminator_action"
 					class="sui-select sui-select-sm sui-select-inline fui-select-listing-actions"
-					data-width="200px"
 					data-search="false"
 				>
 					<option value=""><?php esc_html_e( 'Bulk Action', 'forminator' ); ?></option>

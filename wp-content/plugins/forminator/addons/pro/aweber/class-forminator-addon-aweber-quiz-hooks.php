@@ -157,7 +157,7 @@ class Forminator_Addon_Aweber_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abs
 			$args = array();
 
 			if ( ! isset( $connection_settings['list_id'] ) ) {
-				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly setup.', 'forminator' ) );
+				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly set up.', 'forminator' ) );
 			}
 
 			$list_id = $connection_settings['list_id'];

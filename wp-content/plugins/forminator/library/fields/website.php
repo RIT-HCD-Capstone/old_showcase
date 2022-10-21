@@ -101,19 +101,20 @@ class Forminator_Website extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$html        = '';
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
 		$ariaid      = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = $this->get_property( 'required', $field, false );
 		$ariareq     = 'false';
 		$placeholder = $this->sanitize_value( $this->get_property( 'placeholder', $field ) );
@@ -221,7 +222,10 @@ class Forminator_Website extends Forminator_Field {
 		$id                 = $this->get_id( $field );
 		$validation_enabled = self::get_property( 'validation', $field, false, 'bool' );
 		$validation_message = self::get_property( 'validation_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST );
-		$required_message   = self::get_property( 'required_message', $field, __( 'This field is required. Please input a valid URL', 'forminator' ) );
+		$required_message   = self::get_property( 'required_message', $field );
+		if ( empty( $required_message ) ) {
+			$required_message = __( 'This field is required. Please input a valid URL', 'forminator' );
+		}
 		if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $validation_message ) {
 			$validation_message = self::get_property( 'validation_text', $field, '' );
 		}

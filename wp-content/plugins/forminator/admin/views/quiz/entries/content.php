@@ -1,5 +1,5 @@
 <?php
-/** @var Forminator_Quiz_Renderer_Entries $this */
+/** @var Forminator_Quiz_Renderer $this */
 $plugin_path       = forminator_plugin_url();
 $count             = $this->filtered_total_entries();
 $entries_per_page  = $this->get_per_page();

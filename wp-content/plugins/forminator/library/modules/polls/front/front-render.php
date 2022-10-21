@@ -169,7 +169,7 @@ class Forminator_Poll_Front extends Forminator_Render_Form {
 		$html         = '';
 		$label_class  = '';
 		$message_wrap = '';
-		$status_info = $this->model->opening_status();
+		$status_info  = $this->model->opening_status();
 		if ( 'open' !== $status_info['status'] ) {
 			$html .= '<div class="forminator-response-message forminator-error
  forminator-show">';
@@ -1079,8 +1079,8 @@ class Forminator_Poll_Front extends Forminator_Render_Form {
 		$onchart_label = ( isset( $form_settings['onbar_votes'] ) && ! empty( $form_settings['onbar_votes'] ) ) ? $form_settings['onbar_votes'] : '#333333';
 
 		// Tooltips.
-		$tooltips_bg    = ( isset( $form_settings['tooltips_background'] ) && ! empty( $form_settings['tooltips_background'] ) && ! empty( $form_settings['poll-colors']) ) ? $form_settings['tooltips_background'] : '#333333';
-		$tooltips_color = ( isset( $form_settings['tooltips_text'] ) && ! empty( $form_settings['tooltips_text'] ) && ! empty( $form_settings['poll-colors']) ) ? $form_settings['tooltips_text'] : '#FFFFFF';
+		$tooltips_bg    = ( isset( $form_settings['tooltips_background'] ) && ! empty( $form_settings['tooltips_background'] ) && ! empty( $form_settings['poll-colors'] ) ) ? $form_settings['tooltips_background'] : '#333333';
+		$tooltips_color = ( isset( $form_settings['tooltips_text'] ) && ! empty( $form_settings['tooltips_text'] ) && ! empty( $form_settings['poll-colors'] ) ) ? $form_settings['tooltips_text'] : '#FFFFFF';
 		?>
 
 		<script type="text/javascript">
@@ -1187,15 +1187,15 @@ class Forminator_Poll_Front extends Forminator_Render_Form {
 		$is_same_form   = false;
 		$is_same_render = false;
 		$rendered       = false;
-		$form_id        = filter_input( INPUT_GET, 'form_id', FILTER_VALIDATE_INT );
-		$render_id      = filter_input( INPUT_GET, 'render_id', FILTER_VALIDATE_INT );
-		$saved          = filter_input( INPUT_GET, 'saved' );
-		$results        = filter_input( INPUT_GET, 'results' );
-		if ( $form_id === (int) $this->model->id ) {
+		$form_id        = Forminator_Core::sanitize_text_field( 'form_id' );
+		$render_id      = Forminator_Core::sanitize_text_field( 'render_id' );
+		$saved          = Forminator_Core::sanitize_text_field( 'saved' );
+		$results        = Forminator_Core::sanitize_text_field( 'results' );
+		if ( (int) $form_id === (int) $this->model->id ) {
 			$is_same_form = true;
 		}
 
-		if ( $render_id === (int) self::$render_ids[ $this->model->id ] ) {
+		if ( (int) $render_id === (int) self::$render_ids[ $this->model->id ] ) {
 			$is_same_render = true;
 		}
 

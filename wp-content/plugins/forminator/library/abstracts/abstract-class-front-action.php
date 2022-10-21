@@ -116,9 +116,6 @@ abstract class Forminator_Front_Action {
 			add_action( 'wp_ajax_forminator_update_payment_amount', array( $this, 'update_payment_amount' ) );
 			add_action( 'wp_ajax_nopriv_forminator_update_payment_amount', array( $this, 'update_payment_amount' ) );
 
-			add_action( 'wp_ajax_forminator_multiple_file_upload', array( $this, 'multiple_file_upload' ) );
-			add_action( 'wp_ajax_nopriv_forminator_multiple_file_upload', array( $this, 'multiple_file_upload' ) );
-
 			add_action( 'wp_ajax_forminator_2fa_fallback_email', array( $this, 'fallback_email' ) );
 			add_action( 'wp_ajax_nopriv_forminator_2fa_fallback_email', array( $this, 'fallback_email' ) );
 		}
@@ -169,8 +166,8 @@ abstract class Forminator_Front_Action {
 	 * Init properties
 	 */
 	protected function init_properties( $nonce_args = array() ) {
-		self::$prepared_data 	 = $this->get_post_data( $nonce_args );
-		self::$module_id     	 = isset( self::$prepared_data['form_id'] ) ? self::$prepared_data['form_id'] : false;
+		self::$prepared_data = $this->get_post_data( $nonce_args );
+		self::$module_id     = isset( self::$prepared_data['form_id'] ) ? self::$prepared_data['form_id'] : false;
 
 		if ( self::$module_id ) {
 			static::$module_object = Forminator_Base_Form_Model::get_model( self::$module_id );
@@ -186,9 +183,9 @@ abstract class Forminator_Front_Action {
 					? static::$module_object->get_form_settings() : static::$module_object->settings;
 
 			self::$previous_draft_id = isset( self::$prepared_data['previous_draft_id'] ) ? self::$prepared_data['previous_draft_id'] : null;
-			self::$is_draft 	 	 = isset( self::$prepared_data['save_draft'] ) ? filter_var( self::$prepared_data['save_draft'], FILTER_VALIDATE_BOOLEAN ) : false;
+			self::$is_draft          = isset( self::$prepared_data['save_draft'] ) ? filter_var( self::$prepared_data['save_draft'], FILTER_VALIDATE_BOOLEAN ) : false;
 			// Check if save and continue is enabled
-			self::$is_draft 	   	 = self::$is_draft &&
+			self::$is_draft = self::$is_draft &&
 									   isset( self::$module_settings['use_save_and_continue'] ) &&
 									   filter_var( self::$module_settings['use_save_and_continue'], FILTER_VALIDATE_BOOLEAN )
 									   ? true
@@ -452,12 +449,12 @@ abstract class Forminator_Front_Action {
 	 * @since 1.17.0
 	 */
 	public function show_draft_link( $form_id, $response ) {
-		$response['form_id'] 	= $form_id;
-		$response['type']	 	= 'save_draft';
-		$draft_link 			= esc_url( add_query_arg( 'draft', $response['draft_id'], get_permalink( $response['page_id'] ) ) );
+		$response['form_id']    = $form_id;
+		$response['type']       = 'save_draft';
+		$draft_link             = esc_url( add_query_arg( 'draft', $response['draft_id'], get_permalink( $response['page_id'] ) ) );
 		$send_draft_email_nonce = esc_attr( 'forminator_nonce_email_draft_link_' . $response['draft_id'] );
-		$message 				= str_replace( '{retention_period}', $response['retention_period'], $response['message'] );
-		$autofill_email			= isset( $response['first_email'] ) ? $response['first_email'] : '';
+		$message                = str_replace( '{retention_period}', $response['retention_period'], $response['message'] );
+		$autofill_email         = isset( $response['first_email'] ) ? $response['first_email'] : '';
 
 		ob_start();
 		?>
@@ -610,7 +607,7 @@ abstract class Forminator_Front_Action {
 	 *
 	 * @since 1.1
 	 *
-	 * @param array                      $current_entry_fields
+	 * @param array $current_entry_fields
 	 *
 	 * @return array added fields to entry
 	 */
@@ -816,7 +813,7 @@ abstract class Forminator_Front_Action {
 					return array(
 						'success'   => true,
 						'file_url'  => $file_url,
-						'file_path' => $file_path,
+						'file_path' => wp_normalize_path( $file_path ),
 					);
 				} else {
 					return array(
@@ -878,11 +875,35 @@ abstract class Forminator_Front_Action {
 			}
 		}
 
-		// do some validation.
+		$post_data = $this->remove_uploads_uid( $post_data );
 
 		return $post_data;
 	}
 
+	/**
+	 * Remove the Form UID in the element_id of Ajax multi-upload fields
+	 *
+	 * @since 1.18.0
+	 *
+	 * @param array $post_data
+	 *
+	 * @return $post_data
+	 */
+	protected function remove_uploads_uid( $post_data ) {
+		if ( ! empty( $post_data['forminator-multifile-hidden'] ) ) {
+			$post_data['forminator-multifile-hidden'] = json_decode( stripslashes( $post_data['forminator-multifile-hidden'] ), true );
+
+			foreach ( $post_data['forminator-multifile-hidden'] as $key => $val ) {
+				if ( 0 === strpos( $key, 'upload-' ) ) {
+					$new_key = preg_replace( '/_[^-]+/', '', $key );
+					$post_data['forminator-multifile-hidden'][ $new_key ] = $val;
+					unset( $post_data['forminator-multifile-hidden'][ $key ] );
+				}
+			}
+		}
+
+		return $post_data;
+	}
 
 	/**
 	 * Formatting additional fields from addon

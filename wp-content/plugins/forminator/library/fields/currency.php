@@ -48,7 +48,7 @@ class Forminator_Currency extends Forminator_Field {
 	/**
 	 * @var string
 	 */
-	public $icon = 'sui-icon-currency';
+	public $icon = 'sui-icon forminator-icon-currency';
 
 	/**
 	 * @var bool
@@ -109,38 +109,18 @@ class Forminator_Currency extends Forminator_Field {
 	}
 
 	/**
-	 * Create decimals pattern from decimals number
-	 *
-	 * @since 1.7
-	 * @param integer $decimals
-	 * @return mixed
-	 */
-	private function create_step_string( $decimals = 2 ) {
-		$step = 1;
-
-		if ( ! empty( $decimals ) ) {
-			for ( $i = 1; $i < $decimals; $i++ ) {
-				$step = '0' . $step;
-			}
-
-			$step = '0.' . $step;
-		}
-
-		return $step;
-	}
-
-	/**
 	 * Field front-end markup
 	 *
 	 * @since 1.7
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -149,7 +129,7 @@ class Forminator_Currency extends Forminator_Field {
 		$max         = '';
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$placeholder = $this->sanitize_value( self::get_property( 'placeholder', $field ) );
 		$value       = esc_html( self::get_post_data( $name, self::get_property( 'default_value', $field ) ) );
@@ -161,7 +141,6 @@ class Forminator_Currency extends Forminator_Field {
 		$currency    = self::get_property( 'currency', $field, 'USD' );
 		$precision   = self::get_property( 'precision', $field, 2 );
 		$separator   = self::get_property( 'separators', $field, 'blank' );
-		$step        = $this->create_step_string( $precision );
 		$separators  = $this->forminator_separators( $separator, $field );
 
 		if ( isset( $draft_value['value'] ) ) {
@@ -190,7 +169,7 @@ class Forminator_Currency extends Forminator_Field {
 
 		if ( 'blank' === $separator ) {
 			$number_attr['type'] = 'number';
-			$number_attr['step'] = $step;
+			$number_attr['step'] = 'any';
 		}
 
 		$autofill_markup = $this->get_element_autofill_markup_attr( self::get_property( 'element_id', $field ) );
@@ -235,10 +214,10 @@ class Forminator_Currency extends Forminator_Field {
 		}
 
 		if ( false !== $min && is_numeric( $min ) ) {
-			$rules .= '"minNumber": ' . $min . ',';
+			$rules .= '"minNumber": ' . (float) $min . ',';
 		}
 		if ( false !== $max && is_numeric( $max ) ) {
-			$rules .= '"maxNumber": ' . $max . ',';
+			$rules .= '"maxNumber": ' . (float) $max . ',';
 		}
 
 		$rules .= '},';
@@ -261,7 +240,10 @@ class Forminator_Currency extends Forminator_Field {
 		$messages = '"' . $this->get_id( $field ) . '": {' . "\n";
 
 		if ( $this->is_required( $field ) ) {
-			$required_validation_message = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', 'forminator' ) );
+			$required_validation_message = self::get_property( 'required_message', $field );
+			if ( empty( $required_validation_message ) ) {
+				$required_validation_message = __( 'This field is required. Please enter number.', 'forminator' );
+			}
 			$required_validation_message = apply_filters(
 				'forminator_field_currency_required_validation_message',
 				$required_validation_message,

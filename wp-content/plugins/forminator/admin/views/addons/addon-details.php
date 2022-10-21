@@ -19,7 +19,7 @@ if ( $res->is_hidden ) {
 }
 
 $has_features = false;
-$features	 = array(
+$features     = array(
 	0 => array(),
 	1 => array(),
 );
@@ -27,7 +27,7 @@ $features	 = array(
 if ( is_array( $res->features ) && ! empty( $res->features ) ) {
 	$has_features = true;
 	$chunk_size   = ceil( count( $res->features ) / 2 );
-	$features	 = array_chunk( $res->features, $chunk_size );
+	$features     = array_chunk( $res->features, $chunk_size );
 }
 ?>
 
@@ -114,7 +114,7 @@ if ( is_array( $res->features ) && ! empty( $res->features ) ) {
 								target="_blank"
 								class="sui-button sui-button-purple"
 							>
-								<?php esc_html_e( 'Try Pro For 10% Off', 'forminator' ); ?>
+								<?php esc_html_e( 'Try Pro For 30% Off', 'forminator' ); ?>
 							</a>
 						<?php } ?>
 

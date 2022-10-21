@@ -128,8 +128,8 @@ abstract class Forminator_Addon_Quiz_Settings_Abstract extends Forminator_Addon_
 		$this->quiz_settings = forminator_addon_format_quiz_settings( $this->quiz );
 		if ( isset( $this->quiz_settings['hasLeads'] ) && $this->quiz_settings['hasLeads'] ) {
 			$lead_model          = Forminator_Base_Form_Model::get_model( $this->quiz_settings['leadsId'] );
-			$this->form_fields   = forminator_addon_format_form_fields( $lead_model );
-			$this->form_settings = forminator_addon_format_form_settings( $lead_model );
+			$this->form_fields   = ! empty( $lead_model ) ? forminator_addon_format_form_fields( $lead_model ) : array();
+			$this->form_settings = ! empty( $lead_model ) ? forminator_addon_format_form_settings( $lead_model ) : array();
 		}
 	}
 

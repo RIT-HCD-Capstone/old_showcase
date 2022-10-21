@@ -60,9 +60,13 @@ class Forminator_API {
 				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', 'forminator' ) );
 			}
 
+			if ( empty( $status ) ) {
+				$status = 'publish';
+			}
+
 			foreach ( $form_ids as $form_id ) {
 				$model = self::get_module( $form_id );
-				if ( ! empty( $status ) && ! $model instanceof WP_Error
+				if ( ! $model instanceof WP_Error
 						&& ( is_array( $status ) && in_array( $model->status, $status, true ) || $status === $model->status ) ) {
 					$temp[] = $model;
 				}
@@ -400,6 +404,7 @@ class Forminator_API {
 				$field->form_id = $row['wrapper_id'];
 				$field->slug    = $f['id'];
 				unset( $f['id'] );
+				$field->parent_group = ! empty( $row['parent_group'] ) ? $row['parent_group'] : '';
 				$field->import( $f );
 				$form_model->add_field( $field );
 			}
@@ -897,6 +902,7 @@ class Forminator_API {
 				$field->form_id = $row['wrapper_id'];
 				$field->slug    = $f['id'];
 				unset( $f['id'] );
+				$field->parent_group = ! empty( $row['parent_group'] ) ? $row['parent_group'] : '';
 				$field->import( $f );
 				$form->add_field( $field );
 			}

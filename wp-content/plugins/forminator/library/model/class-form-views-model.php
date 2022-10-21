@@ -63,7 +63,7 @@ class Forminator_Form_Views_Model {
 			$ip_query = ' AND `ip` IS NULL';
 		}
 
-		$sql = "SELECT `view_id` FROM {$this->get_table_name()} WHERE `form_id` = %d AND `page_id` = %d {$ip_query} AND `date_created` BETWEEN DATE_SUB(utc_timestamp(), INTERVAL 1 DAY) AND utc_timestamp()";
+		$sql = "SELECT `view_id` FROM {$this->get_table_name()} WHERE `form_id` = %d AND `page_id` = %d {$ip_query} AND DATE(`date_created`) = CURDATE()";
 
 		if ( ! is_null( $ip ) ) {
 			$prepared_sql = $wpdb->prepare( $sql, $form_id, $page_id, $ip ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -190,7 +190,7 @@ class Forminator_Form_Views_Model {
 	private function _count( $form_id, $starting_date = null, $ending_date = null ) {
 		global $wpdb;
 		$date_query = $this->_generate_date_query( $wpdb, $starting_date, $ending_date );
-		$sql        = "SELECT SUM(`count`) FROM {$this->get_table_name()} WHERE `form_id` = %d $date_query";
+		$sql        = "SELECT SUM(`count`) FROM {$this->get_table_name()} WHERE `form_id` = %d $date_query";    
 		$counts     = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( $counts ) {
@@ -212,14 +212,14 @@ class Forminator_Form_Views_Model {
 	 */
 	private function _generate_date_query( $wpdb, $starting_date = null, $ending_date = null, $prefix = '', $clause = 'AND' ) {
 		$date_query  = '';
-		$date_format = '%d-%m-%Y';
 		if ( ! is_null( $starting_date ) && ! is_null( $ending_date ) && ! empty( $starting_date ) && ! empty( $ending_date ) ) {
-			$date_query = $wpdb->prepare( "$clause DATE_FORMAT($prefix`date_created`, '$date_format') >= %s AND DATE_FORMAT($prefix`date_created`, '$date_format') <= %s", $starting_date, $ending_date );
+			$ending_date = $ending_date . ' 23:59:00';
+			$date_query  = $wpdb->prepare( "$clause date_created >= %s AND date_created <= %s", $starting_date, $ending_date );
 		} else {
 			if ( ! is_null( $starting_date ) && ! empty( $starting_date ) ) {
-				$date_query = $wpdb->prepare( "$clause DATE_FORMAT($prefix`date_created`, '$date_format') >= %s", $starting_date );
+				$date_query = $wpdb->prepare( "$clause date_created >= %s", $starting_date );
 			} elseif ( ! is_null( $ending_date ) && ! empty( $ending_date ) ) {
-				$date_query = $wpdb->prepare( "$clause DATE_FORMAT($prefix`date_created`, '$date_format') <= %s", $starting_date );
+				$date_query = $wpdb->prepare( "$clause date_created <= %s", $starting_date );
 			}
 		}
 

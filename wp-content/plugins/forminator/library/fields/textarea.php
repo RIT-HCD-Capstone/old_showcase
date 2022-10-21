@@ -108,12 +108,13 @@ class Forminator_Textarea extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -121,7 +122,7 @@ class Forminator_Textarea extends Forminator_Field {
 		$id             = self::get_property( 'element_id', $field );
 		$name           = $id;
 		$ariaid         = $id;
-		$id             = 'forminator-field-' . $id;
+		$id             = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required       = self::get_property( 'required', $field, false, 'bool' );
 		$default        = esc_html( self::get_property( 'default', $field, false ) );
 		$placeholder    = $this->sanitize_value( self::get_property( 'placeholder', $field ) );

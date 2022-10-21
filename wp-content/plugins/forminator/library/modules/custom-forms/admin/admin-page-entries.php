@@ -261,8 +261,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 	private function build_fields_mappers() {
 		/** @var  Forminator_Form_Model $model */
 		$model          = $this->model;
-		$fields         = apply_filters( 'forminator_custom_form_build_fields_mappers', $model->get_real_fields() );
-		$visible_fields = $this->get_visible_fields();
+		$fields         = apply_filters( 'forminator_custom_form_build_fields_mappers', $model->get_grouped_real_fields() );
 
 		/** @var  Forminator_Form_Field_Model $fields */
 		$mappers = array(
@@ -281,229 +280,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 		);
 
 		foreach ( $fields as $field ) {
-			$field_type = $field->__get( 'type' );
-
-			if ( ! empty( $visible_fields ) ) {
-				if ( ! in_array( $field->slug, $visible_fields, true ) ) {
-					continue;
-				}
-			}
-
-			// base mapper for every field.
-			$mapper             = array();
-			$mapper['meta_key'] = $field->slug;
-			$mapper['label']    = $field->get_label_for_entry();
-			$mapper['type']     = $field_type;
-
-			if ( 'textarea' === $field_type ) {
-				$field_array    = $field->to_array();
-				$mapper['rich'] = isset( $field_array['editor-type'] ) ? $field_array['editor-type'] : false;
-			} elseif ( 'number' === $field_type || 'currency' === $field_type || 'calculation' === $field_type ) {
-				$field_array = $field->to_array();
-				$decimal     = 'calculation' === $field_type ? 2 : 0;
-				$separator   = Forminator_Field::get_property( 'separators', $field_array, 'blank' );
-				$precision   = Forminator_Field::get_property( 'precision', $field_array, $decimal );
-				$separators  = Forminator_Field::forminator_separators( $separator, $field_array );
-
-				$mapper['separator'] = $separators['separator'];
-				$mapper['point']     = $separators['point'];
-				$mapper['precision'] = $precision;
-			} elseif ( 'name' === $field_type ) {
-				// fields that should be displayed as multi column (sub_metas).
-				$is_multiple_name = filter_var( $field->__get( 'multiple_name' ), FILTER_VALIDATE_BOOLEAN );
-				if ( $is_multiple_name ) {
-					$prefix_enabled      = filter_var( $field->__get( 'prefix' ), FILTER_VALIDATE_BOOLEAN );
-					$first_name_enabled  = filter_var( $field->__get( 'fname' ), FILTER_VALIDATE_BOOLEAN );
-					$middle_name_enabled = filter_var( $field->__get( 'mname' ), FILTER_VALIDATE_BOOLEAN );
-					$last_name_enabled   = filter_var( $field->__get( 'lname' ), FILTER_VALIDATE_BOOLEAN );
-					// at least one sub field enabled.
-					if ( $prefix_enabled || $first_name_enabled || $middle_name_enabled || $last_name_enabled ) {
-						// sub metas.
-						$mapper['sub_metas'] = array();
-						if ( $prefix_enabled ) {
-							$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'prefix' );
-							$label                 = $field->__get( 'prefix_label' );
-							$mapper['sub_metas'][] = array(
-								'key'   => 'prefix',
-								'label' => ( $label ? $label : $default_label ),
-							);
-						}
-
-						if ( $first_name_enabled ) {
-							$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'first-name' );
-							$label                 = $field->__get( 'fname_label' );
-							$mapper['sub_metas'][] = array(
-								'key'   => 'first-name',
-								'label' => ( $label ? $label : $default_label ),
-							);
-						}
-
-						if ( $middle_name_enabled ) {
-							$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'middle-name' );
-							$label                 = $field->__get( 'mname_label' );
-							$mapper['sub_metas'][] = array(
-								'key'   => 'middle-name',
-								'label' => ( $label ? $label : $default_label ),
-							);
-						}
-						if ( $last_name_enabled ) {
-							$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'last-name' );
-							$label                 = $field->__get( 'lname_label' );
-							$mapper['sub_metas'][] = array(
-								'key'   => 'last-name',
-								'label' => ( $label ? $label : $default_label ),
-							);
-						}
-					} else {
-						// if no subfield enabled when multiple name remove mapper (means dont show it on export).
-						$mapper = array();
-					}
-				}
-			} elseif ( 'address' === $field_type ) {
-				$street_enabled  = filter_var( $field->__get( 'street_address' ), FILTER_VALIDATE_BOOLEAN );
-				$line_enabled    = filter_var( $field->__get( 'address_line' ), FILTER_VALIDATE_BOOLEAN );
-				$city_enabled    = filter_var( $field->__get( 'address_city' ), FILTER_VALIDATE_BOOLEAN );
-				$state_enabled   = filter_var( $field->__get( 'address_state' ), FILTER_VALIDATE_BOOLEAN );
-				$zip_enabled     = filter_var( $field->__get( 'address_zip' ), FILTER_VALIDATE_BOOLEAN );
-				$country_enabled = filter_var( $field->__get( 'address_country' ), FILTER_VALIDATE_BOOLEAN );
-				if ( $street_enabled || $line_enabled || $city_enabled || $state_enabled || $zip_enabled || $country_enabled ) {
-					$mapper['sub_metas'] = array();
-					if ( $street_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'street_address' );
-						$label                 = $field->__get( 'street_address_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'street_address',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-					if ( $line_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'address_line' );
-						$label                 = $field->__get( 'address_line_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'address_line',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-					if ( $city_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'city' );
-						$label                 = $field->__get( 'address_city_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'city',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-					if ( $state_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'state' );
-						$label                 = $field->__get( 'address_state_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'state',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-					if ( $zip_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'zip' );
-						$label                 = $field->__get( 'address_zip_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'zip',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-					if ( $country_enabled ) {
-						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'country' );
-						$label                 = $field->__get( 'address_country_label' );
-						$mapper['sub_metas'][] = array(
-							'key'   => 'country',
-							'label' => ( $label ? $label : $default_label ),
-						);
-					}
-				} else {
-					// if no subfield enabled when multiple name remove mapper (means dont show it on export).
-					$mapper = array();
-				}
-			} elseif ( 'stripe' === $field_type ) {
-				$mapper['label']         = __( 'Stripe Payment', 'forminator' );
-				$mapper['sub_metas']     = array();
-				$mapper['sub_metas'][]   = array(
-					'key'                => 'mode',
-					'label'              => __( 'Mode', 'forminator' ),
-					'transform_callback' => 'strtoupper',
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'product_name',
-					'label' => __( 'Product / Plan Name', 'forminator' ),
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'payment_type',
-					'label' => __( 'Payment type', 'forminator' ),
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'amount',
-					'label' => __( 'Amount', 'forminator' ),
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'currency',
-					'label' => __( 'Currency', 'forminator' ),
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'quantity',
-					'label' => __( 'Quantity', 'forminator' ),
-				);
-				$transaction_link_mapper = array(
-					'key'   => 'transaction_id',
-					'label' => __( 'Transaction ID', 'forminator' ),
-				);
-				if ( class_exists( 'Forminator_Stripe' ) ) {
-					$transaction_link_mapper['transform_callback'] = array( 'Forminator_Stripe', 'linkify_transaction_id' );
-					$transaction_link_mapper['num_transform_arg']  = 2;
-				}
-				$mapper['sub_metas'][] = $transaction_link_mapper;
-				$mapper['sub_metas'][] = array(
-					'key'                => 'status',
-					'label'              => __( 'Status', 'forminator' ),
-					'transform_callback' => 'ucfirst',
-				);
-				if ( class_exists( 'Forminator_Stripe_Subscription' ) ) {
-					$manage_mapper                       = array(
-						'key'   => 'subscription_id',
-						'label' => __( 'Manage', 'forminator' ),
-					);
-					$manage_mapper['transform_callback'] = array( 'Forminator_Stripe_Subscription', 'manage_subscription' );
-					$manage_mapper['num_transform_arg']  = 2;
-
-					$mapper['sub_metas'][] = $manage_mapper;
-				}
-			} elseif ( 'paypal' === $field_type ) {
-				$mapper['label']         = __( 'PayPal Checkout', 'forminator' );
-				$mapper['sub_metas']     = array();
-				$mapper['sub_metas'][]   = array(
-					'key'                => 'mode',
-					'label'              => __( 'Mode', 'forminator' ),
-					'transform_callback' => 'strtoupper',
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'                => 'status',
-					'label'              => __( 'Status', 'forminator' ),
-					'transform_callback' => 'ucfirst',
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'   => 'amount',
-					'label' => __( 'Amount', 'forminator' ),
-				);
-				$mapper['sub_metas'][]   = array(
-					'key'                => 'currency',
-					'label'              => __( 'Currency', 'forminator' ),
-					'transform_callback' => 'strtoupper',
-				);
-				$transaction_link_mapper = array(
-					'key'   => 'transaction_id',
-					'label' => __( 'Transaction ID', 'forminator' ),
-				);
-				if ( class_exists( 'Forminator_PayPal' ) ) {
-					$transaction_link_mapper['transform_callback'] = array( 'Forminator_PayPal', 'linkify_transaction_id' );
-					$transaction_link_mapper['num_transform_arg']  = 2;
-				}
-				$mapper['sub_metas'][] = $transaction_link_mapper;
-			}
+			$mapper = self::build_field_mapper( $field );
 
 			if ( ! empty( $mapper ) ) {
 				$mappers[] = $mapper;
@@ -511,6 +288,251 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 		}
 
 		return $mappers;
+	}
+
+	/**
+	 * Build field
+	 *
+	 * @param object $field Field object.
+	 * @return array
+	 */
+	private function build_field_mapper( $field ) {
+		$visible_fields = $this->get_visible_fields();
+
+		$field_type = $field->__get( 'type' );
+
+		if ( ! empty( $visible_fields ) ) {
+			if ( ! in_array( $field->slug, $visible_fields, true ) ) {
+				return array();
+			}
+		}
+
+		// base mapper for every field.
+		$mapper             = array();
+		$mapper['meta_key'] = $field->slug;
+		$mapper['label']    = $field->get_label_for_entry();
+		$mapper['type']     = $field_type;
+
+		if ( 'textarea' === $field_type ) {
+			$field_array    = $field->to_array();
+			$mapper['rich'] = isset( $field_array['editor-type'] ) ? $field_array['editor-type'] : false;
+		} elseif ( 'number' === $field_type || 'currency' === $field_type || 'calculation' === $field_type ) {
+			$field_array = $field->to_array();
+			$decimal     = 'calculation' === $field_type ? 2 : 0;
+			$separator   = Forminator_Field::get_property( 'separators', $field_array, 'blank' );
+			$precision   = Forminator_Field::get_property( 'precision', $field_array, $decimal );
+			$separators  = Forminator_Field::forminator_separators( $separator, $field_array );
+
+			$mapper['separator'] = $separators['separator'];
+			$mapper['point']     = $separators['point'];
+			$mapper['precision'] = $precision;
+		} elseif ( 'name' === $field_type ) {
+			// fields that should be displayed as multi column (sub_metas).
+			$is_multiple_name = filter_var( $field->__get( 'multiple_name' ), FILTER_VALIDATE_BOOLEAN );
+			if ( $is_multiple_name ) {
+				$prefix_enabled      = filter_var( $field->__get( 'prefix' ), FILTER_VALIDATE_BOOLEAN );
+				$first_name_enabled  = filter_var( $field->__get( 'fname' ), FILTER_VALIDATE_BOOLEAN );
+				$middle_name_enabled = filter_var( $field->__get( 'mname' ), FILTER_VALIDATE_BOOLEAN );
+				$last_name_enabled   = filter_var( $field->__get( 'lname' ), FILTER_VALIDATE_BOOLEAN );
+				// at least one sub field enabled.
+				if ( $prefix_enabled || $first_name_enabled || $middle_name_enabled || $last_name_enabled ) {
+					// sub metas.
+					$mapper['sub_metas'] = array();
+					if ( $prefix_enabled ) {
+						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'prefix' );
+						$label                 = $field->__get( 'prefix_label' );
+						$mapper['sub_metas'][] = array(
+							'key'   => 'prefix',
+							'label' => ( $label ? $label : $default_label ),
+						);
+					}
+
+					if ( $first_name_enabled ) {
+						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'first-name' );
+						$label                 = $field->__get( 'fname_label' );
+						$mapper['sub_metas'][] = array(
+							'key'   => 'first-name',
+							'label' => ( $label ? $label : $default_label ),
+						);
+					}
+
+					if ( $middle_name_enabled ) {
+						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'middle-name' );
+						$label                 = $field->__get( 'mname_label' );
+						$mapper['sub_metas'][] = array(
+							'key'   => 'middle-name',
+							'label' => ( $label ? $label : $default_label ),
+						);
+					}
+					if ( $last_name_enabled ) {
+						$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'last-name' );
+						$label                 = $field->__get( 'lname_label' );
+						$mapper['sub_metas'][] = array(
+							'key'   => 'last-name',
+							'label' => ( $label ? $label : $default_label ),
+						);
+					}
+				} else {
+					// if no succbvgbfield enabled when multiple name remove mapper (means dont show it on export).
+					$mapper = array();
+				}
+			}
+		} elseif ( 'address' === $field_type ) {
+			$street_enabled  = filter_var( $field->__get( 'street_address' ), FILTER_VALIDATE_BOOLEAN );
+			$line_enabled    = filter_var( $field->__get( 'address_line' ), FILTER_VALIDATE_BOOLEAN );
+			$city_enabled    = filter_var( $field->__get( 'address_city' ), FILTER_VALIDATE_BOOLEAN );
+			$state_enabled   = filter_var( $field->__get( 'address_state' ), FILTER_VALIDATE_BOOLEAN );
+			$zip_enabled     = filter_var( $field->__get( 'address_zip' ), FILTER_VALIDATE_BOOLEAN );
+			$country_enabled = filter_var( $field->__get( 'address_country' ), FILTER_VALIDATE_BOOLEAN );
+			if ( $street_enabled || $line_enabled || $city_enabled || $state_enabled || $zip_enabled || $country_enabled ) {
+				$mapper['sub_metas'] = array();
+				if ( $street_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'street_address' );
+					$label                 = $field->__get( 'street_address_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'street_address',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+				if ( $line_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'address_line' );
+					$label                 = $field->__get( 'address_line_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'address_line',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+				if ( $city_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'city' );
+					$label                 = $field->__get( 'address_city_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'city',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+				if ( $state_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'state' );
+					$label                 = $field->__get( 'address_state_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'state',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+				if ( $zip_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'zip' );
+					$label                 = $field->__get( 'address_zip_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'zip',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+				if ( $country_enabled ) {
+					$default_label         = Forminator_Form_Entry_Model::translate_suffix( 'country' );
+					$label                 = $field->__get( 'address_country_label' );
+					$mapper['sub_metas'][] = array(
+						'key'   => 'country',
+						'label' => ( $label ? $label : $default_label ),
+					);
+				}
+			} else {
+				// if no subfield enabled when multiple name remove mapper (means dont show it on export).
+				$mapper = array();
+			}
+		} elseif ( 'stripe' === $field_type ) {
+			$mapper['label']         = __( 'Stripe Payment', 'forminator' );
+			$mapper['sub_metas']     = array();
+			$mapper['sub_metas'][]   = array(
+				'key'                => 'mode',
+				'label'              => __( 'Mode', 'forminator' ),
+				'transform_callback' => 'strtoupper',
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'product_name',
+				'label' => __( 'Product / Plan Name', 'forminator' ),
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'payment_type',
+				'label' => __( 'Payment type', 'forminator' ),
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'amount',
+				'label' => __( 'Amount', 'forminator' ),
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'currency',
+				'label' => __( 'Currency', 'forminator' ),
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'quantity',
+				'label' => __( 'Quantity', 'forminator' ),
+			);
+			$transaction_link_mapper = array(
+				'key'   => 'transaction_id',
+				'label' => __( 'Transaction ID', 'forminator' ),
+			);
+			if ( class_exists( 'Forminator_Stripe' ) ) {
+				$transaction_link_mapper['transform_callback'] = array( 'Forminator_Stripe', 'linkify_transaction_id' );
+				$transaction_link_mapper['num_transform_arg']  = 2;
+			}
+			$mapper['sub_metas'][] = $transaction_link_mapper;
+			$mapper['sub_metas'][] = array(
+				'key'                => 'status',
+				'label'              => __( 'Status', 'forminator' ),
+				'transform_callback' => 'ucfirst',
+			);
+			if ( class_exists( 'Forminator_Stripe_Subscription' ) ) {
+				$manage_mapper                       = array(
+					'key'   => 'subscription_id',
+					'label' => __( 'Manage', 'forminator' ),
+				);
+				$manage_mapper['transform_callback'] = array( 'Forminator_Stripe_Subscription', 'manage_subscription' );
+				$manage_mapper['num_transform_arg']  = 2;
+
+				$mapper['sub_metas'][] = $manage_mapper;
+			}
+		} elseif ( 'paypal' === $field_type ) {
+			$mapper['label']         = __( 'PayPal Checkout', 'forminator' );
+			$mapper['sub_metas']     = array();
+			$mapper['sub_metas'][]   = array(
+				'key'                => 'mode',
+				'label'              => __( 'Mode', 'forminator' ),
+				'transform_callback' => 'strtoupper',
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'                => 'status',
+				'label'              => __( 'Status', 'forminator' ),
+				'transform_callback' => 'ucfirst',
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'   => 'amount',
+				'label' => __( 'Amount', 'forminator' ),
+			);
+			$mapper['sub_metas'][]   = array(
+				'key'                => 'currency',
+				'label'              => __( 'Currency', 'forminator' ),
+				'transform_callback' => 'strtoupper',
+			);
+			$transaction_link_mapper = array(
+				'key'   => 'transaction_id',
+				'label' => __( 'Transaction ID', 'forminator' ),
+			);
+			if ( class_exists( 'Forminator_PayPal' ) ) {
+				$transaction_link_mapper['transform_callback'] = array( 'Forminator_PayPal', 'linkify_transaction_id' );
+				$transaction_link_mapper['num_transform_arg']  = 2;
+			}
+			$mapper['sub_metas'][] = $transaction_link_mapper;
+		} elseif ( 'group' === $field_type ) {
+			$group_fields = $this->model->get_grouped_real_fields( $field->__get( 'slug' ) );
+
+			$mapper['sub_metas'] = array();
+			foreach ( $group_fields as $group_field ) {
+				$field_mapper        = $this->build_field_mapper( $group_field );
+				$field_mapper['key'] = $field_mapper['meta_key'];
+				$mapper['sub_metas'][] = $field_mapper;
+			}
+		}
+
+		return $mapper;
 	}
 
 	/**
@@ -537,7 +559,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 			foreach ( $fields_mappers as $fields_mapper ) {
 				if ( ! isset( $fields_mapper['sub_metas'] ) ) {
 					$flatten_fields_mappers[] = $fields_mapper;
-				} else {
+				} elseif ( 'group' !== $fields_mapper['type'] ) {
 					foreach ( $fields_mapper['sub_metas'] as $sub_meta ) {
 						$sub_meta['parent']       = $fields_mapper;
 						$flatten_fields_mappers[] = $sub_meta;
@@ -743,25 +765,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 				if ( ! isset( $mapper['sub_metas'] ) ) {
 					$value = forminator_get_entry_field_value( $entry, $mapper, '', true );
 				} else {
-					if ( ! empty( $mapper['sub_metas'] ) ) {
-						foreach ( $mapper['sub_metas'] as $sub_meta ) {
-							$sub_entry_value = forminator_get_entry_field_value( $entry, $mapper, $sub_meta['key'], true );
-							if ( ! empty( $sub_entry_value ) && isset( $sub_meta['transform_callback'] ) && is_callable( $sub_meta['transform_callback'] ) ) {
-								$transform_args = array( $sub_entry_value );
-								if ( isset( $sub_meta['num_transform_arg'] ) && 2 === $sub_meta['num_transform_arg'] ) {
-									$meta_value       = $entry->get_meta( $mapper['meta_key'], '' );
-									$transform_args[] = $meta_value;
-								}
-
-								$sub_entry_value = call_user_func_array( $sub_meta['transform_callback'], $transform_args );
-							}
-							$sub_entries[] = array(
-								'key'   => $sub_meta['key'],
-								'label' => $sub_meta['label'],
-								'value' => $sub_entry_value,
-							);
-						}
-					}
+					$sub_entries = self::get_sub_entries( $mapper, $entry );
 				}
 
 				$detail_args = array(
@@ -771,6 +775,17 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 					'rich'        => isset( $mapper['rich'] ) ? $mapper['rich'] : false,
 					'sub_entries' => $sub_entries,
 				);
+
+				if ( 'group' === $mapper['type'] && ! empty( $mapper['sub_metas'] ) ) {
+					$original_keys       = wp_list_pluck( $mapper['sub_metas'], 'key' );
+					$repeated_group_keys = forminator_get_cloned_field_keys( $entry, $original_keys );
+					foreach ( $repeated_group_keys as $slug ) {
+						$sub_entries = self::get_sub_entries( $mapper, $entry, $slug );
+
+						$detail_args[ 'sub_entries' . $slug ] = $sub_entries;
+					}
+					$detail_args['repeated_group_keys'] = array_merge( array( '' ), $repeated_group_keys );
+				}
 
 				if ( ! empty( $mapper['separator'] ) || ! empty( $mapper['point'] ) ) {
 					$detail_args['separator'] = $mapper['separator'];
@@ -808,6 +823,50 @@ class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 		}
 
 		return $entries_iterator;
+	}
+
+	/**
+	 * Get sub entries
+	 *
+	 * @param array  $mapper Field Mapper.
+	 * @param object $entry Entry object.
+	 * @param string $slug Cloned field suffix.
+	 * @return array
+	 */
+	private static function get_sub_entries( $mapper, $entry, $slug = '' ) {
+		$sub_entries = array();
+		if ( empty( $mapper['sub_metas'] ) ) {
+			return $sub_entries;
+		}
+		$field_suffixes = Forminator_Form_Entry_Model::field_suffix();
+
+		foreach ( $mapper['sub_metas'] as $sub_meta ) {
+			$submeta_key     = in_array( $sub_meta['key'], $field_suffixes, true ) ? $sub_meta['key'] : $sub_meta['key'] . $slug;
+			$sub_entry_value = forminator_get_entry_field_value( $entry, $mapper, $submeta_key, true );
+			if ( ! empty( $sub_entry_value ) && isset( $sub_meta['transform_callback'] ) && is_callable( $sub_meta['transform_callback'] ) ) {
+				$transform_args = array( $sub_entry_value );
+				if ( isset( $sub_meta['num_transform_arg'] ) && 2 === $sub_meta['num_transform_arg'] ) {
+					$meta_value       = $entry->get_meta( $mapper['meta_key'], '' );
+					$transform_args[] = $meta_value;
+				}
+
+				$sub_entry_value = call_user_func_array( $sub_meta['transform_callback'], $transform_args );
+			}
+			$sub_entry = array(
+				'key'   => $sub_meta['key'],
+				'label' => $sub_meta['label'],
+				'value' => $sub_entry_value,
+			);
+
+			if ( ! empty( $sub_meta['sub_metas'] ) ) {
+				$sub_meta['meta_key']    .= $slug;
+				$sub_entry['sub_entries'] = self::get_sub_entries( $sub_meta, $entry, $slug );
+			}
+
+			$sub_entries[] = $sub_entry;
+		}
+
+		return $sub_entries;
 	}
 
 	/**

@@ -175,11 +175,11 @@ if ( FORMINATOR_PRO ) {
 								    'color'    => 'blue',
 								    'class'    => 'addons-actions',
 								    'attrs'    => array(
-										'data-action' => 'addons-update',
-										'data-addon'  => esc_attr( $addons->pid ),
-										'data-nonce'  => esc_attr( wp_create_nonce( 'forminator_popup_addons_actions' ) ),
+										'data-action'  => 'addons-update',
+										'data-addon'   => esc_attr( $addons->pid ),
+										'data-nonce'   => esc_attr( wp_create_nonce( 'forminator_popup_addons_actions' ) ),
 										'data-version' => sprintf( esc_html__( 'Version %s', 'forminator' ), esc_html( $addons->version_latest ) ),
-								    )
+								    ),
 								)
 						    );
 						}
@@ -196,14 +196,14 @@ if ( FORMINATOR_PRO ) {
 									'id'       => 'addons-configure__' . $addons_slug,
 								    'class'    => 'addons-configure',
 								    'attrs'    => array(
-										'data-action'		 => esc_attr( $addons_slug . '-connect-modal' ),
-										'data-addon'		  => esc_attr( $addons->pid ),
-										'data-nonce'		  => esc_attr( wp_create_nonce( 'forminator_' . $addons_slug . '_settings_modal' ) ),
-										'data-modal-nonce'    => esc_attr( wp_create_nonce( 'forminator_' . $addons_slug . '_settings_modal' ) ),
-										'data-modal-image'    => esc_url( forminator_plugin_url() . 'assets/images/' . $addons_slug . '-logo.png' ),
+										'data-action'      => esc_attr( $addons_slug . '-connect-modal' ),
+										'data-addon'       => esc_attr( $addons->pid ),
+										'data-nonce'       => esc_attr( wp_create_nonce( 'forminator_' . $addons_slug . '_settings_modal' ) ),
+										'data-modal-nonce' => esc_attr( wp_create_nonce( 'forminator_' . $addons_slug . '_settings_modal' ) ),
+										'data-modal-image' => esc_url( forminator_plugin_url() . 'assets/images/' . $addons_slug . '-logo.png' ),
 										'data-modal-image-x2' => esc_url( forminator_plugin_url() . 'assets/images/' . $addons_slug . '-logo@2x.png' ),
-										'data-modal-title'    => esc_html( sprintf( __( 'Connect %s Account', 'forminator' ), ucfirst( $addons_slug ) ) ),
-								    )
+										'data-modal-title' => esc_html( sprintf( __( 'Connect %s Account', 'forminator' ), ucfirst( $addons_slug ) ) ),
+								    ),
 								)
 						    );
 
@@ -223,9 +223,9 @@ if ( FORMINATOR_PRO ) {
 										'data-modal'       => 'addons-deactivate',
 										'data-modal-title' => esc_html__( 'Deactivate Add-ons', 'forminator' ),
 										'data-modal-content' => sprintf( __( 'You are trying to deactivate <strong>%s</strong> which is being used by the following forms. This can break the functionality of the forms. Are you sure you want to proceed?', 'forminator' ), esc_html( $addons->name ) ),
-										'data-addon-slug' => esc_attr( $addons_slug ),
+										'data-addon-slug'  => esc_attr( $addons_slug ),
+										'data-is_network'  => $is_network_active,
 								    ),
-								    'disabled' => ( $is_network_active ),
 								)
 						    );
 						} else {
@@ -243,7 +243,7 @@ if ( FORMINATOR_PRO ) {
 										'data-action' => 'addons-activate',
 										'data-addon'  => esc_attr( $addons->pid ),
 										'data-nonce'  => esc_attr( wp_create_nonce( 'forminator_popup_addons_actions' ) ),
-								    )
+								    ),
 								)
 						    );
 
@@ -260,7 +260,7 @@ if ( FORMINATOR_PRO ) {
 										'data-action' => 'addons-delete',
 										'data-addon'  => esc_attr( $addons->pid ),
 										'data-nonce'  => esc_attr( wp_create_nonce( 'forminator_popup_addons_actions' ) ),
-								    )
+								    ),
 								)
 						    );
 						}
@@ -279,7 +279,7 @@ if ( FORMINATOR_PRO ) {
 								    'data-action' => 'addons-install',
 								    'data-addon'  => esc_attr( $addons->pid ),
 								    'data-nonce'  => esc_attr( wp_create_nonce( 'forminator_popup_addons_actions' ) ),
-								)
+								),
 						    )
 						);
 
@@ -291,7 +291,7 @@ if ( FORMINATOR_PRO ) {
 						target="_blank"
 						class="sui-button sui-button-purple"
 				    >
-						<?php esc_html_e( 'Try Pro for 10% Off', 'forminator' ); ?>
+						<?php esc_html_e( 'Try Pro for 30% Off', 'forminator' ); ?>
 				    </a>
 				<?php } ?>
 

@@ -672,9 +672,9 @@ final class Forminator_Addon_Googlesheet extends Forminator_Addon_Abstract {
 				$google_client->setAccessToken( $access_token );
 				$revoked = $google_client->revokeToken();
 
-				if ( ! $revoked ) {
-					throw new Forminator_Addon_Googlesheet_Exception( __( 'Failed to revoke access token', 'forminator' ) );
-				}
+				// if ( ! $revoked ) {
+				// 	throw new Forminator_Addon_Googlesheet_Exception( __( 'Failed to revoke access token', 'forminator' ) );
+				// }
 			}
 		} catch ( Forminator_Addon_Googlesheet_Exception $e ) {
 			$this->_deactivation_error_message = $e->getMessage();

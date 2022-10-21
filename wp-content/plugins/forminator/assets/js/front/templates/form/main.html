@@ -5,6 +5,8 @@ include('global/container-padding.html');
 include('global/container-border.html');
 include('global/container-colors.html');
 
+include self::get_template( $theme, 'field-border.html');
+
 include('global/paypal-button.html');
 
 include('global/response-font.html');
@@ -77,6 +79,12 @@ include('global/back-colors.html');
 
 include('global/next-font.html');
 include('global/next-colors.html');
+
+include('global/repeater-colors.html');
+include('global/repeater-font.html');
+include('global/repeater-link-colors.html');
+include('global/repeater-icon-colors.html');
+include self::get_template( $theme,'repeater-button-colors.html');
 
 include self::get_template( $theme,'card-colors.html');
 

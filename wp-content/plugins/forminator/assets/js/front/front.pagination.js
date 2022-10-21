@@ -429,7 +429,8 @@
 		},
 
 		update_buttons: function () {
-			var hasDraft = this.$el.hasClass( 'draft-enabled' );
+			var hasDraft = this.$el.hasClass( 'draft-enabled' ),
+				self     = this;
 
 			if (this.step === 0) {
 				if ( ! hasDraft ) {
@@ -464,7 +465,8 @@
 				var submit_button_text = this.$el.find('.forminator-pagination-submit').html(),
 					loadingText = this.$el.find('.forminator-pagination-submit').data('loading'),
 					last_button_txt = ( this.custom_label[ 'pagination-labels' ] === 'custom'
-						&& this.custom_label['last-previous'] !== '' ) ? this.custom_label['last-previous'] : this.prev_button;
+						&& this.custom_label['last-previous'] !== '' ) ? this.custom_label['last-previous'] : this.prev_button,
+					forminatorPayment = self.$el.find('.forminator-payment');
 
 				if ( this.$el.hasClass('forminator-design--material') ) {
 
@@ -495,17 +497,21 @@
 				}
 
 				if( this.custom_label['has-paypal'] === true ) {
-					submitButton.addClass('forminator-hidden');
-					this.$el.find('.forminator-payment')
-						.attr('id', 'forminator-paypal-submit');
+					forminatorPayment.attr('id', 'forminator-paypal-submit');
 
-					if ( false === window.paypalHasCondition ) {
-						this.$el.find( '.forminator-payment' ).removeClass( 'forminator-hidden' );
-					}
+					setTimeout(
+						function() {
+							if ( ! window.paypalHasCondition.includes( self.$el.data( 'form-id' ) ) ) {
+								submitButton.addClass('forminator-hidden');
+								forminatorPayment.removeClass( 'forminator-hidden' );
+							}
+						},
+						50
+					);
 				}
 
-				if ( this.$el.find('.forminator-payment iframe').length > 0 ) {
-					this.$el.find('.forminator-payment iframe').width('100%');
+				if ( forminatorPayment.find('iframe').length > 0 ) {
+					forminatorPayment.find('iframe').width('100%');
 				}
 
 			} else {
@@ -563,8 +569,7 @@
 			this.$el.find('.forminator-pagination').css({
 				'height': '0',
 				'opacity': '0',
-				'visibility': 'hidden',
-				'overflow': 'hidden'
+				'visibility': 'hidden'
 			}).attr( 'aria-hidden', 'true' ).attr( 'hidden', true );
 
 			this.$el.find('.forminator-pagination .forminator-pagination--content').hide();

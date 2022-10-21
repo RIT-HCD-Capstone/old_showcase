@@ -227,24 +227,28 @@
 		// taken from forminatorFrontCondition
 		get_form_field: function (element_id) {
 			//find element by suffix -field on id input (default behavior)
-			var $form_id = this.$el.data( 'form-id' ),
-				$uid 	 = this.$el.data( 'uid' ),
-				$element = this.$el.find('#forminator-form-' + $form_id + '__field--' + element_id + '_' + $uid );
+			let $form = this.$el;
+			if ( $form.hasClass( 'forminator-grouped-fields' ) ) {
+				$form = $form.closest( 'form.forminator-ui' );
+			}
+			var $form_id = $form.data( 'form-id' ),
+				$uid 	 = $form.data( 'uid' ),
+				$element = $form.find('#forminator-form-' + $form_id + '__field--' + element_id + '_' + $uid );
 			if ( $element.length === 0 ) {
-				var $element = this.$el.find('#' + element_id + '-field' );
+				var $element = $form.find('#' + element_id + '-field' );
 				if ($element.length === 0) {
 					//find element by its on name (for radio on singlevalue)
-					$element = this.$el.find('input[name=' + element_id + ']');
+					$element = $form.find('input[name=' + element_id + ']');
 					if ($element.length === 0) {
 						// for text area that have uniqid, so we check its name instead
-						$element = this.$el.find('textarea[name=' + element_id + ']');
+						$element = $form.find('textarea[name=' + element_id + ']');
 						if ($element.length === 0) {
 							//find element by its on name[] (for checkbox on multivalue)
-							$element = this.$el.find('input[name="' + element_id + '[]"]');
+							$element = $form.find('input[name="' + element_id + '[]"]');
 							if ($element.length === 0) {
 								//find element by direct id (for name field mostly)
 								//will work for all field with element_id-[somestring]
-								$element = this.$el.find('#' + element_id);
+								$element = $form.find('#' + element_id);
 							}
 						}
 					}
@@ -321,7 +325,8 @@
 				res = '0';
 			}
 
-			if ($input.val() !== String(res)) {
+			const inputVal = $input.val().replace(',','.');
+			if (inputVal !== String(res)) {
 				var decimal_point = $input.data('decimal-point');
 				res = String(res).replace(".", decimal_point );
 				$input.val(res).trigger("change");
@@ -350,7 +355,7 @@
 					replace = 0;
 					var quotedOperand = fullMatch.replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
 					var regexp = new RegExp('([\\+\\-\\*\\/]?)[^\\+\\-\\*\\/\\(]*' + quotedOperand + '[^\\)\\+\\-\\*\\/]*([\\+\\-\\*\\/]?)');
-					var mt = regexp.exec(formula);
+					var mt = regexp.exec(parsedFormula);
 					if (mt) {
 						// if operand in multiplication or division set value = 1
 						if (mt[1] === '*' || mt[1] === '/' || mt[2] === '*' || mt[2] === '/') {
@@ -438,8 +443,8 @@
 					}
 				}
 			} else if ( this.field_has_inputMask( $element ) ) {
-				value = parseFloat( $element.inputmask( 'unmaskedvalue' ) );
-			} else {
+				value = parseFloat( $element.inputmask('unmaskedvalue').replace(',','.') );
+			} else if ( $element.length ) {
 				var number = $element.val();
 				value = parseFloat( number.replace(',','.') );
 			}

@@ -419,6 +419,7 @@ class Forminator_Custom_Form_Admin extends Forminator_Admin_Module {
 					$field->form_id = $row['wrapper_id'];
 					$field->slug    = $f['element_id'];
 					unset( $f['element_id'] );
+					$field->parent_group = ! empty( $row['parent_group'] ) ? $row['parent_group'] : '';
 					$field->import( $f );
 					$model->add_field( $field );
 				}
@@ -482,6 +483,7 @@ class Forminator_Custom_Form_Admin extends Forminator_Admin_Module {
 				$field->form_id = $row['wrapper_id'];
 				$field->slug    = $f['element_id'];
 				unset( $f['element_id'] );
+				$field->parent_group = ! empty( $row['parent_group'] ) ? $row['parent_group'] : '';
 				$field->import( $f );
 				$form_model->add_field( $field );
 			}

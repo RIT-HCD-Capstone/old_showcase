@@ -4,7 +4,6 @@
  * Class Forminator_Addon_Aweber_Form_Hooks
  *
  * @since 1.0 Aweber Addon
- *
  */
 class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abstract {
 
@@ -142,13 +141,13 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 		$form_settings_instance = $this->form_settings_instance;
 		$form_settings          = $this->form_settings_instance->get_form_settings();
 
-		//check required fields
+		// check required fields
 		try {
 			$api  = $this->addon->get_api();
 			$args = array();
 
 			if ( ! isset( $connection_settings['list_id'] ) ) {
-				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly setup.', 'forminator' ) );
+				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly set up.', 'forminator' ) );
 			}
 
 			$list_id = $connection_settings['list_id'];
@@ -166,7 +165,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			$email         = strtolower( trim( $email ) );
 			$args['email'] = $email;
 
-			//find existing subscriber first
+			// find existing subscriber first
 			/**
 			 * Filter arguments to passed on to Find Subscriber AWeber API
 			 *
@@ -292,10 +291,15 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 						$element_id = str_ireplace( '}', '', $element_id );
 
 						if ( isset( $submitted_data[ $element_id ] ) ) {
-							$tags[] = strtolower( (string) $submitted_data[ $element_id ] ); // tag must be string.
+							$field_tags = $submitted_data[ $element_id ];
+							$field_tags = explode( ',', $field_tags );
+
+							foreach ( $field_tags as $tag ) {
+								$tags[] = sanitize_title( $tag );
+							}
 						}
 					} else {
-						$tags[] = strtolower( $tag );
+						$tags[] = sanitize_title( $tag );
 					}
 				}
 
@@ -712,7 +716,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	 *
 	 * @param        $addon_meta_data
 	 * @param        $key
-	 * @param string $default
+	 * @param string          $default
 	 *
 	 * @return string
 	 */

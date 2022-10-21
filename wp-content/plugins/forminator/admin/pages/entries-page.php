@@ -11,14 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Forminator_Entries_Page extends Forminator_Admin_Page {
 
 	/**
-	 * Available Modules
-	 *
-	 * @since 1.0.5
-	 * @var array
-	 */
-	private $modules = array();
-
-	/**
 	 * Merged default parameter with superglobal REQUEST
 	 *
 	 * @since 1.0.5
@@ -43,28 +35,6 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	private $form_model = null;
 
 	/**
-	 * Populating Modules that available on Plugin
-	 *
-	 * @since 1.0.5
-	 */
-	public function populate_modules() {
-		$modules[] = array(
-			'name'  => __( 'Forms', 'forminator' ),
-			'model' => Forminator_Form_Model::model(),
-		);
-		$modules[] = array(
-			'name'  => __( 'Polls', 'forminator' ),
-			'model' => Forminator_Poll_Model::model(),
-		);
-		$modules[] = array(
-			'name'  => __( 'Quizzes', 'forminator' ),
-			'model' => Forminator_Quiz_Model::model(),
-		);
-
-		$this->modules = apply_filters( 'forminator_entries_page_modules', $modules );
-	}
-
-	/**
 	 * Populating Current Page Parameters
 	 *
 	 * @since 1.0.5
@@ -83,7 +53,6 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	 */
 	public function before_render() {
 		$this->populate_screen_params();
-		$this->populate_modules();
 		$this->prepare_entries_page();
 		$this->enqueue_entries_scripts();
 	}
@@ -96,14 +65,7 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	 * @return mixed
 	 */
 	public function get_form_types() {
-		$form_types = array();
-		foreach ( $this->modules as $module ) {
-			/** @var Forminator_Base_Form_Model $model */
-			$model = $module['model'];
-			$name  = $module['name'];
-
-			$form_types[ $model->get_post_type() ] = $name;
-		}
+		$form_types = $this->modules_form_type();
 
 		return apply_filters( 'forminator_entries_page_modules', $form_types );
 	}
@@ -150,29 +112,6 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Get Form Model if current requested form_id available and matched form_type
-	 *
-	 * @since 1.0.5
-	 *
-	 * @return bool|Forminator_Base_Form_Model|null
-	 */
-	private function get_form_model() {
-		if ( $this->get_current_form_id() ) {
-			$form_model = forminator_get_model_from_id( $this->get_current_form_id() );
-			if ( ! $form_model instanceof Forminator_Base_Form_Model ) {
-				return null;
-			}
-			if ( $form_model->get_post_type() !== $this->get_current_form_type() ) {
-				return null;
-			}
-
-			return $form_model;
-		}
-
-		return null;
-	}
-
-	/**
 	 * Return rendered entries page
 	 *
 	 * @since 1.0.5
@@ -184,7 +123,7 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Render Form switcher / select based on current form_type
+	 *  Render Form switcher / select based on current form_type
 	 *
 	 * @since 1.0.5
 	 */

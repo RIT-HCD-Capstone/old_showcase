@@ -110,12 +110,13 @@ class Forminator_Upload extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$html        = '';
@@ -127,6 +128,7 @@ class Forminator_Upload extends Forminator_Field {
 		$description = self::get_property( 'description', $field, '' );
 		$file_type   = self::get_property( 'file-type', $field, 'single' );
 		$form_id     = isset( $settings['form_id'] ) ? $settings['form_id'] : 0;
+		$uniq_id     = $id . '_' . Forminator_CForm_Front::$uid;
 
 		if ( 'multiple' === $file_type ) {
 			$name = $name . '[]';
@@ -140,7 +142,7 @@ class Forminator_Upload extends Forminator_Field {
 
 				$html .= sprintf(
 					'<label for="%s" class="forminator-label">%s %s</label>',
-					'forminator-field-' . $id,
+					'forminator-field-' . $uniq_id,
 					$label,
 					forminator_get_required_icon()
 				);
@@ -148,7 +150,7 @@ class Forminator_Upload extends Forminator_Field {
 
 				$html .= sprintf(
 					'<label for="%s" class="forminator-label">%s</label>',
-					'forminator-field-' . $id,
+					'forminator-field-' . $uniq_id,
 					$label
 				);
 			}
@@ -190,7 +192,7 @@ class Forminator_Upload extends Forminator_Field {
 			}
 
 			$html .= self::create_file_upload(
-				$id,
+				$uniq_id,
 				$name,
 				$description,
 				$required,
@@ -206,7 +208,7 @@ class Forminator_Upload extends Forminator_Field {
 			}
 
 			$html .= self::create_file_upload(
-				$id,
+				$uniq_id,
 				$name,
 				$description,
 				$required,
@@ -218,7 +220,7 @@ class Forminator_Upload extends Forminator_Field {
 		}
 
 		if ( 'multiple' === $file_type ) {
-			$html .= sprintf( '<ul class="forminator-uploaded-files upload-container-%s"></ul>', $id );
+			$html .= sprintf( '<ul class="forminator-uploaded-files upload-container-%s"></ul>', $uniq_id );
 		}
 
 		$html .= '</div>';
@@ -330,7 +332,6 @@ class Forminator_Upload extends Forminator_Field {
 	 * @return bool|array
 	 */
 	public function handle_file_upload( $field, $post_data = array(), $upload_type = 'submit', $file_input = array() ) {
-
 		$this->field       = $field;
 		$id                = self::get_property( 'element_id', $field );
 		$field_name        = $id;
@@ -422,7 +423,7 @@ class Forminator_Upload extends Forminator_Field {
 
 				$upload_dir = wp_upload_dir(); // Set upload folder.
 
-				if ( 'upload' === $upload_type && 'multiple' === $file_type ) {
+				if ( 'upload' === $upload_type /* && 'multiple' === $file_type */ ) {
 					$file_path = forminator_upload_root();
 					$file_url  = formninator_upload_url_root();
 				} else {
@@ -463,7 +464,7 @@ class Forminator_Upload extends Forminator_Field {
 				if ( UPLOAD_ERR_OK !== $file_object['error'] ) {
 					return array(
 						'success' => false,
-						'message' => __( 'Error saving form. Upload error. ', 'forminator' ),
+						'message' => __( 'Error saving form. Upload error.', 'forminator' ),
 					);
 				}
 
@@ -522,15 +523,16 @@ class Forminator_Upload extends Forminator_Field {
 
 					return array(
 						'success'   => true,
+						'file_name' => $filename,
 						'file_url'  => $file_url,
 						'message'   => '',
-						'file_path' => $file_path,
+						'file_path' => wp_normalize_path( $file_path ),
 					);
 
 				} else {
 					return array(
 						'success' => false,
-						'message' => __( 'Error saving form. Upload error. ', 'forminator' ),
+						'message' => __( 'Error saving form. Upload error.', 'forminator' ),
 					);
 				}
 			}
@@ -554,14 +556,14 @@ class Forminator_Upload extends Forminator_Field {
 		$file_url_arr  = array();
 		$use_library   = self::get_property( 'use_library', $field_array, false );
 		$file_type     = self::get_property( 'file-type', $field_array, 'single' );
-		if ( ! empty( $upload_data ) ) {
-			if ( false !== array_search( false, array_column( $upload_data, 'success' ) ) ) {
+		if ( ! empty( $upload_data ) && ! empty( $upload_data['file'] ) ) {
+			if ( false !== array_search( false, array_column( $upload_data['file'], 'success' ) ) ) {
 				return array(
 					'success' => false,
 				);
 			}
 			$upload_dir = wp_upload_dir();
-			foreach ( $upload_data as $upload ) {
+			foreach ( $upload_data['file'] as $upload ) {
 				if ( ! empty( $upload ) ) {
 					$file_name = trim( sanitize_file_name( $upload['file_name'] ) );
 					$temp_path = forminator_upload_root() . '/' . $file_name;
@@ -570,10 +572,10 @@ class Forminator_Upload extends Forminator_Field {
 					$exploded_name    = explode( '/', $unique_file_name );
 					$filename         = end( $exploded_name );
 					if ( wp_is_writable( $upload_dir['path'] ) ) {
-						$file_path = $upload_dir['path'] . '/' . trim( sanitize_file_name( $filename ) );
+						$file_path = wp_normalize_path( $upload_dir['path'] . '/' . trim( sanitize_file_name( $filename ) ) );
 						$file_url  = $upload_dir['url'] . '/' . trim( sanitize_file_name( $filename ) );
 					} else {
-						$file_path = $upload_dir['basedir'] . '/' . trim( sanitize_file_name( $filename ) );
+						$file_path = wp_normalize_path( $upload_dir['basedir'] . '/' . trim( sanitize_file_name( $filename ) ) );
 						$file_url  = $upload_dir['baseurl'] . '/' . trim( sanitize_file_name( $filename ) );
 					}
 
@@ -632,7 +634,7 @@ class Forminator_Upload extends Forminator_Field {
 
 				return array(
 					'success' => false,
-					'message' => __( 'Error saving form. Upload error. ', 'forminator' ),
+					'message' => __( 'Error saving form. Upload error.', 'forminator' ),
 				);
 			}
 		}
@@ -647,19 +649,23 @@ class Forminator_Upload extends Forminator_Field {
 	 *
 	 * @param array $field
 	 * @param array $upload_data settings.
+	 * @param bool  $temporary - Upload to temp folder first before payments are verified.
 	 *
 	 * @return bool|array
 	 */
-	public function handle_submission_multifile_upload( $field, $upload_data ) {
+	public function handle_submission_multifile_upload( $field, $upload_data, $temporary = false ) {
+		$file_name_arr = array();
 		$file_path_arr = array();
 		$file_url_arr  = array();
+		$to_temp       = $temporary ? 'upload' : 'submit';
 		if ( ! empty( $upload_data ) ) {
 			$upload_file = $this->arrange_files( $upload_data );
 			$i           = 1;
 			foreach ( $upload_file as $upload ) {
-				$response = $this->handle_file_upload( $field, array( 'totalFiles' => $i ), 'submit', $upload );
+				$response = $this->handle_file_upload( $field, array( 'totalFiles' => $i ), $to_temp, $upload );
 				if ( isset( $response['success'] ) && $response['success'] ) {
-					$file_path_arr[] = $response['file_path'];
+					$file_name_arr[] = $response['file_name'];
+					$file_path_arr[] = wp_normalize_path( $response['file_path'] );
 					$file_url_arr[]  = $response['file_url'];
 				} else {
 					return $response;
@@ -667,22 +673,160 @@ class Forminator_Upload extends Forminator_Field {
 
 				$i++;
 			}
+
 			if ( ! empty( $file_url_arr ) && ! empty( $file_path_arr ) ) {
 
 				return array(
 					'success'   => true,
+					'file_name' => $file_name_arr,
 					'file_url'  => $file_url_arr,
 					'file_path' => $file_path_arr,
 				);
 			} else {
 				return array(
 					'success' => false,
-					'message' => __( 'Error saving form. Upload error. ', 'forminator' ),
+					'message' => __( 'Error saving form. Upload error.', 'forminator' ),
 				);
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Transfer the uploaded files
+	 *
+	 * @since 1.19.0
+	 *
+	 * @param array $upload_data settings.
+	 * @param array $field_array field array.
+	 *
+	 * @return bool|array
+	 */
+	public function transfer_upload( $upload_data, $field_array = array() ) {
+		$file_path   = null;
+		$file_url    = null;
+		$use_library = self::get_property( 'use_library', $field_array, false );
+		$file_type   = self::get_property( 'file-type', $field_array, 'single' );
+		if ( ! empty( $upload_data ) && ! empty( $upload_data['file'] ) ) {
+			if ( false !== array_search( false, array_column( $upload_data['file'], 'success' ) ) ) {
+				return array(
+					'success' => false,
+				);
+			}
+
+			$upload_dir = wp_upload_dir();
+			if ( 'multiple' === $file_type ) {
+				foreach ( $upload_data['file']['file_name'] as $key => $upload ) {
+					$files = $this->move_upload(
+						array(
+							'file_name' => $upload,
+							'file_path' => $upload_data['file']['file_path'][ $key ],
+							'file_url'  => $upload_data['file']['file_url'][ $key ],
+						),
+						$upload_dir,
+						$use_library,
+						$file_type
+					);
+
+					$file_path[] = $files['file_path'];
+					$file_url[]  = $files['file_url'];
+				}
+			} else {
+				$file      = $this->move_upload( $upload_data['file'], $upload_dir, $use_library, $file_type );
+				$file_path = $file['file_path'];
+				$file_url  = $file['file_url'];
+			}
+
+			if ( ! empty( $file_url ) && ! empty( $file_path ) ) {
+				return array(
+					'success'   => true,
+					'file_url'  => $file_url,
+					'file_path' => $file_path,
+				);
+			} else {
+				return array(
+					'success' => false,
+					'message' => __( 'Error saving form. Upload error.', 'forminator' ),
+				);
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Move the uploaded files from forminator_temp to WP uploads.
+	 * TODO: Refactor this. Similar to handle_ajax_multifile_upload.
+	 *
+	 * @since 1.19.0
+	 *
+	 * @param array  $upload - The upload data.
+	 * @param array  $upload_dir - Upload directory.
+	 * @param bool   $use_library - Upload directory.
+	 * @param string $file_type - Single/Multiple.
+	 *
+	 * @return bool|array
+	 */
+	public function move_upload( $upload, $upload_dir, $use_library, $file_type ) {
+		$file_name        = trim( sanitize_file_name( $upload['file_name'] ) );
+		$temp_path        = forminator_upload_root() . '/' . $file_name;
+		$unique_file_name = wp_unique_filename( $upload_dir['path'], $file_name );
+		$exploded_name    = explode( '/', $unique_file_name );
+		$filename         = end( $exploded_name );
+
+		if ( wp_is_writable( $upload_dir['path'] ) ) {
+			$file_path = wp_normalize_path( $upload_dir['path'] . '/' . trim( sanitize_file_name( $filename ) ) );
+			$file_url  = $upload_dir['url'] . '/' . trim( sanitize_file_name( $filename ) );
+		} else {
+			$file_path = wp_normalize_path( $upload_dir['basedir'] . '/' . trim( sanitize_file_name( $filename ) ) );
+			$file_url  = $upload_dir['baseurl'] . '/' . trim( sanitize_file_name( $filename ) );
+		}
+
+		if ( file_exists( $temp_path ) ) {
+			if ( rename( $temp_path, $file_path ) ) {
+				if ( $use_library && 'multiple' === $file_type ) {
+					$upload_id = wp_insert_attachment(
+						array(
+							'guid'           => $file_path,
+							'post_mime_type' => $upload['mime_type'],
+							'post_title'     => preg_replace( '/\.[^.]+$/', '', $filename ),
+							'post_content'   => '',
+							'post_status'    => 'inherit',
+						),
+						$file_path
+					);
+
+					// wp_generate_attachment_metadata() won't work if you do not include this file.
+					require_once ABSPATH . 'wp-admin/includes/image.php';
+
+					// Generate and save the attachment metas into the database.
+					wp_update_attachment_metadata( $upload_id, wp_generate_attachment_metadata( $upload_id, $file_path ) );
+				}
+			}
+		} else {
+			// Check maybe it was already saved on previous submission but it had other fields validation issues.
+			preg_match( '/(\-([0-9]+))\.[^.]+$/', $file_path, $matches );
+			if ( ! empty( $matches[0] ) ) {
+				if ( '-1' === $matches[1] ) {
+					$replace = '';
+				} else {
+					$replace = '-' . ( --$matches[2] );
+				}
+				$ext           = str_replace( $matches[1], $replace, $matches[0] );
+				$file_path_new = substr( $file_path, 0, -strlen( $matches[0] ) ) . $ext;
+				$file_url_new  = substr( $file_url, 0, -strlen( $matches[0] ) ) . $ext;
+				if ( file_exists( $file_path_new ) ) {
+					$file_path = $file_path_new;
+					$file_url  = $file_url_new;
+				}
+			}
+		}
+
+		return array(
+			'file_path' => $file_path,
+			'file_url'  => $file_url,
+		);
 	}
 
 	/**

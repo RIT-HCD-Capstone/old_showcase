@@ -131,14 +131,15 @@ class Forminator_Address extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
-		$draft_value 		 = isset( $draft_value['value'] ) ? $draft_value['value'] : '';
+		$draft_value         = isset( $draft_value['value'] ) ? $draft_value['value'] : '';
 
 		$design = $this->get_form_style( $settings );
 
@@ -186,19 +187,19 @@ class Forminator_Address extends Forminator_Field {
 			'type'          => 'text',
 			'name'          => $name . '-' . $slug,
 			'placeholder'   => $this->sanitize_value( self::get_property( $slug . '_placeholder', $field ) ),
-			'id'            => 'forminator-field-' . $slug . '-' . $name,
+			'id'            => 'forminator-field-' . $slug . '-' . $name . '_' . Forminator_CForm_Front::$uid,
 			'class'         => 'forminator-input',
 			'data-required' => $required,
 			'aria-required' => $ariareq,
 		);
 
-		if ( is_null( $draft_value ) ) {
+		if ( empty( $draft_value ) ) {
 
 			$address = $this->replace_from_prefill( $field, $address, $slug );
 
-		} elseif ( isset( $draft_value[$slug] ) ) {
+		} elseif ( isset( $draft_value[ $slug ] ) ) {
 
-			$address['value'] = esc_attr( $draft_value[$slug] );
+			$address['value'] = esc_attr( $draft_value[ $slug ] );
 		}
 
 		if ( $enabled ) {
@@ -236,7 +237,7 @@ class Forminator_Address extends Forminator_Field {
 	 *
 	 * @return string
 	 */
-	public function get_city_state( $field, $design, $draft_value = null) {
+	public function get_city_state( $field, $design, $draft_value = null ) {
 		$html           = '';
 		$cols           = 12;
 		$id             = self::get_property( 'element_id', $field );
@@ -274,7 +275,7 @@ class Forminator_Address extends Forminator_Field {
 					'type'          => 'text',
 					'name'          => $id . '-city',
 					'placeholder'   => $this->sanitize_value( self::get_property( 'address_city_placeholder', $field ) ),
-					'id'            => 'forminator-field-city' . $id,
+					'id'            => 'forminator-field-city-' . $id . '_' . Forminator_CForm_Front::$uid,
 					'class'         => 'forminator-input',
 					'data-required' => $city_required,
 					'aria-required' => $city_ariareq,
@@ -314,7 +315,7 @@ class Forminator_Address extends Forminator_Field {
 					'type'          => 'text',
 					'name'          => $id . '-state',
 					'placeholder'   => $this->sanitize_value( self::get_property( 'address_state_placeholder', $field ) ),
-					'id'            => 'forminator-field-state-' . $id,
+					'id'            => 'forminator-field-state-' . $id . '_' . Forminator_CForm_Front::$uid,
 					'class'         => 'forminator-input',
 					'data-required' => $state_required,
 					'aria-required' => $state_ariareq,
@@ -400,7 +401,7 @@ class Forminator_Address extends Forminator_Field {
 					'type'        => 'text',
 					'name'        => $id . '-zip',
 					'placeholder' => $this->sanitize_value( self::get_property( 'address_zip_placeholder', $field ) ),
-					'id'          => 'forminator-field-zip-' . $id,
+					'id'          => 'forminator-field-zip-' . $id . '_' . Forminator_CForm_Front::$uid,
 					'class'       => 'forminator-input',
 				);
 

@@ -138,7 +138,7 @@ class Forminator_Name extends Forminator_Field {
 		$html        = '';
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$ariareq     = 'false';
 		$label       = esc_html( self::get_property( 'field_label', $field, '' ) );
@@ -293,7 +293,7 @@ class Forminator_Name extends Forminator_Field {
 				'type'          => 'text',
 				'name'          => $id . '-first-name',
 				'placeholder'   => $this->sanitize_value( self::get_property( 'fname_placeholder', $field ) ),
-				'id'            => 'forminator-field-first-' . $id,
+				'id'            => 'forminator-field-first-' . $id . '_' . Forminator_CForm_Front::$uid,
 				'class'         => 'forminator-input',
 				'aria-required' => $fname_ariareq,
 				'data-multi'    => true,
@@ -307,7 +307,7 @@ class Forminator_Name extends Forminator_Field {
 
 				$first_name['value'] = $draft_value['first-name'];
 
-			} elseif ( $this->has_prefill( $field, 'prefix' ) ) {
+			} elseif ( $this->has_prefill( $field, 'fname' ) ) {
 
 				$first_name = $this->replace_from_prefill( $field, $first_name, 'fname' );
 
@@ -393,7 +393,7 @@ class Forminator_Name extends Forminator_Field {
 				'type'          => 'text',
 				'name'          => $id . '-middle-name',
 				'placeholder'   => $this->sanitize_value( self::get_property( 'mname_placeholder', $field ) ),
-				'id'            => 'forminator-field-middle-' . $id,
+				'id'            => 'forminator-field-middle-' . $id . '_' . Forminator_CForm_Front::$uid,
 				'class'         => 'forminator-input',
 				'aria-required' => $mname_ariareq,
 				'data-multi'    => true,
@@ -403,7 +403,7 @@ class Forminator_Name extends Forminator_Field {
 
 				$middle_name['value'] = $draft_value['middle-name'];
 
-			} elseif ( $this->has_prefill( $field, 'prefix' ) ) {
+			} elseif ( $this->has_prefill( $field, 'mname' ) ) {
 
 				$middle_name = $this->replace_from_prefill( $field, $middle_name, 'mname' );
 
@@ -433,7 +433,7 @@ class Forminator_Name extends Forminator_Field {
 				'type'          => 'text',
 				'name'          => $id . '-last-name',
 				'placeholder'   => $this->sanitize_value( self::get_property( 'lname_placeholder', $field ) ),
-				'id'            => 'forminator-field-last-' . $id,
+				'id'            => 'forminator-field-last-' . $id . '_' . Forminator_CForm_Front::$uid,
 				'class'         => 'forminator-input',
 				'aria-required' => $lname_ariareq,
 				'data-multi'    => true,
@@ -447,7 +447,7 @@ class Forminator_Name extends Forminator_Field {
 
 				$last_name['value'] = $draft_value['last-name'];
 
-			} elseif ( $this->has_prefill( $field, 'prefix' ) ) {
+			} elseif ( $this->has_prefill( $field, 'lname' ) ) {
 
 				$last_name = $this->replace_from_prefill( $field, $last_name, 'lname' );
 
@@ -482,11 +482,12 @@ class Forminator_Name extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -638,7 +639,7 @@ class Forminator_Name extends Forminator_Field {
 			if ( $required ) {
 				// backward compat.
 				$required_message = self::get_property( 'required_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST, 'string' );
-				if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message ) {
+				if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message || empty( $required_message ) ) {
 					$required_message = __( 'This field is required. Please input your name.', 'forminator' );
 				}
 

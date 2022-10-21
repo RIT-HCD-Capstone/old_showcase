@@ -4,7 +4,7 @@ Donate link: http://www.wp-event-organiser.com/donate
 Tags: events, event, event categories, event organizer, events calendar, event management, ical, locations, google map, OpenStreetMap, widget, venues, maps, gigs, shows,
 Requires at least: 3.8.0
 Tested up to: 5.9.1
-Stable tag: 3.12.0
+Stable tag: 3.12.1
 License: GPLv3
 
 Create and maintain events, including complex reoccurring patterns, venue management (with Google Maps or OpenStreetMap), calendars and customisable event lists
@@ -222,6 +222,8 @@ More information on shortcodes is [available here](http://wp-event-organiser.com
 
 == Changelog ==
 
+= 3.12.1 - 28th September 2022 =
+* fix: static method called dynamically
 
 = 3.12.0 - 30th March 2022 =
 * feat: Add %event_organiser_url% placeholder for event list shortcode (url of the event's organiser)

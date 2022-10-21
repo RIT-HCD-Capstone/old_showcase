@@ -20,7 +20,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 id="forminator-integration-popup__title" class="sui-box-title sui-lg" style="overflow: initial; white-space: normal; text-overflow: initial;">
 		<?php
 		/* translators: ... */
-		echo esc_html( sprintf( __( 'Setup %1$s Client', 'forminator' ), 'Slack' ) );
+		echo esc_html( sprintf( __( 'Set Up %1$s Client', 'forminator' ), 'Slack' ) );
 		?>
 	</h3>
 
@@ -30,7 +30,7 @@ foreach ( $template_vars as $key => $val ) {
 
 	<?php else : ?>
 
-		<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Setup Slack to be used by Forminator to communicating with Slack server.', 'forminator' ); ?></p>
+		<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Set up Slack to be used by Forminator to communicating with Slack server.', 'forminator' ); ?></p>
 
 		<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 			<div

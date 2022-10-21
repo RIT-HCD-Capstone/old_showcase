@@ -578,4 +578,68 @@ abstract class Forminator_Admin_Page {
 
 		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
+
+	/**
+     * Forminator modules
+	 */
+	public function populate_modules() {
+
+		$modules[] = array(
+			'name'  => __( 'Forms', 'forminator' ),
+			'model' => Forminator_Form_Model::model(),
+			'slug'  => 'form',
+		);
+		$modules[] = array(
+			'name'  => __( 'Polls', 'forminator' ),
+			'model' => Forminator_Poll_Model::model(),
+			'slug'  => 'poll',
+		);
+		$modules[] = array(
+			'name'  => __( 'Quizzes', 'forminator' ),
+			'model' => Forminator_Quiz_Model::model(),
+			'slug'  => 'quiz',
+		);
+
+		return $modules;
+	}
+
+	/**
+     * Modules form type
+     *
+	 * @return array
+	 */
+    public function modules_form_type() {
+	    $form_types = array();
+        $modules = $this->populate_modules();
+	    foreach ( $modules as $module ) {
+		    /** @var Forminator_Base_Form_Model $model */
+		    $model = $module['model'];
+		    $name  = $module['name'];
+
+		    $form_types[ $model->get_post_type() ] = $name;
+	    }
+
+        return $form_types;
+    }
+
+	/**
+	 * Get Form Model if current requested form_id available and matched form_type
+	 *
+	 * @return bool|Forminator_Base_Form_Model|null
+	 */
+	public function get_form_model() {
+		if ( $this->get_current_form_id() ) {
+			$form_model = forminator_get_model_from_id( $this->get_current_form_id() );
+			if ( ! $form_model instanceof Forminator_Base_Form_Model ) {
+				return null;
+			}
+			if ( $form_model->get_post_type() !== $this->get_current_form_type() ) {
+				return null;
+			}
+
+			return $form_model;
+		}
+
+		return null;
+	}
 }

@@ -86,12 +86,13 @@ class Forminator_Calculation extends Forminator_Field {
 	 * @since 1.7
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -99,7 +100,7 @@ class Forminator_Calculation extends Forminator_Field {
 		$wrapper     = array();
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
-		$id          = $id . '-field';
+		$id          = $id . '-field' . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$value       = esc_html( self::get_post_data( $name, self::get_property( 'default_value', $field ) ) );
 		$label       = esc_html( self::get_property( 'field_label', $field, '' ) );
@@ -114,6 +115,10 @@ class Forminator_Calculation extends Forminator_Field {
 		$separators  = $this->forminator_separators( $separator, $field );
 
 		$point = ! empty( $precision ) ? $separators['point'] : '';
+
+		if( is_numeric( $formula ) ) {
+			$formula = $formula . '*1';
+		}
 
 		$number_attr = array(
 			'name'               => $name,

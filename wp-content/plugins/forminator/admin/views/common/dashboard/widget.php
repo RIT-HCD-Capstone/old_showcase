@@ -91,7 +91,7 @@ $modules = Forminator_API::$method( null, 1, $num_recent, $statuses );
 						}
 						// For Quizzes.
 						$has_leads = isset( $module['settings']['hasLeads'] ) ? $module['settings']['hasLeads'] : false;
-						$leads_id  = isset( $module['leads_id'] ) ? $module['leads_id'] : 0;
+						$leads_id  = isset( $module['settings']['leadsId'] ) ? $module['settings']['leadsId'] : 0;
 						?>
 
 							<span

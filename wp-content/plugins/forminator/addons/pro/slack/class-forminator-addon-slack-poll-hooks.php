@@ -133,11 +133,11 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 			$args = array();
 
 			if ( ! isset( $connection_settings['target_id'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly setup.', 'forminator' ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly set up.', 'forminator' ) );
 			}
 
 			if ( ! isset( $connection_settings['message'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly setup.', 'forminator' ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly set up.', 'forminator' ) );
 			}
 			$text_message = $connection_settings['message'];
 			$text_message = forminator_replace_variables( $text_message );

@@ -27,6 +27,13 @@ class Forminator_Form_Field_Model {
 	public $form_id;
 
 	/**
+	 * This is parent group, optional
+	 *
+	 * @var string
+	 */
+	public $parent_group = '';
+
+	/**
 	 * This contains all the parsed json data from frontend form
 	 *
 	 * @var array
@@ -103,9 +110,10 @@ class Forminator_Form_Field_Model {
 	 */
 	public function to_array() {
 		$data = array(
-			'id'         => $this->slug,
-			'element_id' => $this->slug,
-			'form_id'    => $this->form_id,
+			'id'           => $this->slug,
+			'element_id'   => $this->slug,
+			'form_id'      => $this->form_id,
+			'parent_group' => $this->parent_group,
 		);
 
 		return array_merge( $data, $this->raw );

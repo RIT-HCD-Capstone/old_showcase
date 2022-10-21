@@ -117,6 +117,7 @@ class Forminator_Core {
 			if ( Forminator::is_addons_feature_enabled() ) {
 				$this->admin->add_integrations_page();
 			}
+			$this->admin->add_reports_page();
 			$this->admin->add_settings_page();
 
 			if ( ! FORMINATOR_PRO ) {
@@ -434,7 +435,9 @@ class Forminator_Core {
 		// TODO: Should skip fields that has its own sanitize function
 		if (
 			in_array( $current_key, $skipped_keys, true ) ||
-			0 === strpos( $current_key, 'url-' )
+			0 === strpos( $current_key, 'url-' ) ||
+			0 === strpos( $current_key, 'select-' ) ||
+			0 === strpos( $current_key, 'checkbox-' )
 		) {
 			return $data;
 		}
@@ -465,6 +468,7 @@ class Forminator_Core {
 			in_array( $current_key, $allow_html, true ) ||
 			0 === strpos( $current_key, 'html-' ) ||
 			0 === strpos( $current_key, 'textarea-' ) ||
+			0 === strpos( $current_key, 'radio-' ) ||
 			false !== strpos( $current_key, '-post-title' ) ||
 			false !== strpos( $current_key, '-post-content' ) ||
 			false !== strpos( $current_key, '-post-excerpt' )

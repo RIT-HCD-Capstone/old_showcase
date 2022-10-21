@@ -70,7 +70,7 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 	}
 
 	/**
-	 * Setup Connection Name
+	 * Set up Connection Name
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -170,7 +170,7 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 	}
 
 	/**
-	 * Setup Contact List
+	 * Set up Contact List
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -199,7 +199,7 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 		$is_submit  = ! empty( $submitted_data );
 		$has_errors = false;
 
-		$lists         = array();
+		$lists = array();
 
 		try {
 
@@ -304,7 +304,7 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 
 
 	/**
-	 * Setup fields map
+	 * Set up fields map
 	 *
 	 * @since 1.0 Activecampaign Addon
 	 *
@@ -342,8 +342,8 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 			'email_fields'  => $email_fields,
 		);
 
-		$is_submit  = ! empty( $submitted_data );
-		$has_errors = false;
+		$is_submit     = ! empty( $submitted_data );
+		$has_errors    = false;
 		$custom_fields = array();
 
 		$fields = array(
@@ -358,23 +358,22 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 
 		try {
 
-			$ac_api      = $this->addon->get_api();
-			$list_detail = $ac_api->get_list( $list_id );
+			$ac_api        = $this->addon->get_api();
 			$lists_request = $ac_api->get_lists();
-			foreach ( $lists_request as $key => $data ) {
-				if ( isset( $data->id ) ) {
-					if ( isset( $data->fields ) ) {
-						$custom_fields[ $list_id ] = $data->fields;
+			$custom_fields = array();
+
+			foreach ( $lists_request as $list ) {
+				if ( $list_id === $list->id ) {
+					if ( ! empty( $list->fields ) ) {
+						$custom_fields = $list->fields;
 					}
 				}
 			}
 
-			//get global fields assigned to the form as well as explecit field
-			if ( ! empty( $custom_fields ) && is_array( $custom_fields ) ) {
+			// get global fields assigned to the form as well as explecit field
+			if ( ! empty( $custom_fields ) ) {
 				foreach ( $custom_fields as $custom_field ) {
-					foreach ( $custom_field as $field ) {
-						$fields[ $field->id ] = $field->title;
-					}
+					$fields[ $custom_field->id ] = $custom_field->title;
 				}
 			}
 
@@ -487,7 +486,7 @@ class Forminator_Addon_Activecampaign_Form_Settings extends Forminator_Addon_For
 	}
 
 	/**
-	 * Setup options
+	 * Set up options
 	 *
 	 * Contains :
 	 * - Double opt-in form,

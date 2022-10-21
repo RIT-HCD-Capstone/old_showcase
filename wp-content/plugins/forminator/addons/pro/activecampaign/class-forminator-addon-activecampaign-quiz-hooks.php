@@ -160,7 +160,7 @@ class Forminator_Addon_Activecampaign_Quiz_Hooks extends Forminator_Addon_Quiz_H
 			$args   = array();
 
 			if ( ! isset( $connection_settings['list_id'] ) ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'List ID not properly setup.', 'forminator' ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'List ID not properly set up.', 'forminator' ) );
 			}
 
 			$args[ 'p[' . $connection_settings['list_id'] . ']' ] = $connection_settings['list_id'];

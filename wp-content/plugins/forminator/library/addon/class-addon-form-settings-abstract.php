@@ -611,4 +611,5 @@ abstract class Forminator_Addon_Form_Settings_Abstract extends Forminator_Addon_
 
 		return $address;
 	}
+
 }

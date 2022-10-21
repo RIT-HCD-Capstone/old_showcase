@@ -23,7 +23,7 @@ foreach ( $template_vars as $key => $val ) {
 	?>
 	</h3>
 
-	<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Setup ActiveCampaign API Access.', 'forminator' ); ?></p>
+	<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Set Up ActiveCampaign API Access.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<div

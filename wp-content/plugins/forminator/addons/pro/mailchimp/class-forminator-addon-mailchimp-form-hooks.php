@@ -488,6 +488,14 @@ class Forminator_Addon_Mailchimp_Form_Hooks extends Forminator_Addon_Form_Hooks_
 							continue;
 						}
 						$merge_fields[ $item->tag ] = $submitted_data[ $element_id ];
+						if ( in_array( $item->type, array( 'date', 'birthday' ), true ) ) {
+							$time = strtotime( $submitted_data[ $element_id ] );
+							if ( $time ) {
+								$format = 'birthday' === $item->type ? 'm/d' : 'm/d/Y';
+
+								$merge_fields[ $item->tag ] = date( $format, $time ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+							}
+						}
 					}
 				}
 			}

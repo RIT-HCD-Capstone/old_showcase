@@ -164,6 +164,27 @@ abstract class Forminator_Field {
 	}
 
 	/**
+	 * Create decimals pattern from decimals number
+	 *
+	 * @since 1.7
+	 * @param integer $decimals
+	 * @return mixed
+	 */
+	protected static function create_step_string( $decimals = 2 ) {
+		$step = 1;
+
+		if ( ! empty( $decimals ) ) {
+			for ( $i = 1; $i < $decimals; $i++ ) {
+				$step = '0' . $step;
+			}
+
+			$step = '0.' . $step;
+		}
+
+		return $step;
+	}
+
+	/**
 	 * Return field property
 	 *
 	 * @since 1.0
@@ -200,14 +221,14 @@ abstract class Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param       $field
-	 * @param array $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
 	public function markup(
 		/** @noinspection PhpUnusedParameterInspection */
 		$field,
-		$settings = array()
+		$views_obj
 	) {
 		return '';
 	}
@@ -879,8 +900,11 @@ abstract class Forminator_Field {
 			$conditions_count ++;
 
 			if ( in_array( $element_id, Forminator_CForm_Front_Action::$hidden_fields, true ) ) {
-				$is_condition_fulfilled = false;
+				$current_is_hidden      = true;
+				$is_condition_fulfilled = isset( $condition['rule'] ) && 'is_not' === $condition['rule']
+					&& isset( $condition['value'] ) && ! is_null( $condition['value'] ) && '' !== $condition['value'];
 			} else {
+				$current_is_hidden      = false;
 				$is_condition_fulfilled = self::is_condition_matched( $condition );
 			}
 
@@ -892,7 +916,7 @@ abstract class Forminator_Field {
 			}
 
 			// Check parent conditions only if the current condition is matched.
-			if ( $is_condition_fulfilled && Forminator_Front_Action::$module_object ) {
+			if ( $is_condition_fulfilled && ! $current_is_hidden && Forminator_Front_Action::$module_object ) {
 				$parent_field  = Forminator_Front_Action::$module_object->get_field( $element_id );
 				$parent_hidden = self::is_hidden( $parent_field );
 
@@ -940,7 +964,7 @@ abstract class Forminator_Field {
 		$field_value = isset( $form_data[ $element_id ] ) ? $form_data[ $element_id ] : '';
 
 		if ( stripos( $element_id, 'upload-' ) !== false && ! isset( $form_data[ $element_id ] ) && isset( $form_data['forminator-multifile-hidden'] ) ) {
-			$form_upload_data = json_decode( stripslashes( $form_data['forminator-multifile-hidden'] ), true );
+			$form_upload_data = $form_data['forminator-multifile-hidden'];
 			if ( $form_upload_data && isset( $form_upload_data[ $element_id ] ) ) {
 				$field_value = $form_upload_data[ $element_id ];
 			}
@@ -1003,15 +1027,19 @@ abstract class Forminator_Field {
 		if ( is_array( $form_field_value ) ) {
 			$form_field_value = forminator_trim_array( $form_field_value );
 		} else {
-			$form_field_value = wp_unslash( trim( $form_field_value ) );
+			$form_field_value = strtolower( trim( $form_field_value ) );
 		}
 
 		$form_field_value = wp_unslash( $form_field_value );
 		$condition_value  = trim( $condition['value'] );
 
-		if ( is_string( $form_field_value ) ) {
-			$form_field_value = strtolower( $form_field_value );
-		}
+		// Remove lines below coz strtolower is already applied using forminator_trim_array
+		// if ( is_array( $form_field_value ) ) {
+		// 	$form_field_value = array_map( 'strtolower', $form_field_value );
+		// } else if ( is_string( $form_field_value ) ) {
+		// 	$form_field_value = strtolower( $form_field_value );
+		// }
+
 		if ( is_string( $condition_value ) ) {
 			$condition_value = strtolower( $condition_value );
 		}
@@ -1549,7 +1577,7 @@ abstract class Forminator_Field {
 	protected function get_field_multiple_required_message( $id, $field, $property, $slug, $fallback ) {
 		// backward compat *_required_message.
 		$required_message = self::get_property( $property, $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST, 'string' );
-		if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message ) {
+		if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message || empty( $required_message ) ) {
 			$required_message = $fallback;
 		}
 

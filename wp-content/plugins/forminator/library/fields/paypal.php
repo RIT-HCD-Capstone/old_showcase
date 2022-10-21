@@ -44,7 +44,7 @@ class Forminator_PayPal extends Forminator_Field {
 	/**
 	 * @var string
 	 */
-	public $icon = 'sui-icon-paypal';
+	public $icon = 'sui-icon forminator-icon-paypal';
 
 	public $is_connected = false;
 
@@ -92,12 +92,13 @@ class Forminator_PayPal extends Forminator_Field {
 	 * Field front-end markup
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -121,7 +122,7 @@ class Forminator_PayPal extends Forminator_Field {
 		$attr = array(
 			'type'              => 'hidden',
 			'name'              => $element_name,
-			'id'                => 'forminator-' . $field_id . '-field',
+			'id'                => 'forminator-' . $field_id . '_' . Forminator_CForm_Front::$uid,
 			'class'             => 'forminator-paypal-input',
 			'data-is-payment'   => 'true',
 			'data-payment-type' => $this->type,

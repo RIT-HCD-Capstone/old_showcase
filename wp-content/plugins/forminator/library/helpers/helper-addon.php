@@ -31,11 +31,11 @@ function forminator_get_pro_addon_list() {
 			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', 'forminator' ),
 			'_min_forminator_version' => FORMINATOR_VERSION,
 		),
-		'zapier'    => array(
+		'webhook'   => array(
 			'_image'                  => 'https://via.placeholder.com/350x150',
-			'_icon'                   => 'zapier',
-			'_title'                  => 'Zapier',
-			'_short_title'            => 'Zapier',
+			'_icon'                   => 'webhook',
+			'_title'                  => 'Webhook',
+			'_short_title'            => 'Webhook',
 			'_version'                => '1.0',
 			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', 'forminator' ),
 			'_min_forminator_version' => FORMINATOR_VERSION,
@@ -897,9 +897,16 @@ function forminator_addon_format_form_settings( Forminator_Base_Form_Model $cust
  */
 function forminator_find_addon_meta_data_from_entry_model( Forminator_Addon_Abstract $connected_addon, Forminator_Form_Entry_Model $entry_model ) {
 	$addon_meta_data        = array();
-	$addon_meta_data_prefix = 'forminator_addon_' . $connected_addon->get_slug() . '_';
+	$slug                   = $connected_addon->get_slug();
+	$addon_meta_data_prefix = 'forminator_addon_' . $slug . '_';
 	foreach ( $entry_model->meta_data as $key => $meta_datum ) {
-		if ( false !== stripos( $key, $addon_meta_data_prefix ) ) {
+		$addon_info_exist = false !== stripos( $key, $addon_meta_data_prefix );
+		if ( ! $addon_info_exist && 'webhook' === $slug
+				&& false !== stripos( $key, 'forminator_addon_zapier_' ) ) {
+			// Old submission Zapier information.
+			$addon_info_exist = true;
+		}
+		if ( $addon_info_exist ) {
 			$addon_meta_data[] = array(
 				'title'     => $connected_addon->get_title(),
 				'name'      => str_ireplace( $addon_meta_data_prefix, '', $key ),

@@ -22,6 +22,26 @@ $nonce = wp_create_nonce( 'forminator_save_import_' . $slug );
 
 	</div>
 
+	<div class="sui-form-field">
+
+		<label for="change-recipients" class="sui-checkbox">
+
+			<input
+				type="checkbox"
+				id="change-recipients"
+				aria-labelledby="change-recipients-label"
+				name="change_recipients"
+				value="checked"
+			/>
+
+			<span aria-hidden="true"></span>
+
+			<span id="change-recipients-label"><?php esc_html_e( 'Change all recipients in this form to current user email.', 'forminator' ); ?></span>
+
+		</label>
+
+	</div>
+
 </div>
 
 <div class="sui-box-footer">

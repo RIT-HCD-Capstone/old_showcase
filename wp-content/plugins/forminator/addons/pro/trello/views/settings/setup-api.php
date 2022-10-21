@@ -18,7 +18,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 id="forminator-integration-popup__title" class="sui-box-title sui-lg" style="overflow: initial; white-space: normal; text-overflow: initial;">
 		<?php
 		/* translators: ... */
-		 printf( __( 'Setup %1$s', 'forminator' ), 'Trello' );
+		 printf( __( 'Set Up %1$s', 'forminator' ), 'Trello' );
 		?>
 	</h3>
 

@@ -452,6 +452,14 @@ abstract class Forminator_Admin_Module_Edit_Page extends Forminator_Admin_Page {
 							</li>
 						<?php endif; ?>
 
+						<li>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=forminator-reports&form_type=' . $post_type . '&form_id=' . $module['id'] ) ); ?>"
+                               class="sui-button sui-button-ghost">
+								<i class="sui-icon-page" aria-hidden="true"></i>
+                                <?php esc_html_e( 'view full report', 'forminator' ); ?>
+							</a>
+						</li>
+
 					</ul>
 
 					<div class="sui-chartjs <?php echo esc_attr( $opened_chart ); ?> forminator-stats-chart" data-chart-id="<?php echo esc_attr( $module['id'] ); ?>">
@@ -902,13 +910,13 @@ abstract class Forminator_Admin_Module_Edit_Page extends Forminator_Admin_Page {
 				}
 				break;
 
-			case 'draft-forms':
+			case 'draft-' . $plural_slug:
 				foreach ( $module_ids as $form_id ) {
 					$this->update_module_status( $form_id, 'draft' );
 				}
 				break;
 
-			case 'publish-forms':
+			case 'publish-' . $plural_slug:
 				foreach ( $module_ids as $form_id ) {
 					$this->update_module_status( $form_id, 'publish' );
 				}

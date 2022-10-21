@@ -19,7 +19,7 @@ foreach ( $template_vars as $key => $val ) {
 <div class="forminator-integration-popup__header">
 
 	<h3 id="forminator-integration-popup__title" class="sui-box-title sui-lg" style="overflow: initial; white-space: normal; text-overflow: initial;">
-		<?php echo esc_html( sprintf( /* translators: ... */ __( 'Setup %1$s Client', 'forminator' ), 'Google Sheets' ) ); ?>
+		<?php echo esc_html( sprintf( /* translators: ... */ __( 'Set Up %1$s Client', 'forminator' ), 'Google Sheets' ) ); ?>
 	</h3>
 
 	<?php if ( ! empty( $vars['token'] ) ) : ?>

@@ -65,6 +65,13 @@
 		this.template_type = '';
 
 		this.init();
+
+		var self = this;
+		if ( 'undefined' !== typeof DiviArea ) {
+			DiviArea.addAction( 'show_area', function( area ) {
+				self.init();
+			});
+		}
 	}
 
 	// Avoid Plugin.prototype conflicts
@@ -92,6 +99,8 @@
 				$modal.find('form').css('display', '');
 			});
 
+			self.reint_intlTelInput();
+
 			// Show form when popup trigger
 			setTimeout(function () {
 				var $modal = $('.wph-modal-active');
@@ -104,6 +113,10 @@
 					$( this.element ).each( function() {
 						self.init_custom_form( this );
 					});
+
+					$( document ).on( 'forminator-clone-group', function ( event ) {
+						self.init_custom_form( event.target );
+					} );
 
 					break;
 				case  'poll':
@@ -147,7 +160,6 @@
 
 			// Init small form for all type of form
 			this.small_form();
-
 		},
 		init_custom_form: function ( form_selector ) {
 
@@ -190,10 +202,17 @@
 			if( self.settings.has_stripe ) {
 				var stripe_payment = $(this.element).find('.forminator-stripe-element').first();
 
-				this.renderStripe( self, stripe_payment );
+				if ( $( self.element ).is( ':visible' ) ) {
+					this.renderStripe( self, stripe_payment );
+				}
+
+				// Show Stripe on modal display.
+				$( document ).on( "hustle:module:displayed", function () {
+					self.renderStripe( self, stripe_payment );
+				});
 			}
 
-			if( self.settings.has_paypal ) {
+			if( self.settings.has_paypal && $( self.element ).is( ':visible' ) ) {
 				$(this.element).forminatorFrontPayPal({
 					type: 'paypal',
 					paymentEl: this.settings.paypal_config,
@@ -233,6 +252,8 @@
 			this.init_login_2FA();
 
 			self.maybeRemoveDuplicateFields( form_selector );
+
+			self.checkComplianzBlocker();
 
 			// Handle function on resize
 			$(window).on('resize', function () {
@@ -543,8 +564,21 @@
 					if ( 'undefined' !== typeof ( validation ) && 'standard' === validation ) {
 						args.allowDropdown  = false;
 					}
+					// stop from removing country code.
+					if ( 'undefined' !== typeof ( validation ) && 'international' === validation ) {
+						args.autoHideDialCode = false;
+					}
 
 					$(this).intlTelInput(args);
+					if ( 'undefined' !== typeof ( validation )
+						&& 'international' === validation ) {
+						var dial_code = $(this).intlTelInput( 'getSelectedCountryData' ).dialCode,
+							country_code = '+' + dial_code;
+						if ( country_code !== $(this).val() ) {
+							var phone_value = $(this).val().trim().replace( dial_code, '' );
+								$(this).val( country_code + phone_value );
+						}
+					}
 
 					if ( ! is_material ) {
 						$(this).closest( '.forminator-field' ).find( 'div.iti' ).addClass( 'forminator-phone' );
@@ -565,6 +599,14 @@
 				}
 			});
 
+		},
+
+		reint_intlTelInput: function () {
+
+			var self = this;
+			self.$el.on( 'after:forminator:form:submit', function (e, data) {
+				self.init_intlTelInput_validation( self.forminator_selector );
+			} );
 		},
 
 		init_fui: function ( form_selector ) {
@@ -1371,6 +1413,40 @@
 			}
 		},
 
+		disableFields: function () {
+			this.$el.addClass( 'forminator-fields-disabled' );
+		},
+
+        // Check if Complianz has added a blocker for reCaptcha.
+		checkComplianzBlocker: function () {
+			var complianzBlocker = this.$el.find( '.cmplz-blocked-content-container' );
+
+			if ( complianzBlocker.length > 0 ) {
+                var row = complianzBlocker.closest( '.forminator-row' );
+
+				this.disableFields();
+                row.insertBefore( this.$el.find( '.forminator-row' ).first() );
+				row.css({ 'pointer-events': 'all', 'opacity': '1' });
+				row.find( '*' ).css( 'pointer-events', 'all' );
+
+                // For paginated.
+                if ( row.closest( '.forminator-pagination--content' ).length > 0 ) {
+                    row.closest( '.forminator-pagination--content' ).css({ 'pointer-events': 'all', 'opacity': '1' });
+                    row.nextAll( '.forminator-row' ).css({ 'opacity': '0.5' });
+                }
+
+                // Reload window if accepted.
+                $( 'body' ).on( 'click', '.cmplz-blocked-content-notice, .cmplz-accept', function() {
+                    setTimeout(
+                        function() {
+                            window.location.reload();
+                        },
+                        50
+                    );
+                });
+			}
+		},
+
 	});
 
 	// A really lightweight plugin wrapper around the constructor,
@@ -1514,10 +1590,10 @@ var forminator_render_hcaptcha = function () {
 		var thisCaptcha = jQuery(this),
 			form 		= thisCaptcha.closest('form');
 
-		if (form.length > 0) {
+		if ( form.length > 0 && '' === thisCaptcha.html() ) {
 			window.setTimeout( function() {
 				var forminatorFront = form.data( 'forminatorFront' );
-				if (typeof forminatorFront !== 'undefined') {
+				if ( typeof forminatorFront !== 'undefined' ) {
 					forminatorFront.renderHcaptcha( thisCaptcha[0] );
 				}
 			}, 100 );

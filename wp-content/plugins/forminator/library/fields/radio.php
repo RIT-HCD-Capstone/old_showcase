@@ -112,12 +112,13 @@ class Forminator_Radio extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$i                = 1;
@@ -139,7 +140,7 @@ class Forminator_Radio extends Forminator_Field {
 		$input_visibility = self::get_property( 'input_visibility', $field, 'true' );
 		$input_visibility = filter_var( $input_visibility, FILTER_VALIDATE_BOOLEAN );
 
-		$uniq_id = uniqid();
+		$uniq_id = Forminator_CForm_Front::$uid;
 
 		if ( (bool) $required ) {
 			$ariareq = 'true';
@@ -220,7 +221,6 @@ class Forminator_Radio extends Forminator_Field {
 				if ( trim( $draft_value['value'] ) === trim( $value ) ) {
 					$option_default = true;
 				}
-
 			} elseif ( $this->has_prefill( $field ) ) {
 				// We have pre-fill parameter, use its value or $value.
 				$prefill = $this->get_prefill( $field, false );
@@ -395,12 +395,16 @@ class Forminator_Radio extends Forminator_Field {
 	 */
 	public function sanitize( $field, $data ) {
 		$original_data = $data;
+		/*
+		* Field sanitization has been moved to library\abstracts\abstract-class-front-action.php > get_post_data > Forminator_Core::sanitize_array
+		* Due to members' request to allow html, we now use wp_kses_post for sanitization of this field
+
 		// Sanitize.
 		if ( is_array( $data ) ) {
 			$data = forminator_sanitize_array_field( $data );
 		} else {
 			$data = forminator_sanitize_field( $data );
-		}
+		} */
 		return apply_filters( 'forminator_field_single_sanitize', $data, $field, $original_data );
 	}
 

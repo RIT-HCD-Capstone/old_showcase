@@ -4,7 +4,6 @@
  * Class Forminator_Addon_Trello_Form_Hooks
  *
  * @since 1.0 Trello Addon
- *
  */
 class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abstract {
 
@@ -152,9 +151,9 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	 * @since 1.0 Trello Addon
 	 *
 	 * @param string $connection_id
-	 * @param array $submitted_data
-	 * @param array $connection_settings
-	 * @param array $form_entry_fields
+	 * @param array  $submitted_data
+	 * @param array  $connection_settings
+	 * @param array  $form_entry_fields
 	 *
 	 * @return array `is_sent` true means its success send data to Trello, false otherwise
 	 */
@@ -164,9 +163,9 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 
 		$form_id                = $this->form_id;
 		$form_settings_instance = $this->form_settings_instance;
-		$uploads				= $this->get_uploads( $form_entry_fields );
+		$uploads                = $this->get_uploads( $form_entry_fields );
 
-		//check required fields
+		// check required fields
 		try {
 			$api  = $this->addon->get_api();
 			$args = array();
@@ -247,8 +246,15 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			}
 
 			if ( isset( $connection_settings['due_date'] ) && ! empty( $connection_settings['due_date'] ) ) {
-				$due_date            = forminator_addon_replace_custom_vars( $connection_settings['due_date'], $submitted_data, $this->custom_form, $form_entry_fields, false, $entry );
-				$args['due']         = $due_date;
+				$due_date = forminator_addon_replace_custom_vars( $connection_settings['due_date'], $submitted_data, $this->custom_form, $form_entry_fields, false, $entry );
+				if ( false !== strpos( $connection_settings['due_date'], '{' ) ) {
+					$date_field       = str_replace( array( '{', '}' ), '', $connection_settings['due_date'] );
+					$date_field_index = array_search( $date_field, array_column( $form_entry_fields, 'name' ) );
+					$date_format      = Forminator_Field::get_property( 'date_format', $form_entry_fields[ $date_field_index ]['field_array'] );
+					$due_date         = forminator_reformat_date( $due_date, $date_format, 'F j Y' );
+				}
+
+				$args['due'] = $due_date;
 			}
 
 			if ( isset( $connection_settings['position'] ) ) {
@@ -329,7 +335,6 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 
 	/**
 	 * Special Replacer `{all_fields}` to markdown with Trello Flavour
-	 *
 	 */
 	private function all_fields_to_markdown() {
 		$form_fields = $this->form_settings_instance->get_form_fields();
@@ -685,7 +690,7 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	 *
 	 * @param        $addon_meta_data
 	 * @param        $key
-	 * @param string $default
+	 * @param string          $default
 	 *
 	 * @return string
 	 */
@@ -740,7 +745,7 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	 * @since 1.0 Trello Addon
 	 *
 	 * @param Forminator_Form_Entry_Model $entry_model
-	 * @param  array $addon_meta_data
+	 * @param  array                       $addon_meta_data
 	 *
 	 * @return bool
 	 */
@@ -828,7 +833,7 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 				}
 			}
 
-			//delete mode!
+			// delete mode!
 			return true;
 
 		} catch ( Forminator_Addon_Trello_Exception $e ) {
@@ -914,7 +919,6 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 		 * @param array $addon_meta_datum
 		 * @param int $form_id
 		 * @param Forminator_Addon_Trello_Form_Settings $form_settings_instance Trello Addon Form Settings instance.
-		 *
 		 */
 		do_action(
 			'forminator_addon_trello_delete_card',
@@ -929,18 +933,17 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 
 	/**
 	 * Get uploads to be added as attachments
-	 *
 	 */
 	private function get_uploads( $fields ) {
-		$uploads = [];
+		$uploads = array();
 
-		foreach( $fields as $i => $val ) {
+		foreach ( $fields as $i => $val ) {
 			if ( 0 === stripos( $val['name'], 'upload-' ) ) {
 				if ( ! empty( $val['value'] ) ) {
 					$file_url = $val['value']['file']['file_url'];
 
 					if ( is_array( $file_url ) ) {
-						foreach( $file_url as $url ) {
+						foreach ( $file_url as $url ) {
 							$uploads[] = $url;
 						}
 					} else {
@@ -955,13 +958,12 @@ class Forminator_Addon_Trello_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 
 	/**
 	 * Add attachments to created card
-	 *
 	 */
 	private function add_attachments( $api, $uploads ) {
 		$card_id = $api->get_card_id();
 
 		if ( ! empty( $uploads ) ) {
-			foreach( $uploads as $upload ) {
+			foreach ( $uploads as $upload ) {
 				$api->add_attachment( $card_id, $upload );
 			}
 		}

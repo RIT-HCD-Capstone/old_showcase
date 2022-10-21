@@ -764,11 +764,12 @@ function forminator_get_latest_entry_time( $entry_type ) {
  * will return null if there is no entry
  *
  * @param $form_id
+ * @param string $order
  *
  * @return Forminator_Form_Entry_Model|null
  */
-function forminator_get_latest_entry_by_form_id( $form_id ) {
-	$latest_entry = Forminator_Form_Entry_Model::get_latest_entry_by_form_id( $form_id );
+function forminator_get_latest_entry_by_form_id( $form_id, $order = 'DESC' ) {
+	$latest_entry = Forminator_Form_Entry_Model::get_latest_entry_by_form_id( $form_id, $order );
 
 	return $latest_entry;
 }
@@ -777,11 +778,29 @@ function forminator_get_latest_entry_by_form_id( $form_id ) {
  * Get Time of latest entry created based on $form_id
  *
  * @param $form_id
+ * @param string $order
  *
  * @return string
  */
-function forminator_get_latest_entry_time_by_form_id( $form_id ) {
-	$latest_entry = forminator_get_latest_entry_by_form_id( $form_id );
+function forminator_get_latest_entry_time_by_form_id( $form_id, $order = 'DESC' ) {
+	$latest_entry = forminator_get_latest_entry_by_form_id( $form_id, $order );
+	if ( $latest_entry instanceof Forminator_Form_Entry_Model ) {
+		return $latest_entry->time_created;
+	} else {
+		return esc_html__( 'Never', 'forminator' );
+	}
+}
+
+/**
+ * Get Time of view created based on $form_id
+ *
+ * @param $form_id
+ * @param string $order
+ *
+ * @return string
+ */
+function forminator_get_latest_view_time_by_form_id( $form_id, $order = 'DESC' ) {
+	$latest_entry = forminator_get_view_entry_by_form_id( $form_id, $order );
 	if ( $latest_entry instanceof Forminator_Form_Entry_Model ) {
 		return $latest_entry->time_created;
 	} else {

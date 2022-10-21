@@ -180,6 +180,8 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 					$field          = new Forminator_Form_Field_Model();
 					$field->form_id = $row['wrapper_id'];
 					$field->slug    = $f['element_id'];
+
+					$field->parent_group = ! empty( $row['parent_group'] ) ? $row['parent_group'] : '';
 					$field->import( $f );
 					$form_model->add_field( $field );
 				}
@@ -187,110 +189,6 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 		}
 
 		return $form_model;
-	}
-
-	/**
-	 * Check if can submit the form
-	 *
-	 * @since 1.6
-	 * @return array
-	 */
-	public function form_can_submit() {
-		$form_settings = $this->settings;
-		$can_show      = array(
-			'can_submit' => true,
-			'error'      => '',
-		);
-
-		if ( ! empty( $form_settings['logged-users'] ) ) {
-			if ( filter_var( $form_settings['logged-users'], FILTER_VALIDATE_BOOLEAN ) && ! is_user_logged_in() ) {
-				$can_show = array(
-					'can_submit' => false,
-					'error'      => __( 'Only logged in users can submit this form.', 'forminator' ),
-				);
-			}
-		}
-		if ( $can_show['can_submit'] ) {
-			if ( isset( $form_settings['form-expire'] ) ) {
-				if ( 'submits' === $form_settings['form-expire'] ) {
-					if ( isset( $form_settings['expire_submits'] ) && ! empty( $form_settings['expire_submits'] ) ) {
-						$submits       = intval( $form_settings['expire_submits'] );
-						$total_entries = Forminator_Form_Entry_Model::count_entries( $this->id );
-						if ( $total_entries >= $submits ) {
-							$can_show = array(
-								'can_submit' => false,
-								'error'      => __( 'You reached the maximum allowed submissions for this form.', 'forminator' ),
-							);
-						}
-					}
-				} elseif ( 'date' === $form_settings['form-expire'] ) {
-					if ( isset( $form_settings['expire_date'] ) && ! empty( $form_settings['expire_date'] ) ) {
-						$expire_date  = $this->get_expiry_date( $form_settings['expire_date'] );
-						$current_date = strtotime( 'now' );
-						if ( $current_date > $expire_date ) {
-							$can_show = array(
-								'can_submit' => false,
-								'error'      => __( 'Unfortunately this form expired.', 'forminator' ),
-							);
-						}
-					}
-				}
-			}
-		}
-
-		if ( $can_show['can_submit'] ) {
-			// disable submit if status is draft.
-			if ( self::STATUS_DRAFT === $this->status ) {
-				$can_show = array(
-					'can_submit' => false,
-					'error'      => __( 'This form is not published.', 'forminator' ),
-				);
-			}
-		}
-
-		return apply_filters( 'forminator_cform_form_is_submittable', $can_show, $this->id, $form_settings );
-	}
-
-	/**
-	 * Check if can show the form
-	 *
-	 * @param $is_preview
-	 *
-	 * @since 1.0
-	 * @return bool
-	 */
-	public function form_is_visible( $is_preview ) {
-		$form_settings = $this->settings;
-		$can_show      = true;
-
-		if ( isset( $form_settings['logged-users'] ) && ! empty( $form_settings['logged-users'] ) ) {
-			if ( filter_var( $form_settings['logged-users'], FILTER_VALIDATE_BOOLEAN ) && ! is_user_logged_in() ) {
-				$can_show = false;
-			}
-		}
-		if ( $can_show ) {
-			if ( isset( $form_settings['form-expire'] ) ) {
-				if ( 'submits' === $form_settings['form-expire'] ) {
-					if ( isset( $form_settings['expire_submits'] ) && ! empty( $form_settings['expire_submits'] ) ) {
-						$submits       = intval( $form_settings['expire_submits'] );
-						$total_entries = Forminator_Form_Entry_Model::count_entries( $this->id );
-						if ( $total_entries >= $submits && ! $is_preview ) {
-							$can_show = false;
-						}
-					}
-				} elseif ( 'date' === $form_settings['form-expire'] ) {
-					if ( isset( $form_settings['expire_date'] ) && ! empty( $form_settings['expire_date'] ) ) {
-						$expire_date  = $this->get_expiry_date( $form_settings['expire_date'] );
-						$current_date = strtotime( 'now' );
-						if ( $current_date > $expire_date && ! $is_preview ) {
-							$can_show = false;
-						}
-					}
-				}
-			}
-		}
-
-		return apply_filters( 'forminator_cform_form_is_visible', $can_show, $this->id, $form_settings );
 	}
 
 	/**
@@ -462,18 +360,5 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Get expiry date
-	 *
-	 * Before 1.15.4 expiry date is being saved like: 1 Mar 2022
-	 * Since we changed it to save as Unix timestamp, we need to process it
-	 *
-	 * @since
-	 * @return string
-	 */
-	public function get_expiry_date( $expire_date ) {
-		return is_numeric( $expire_date ) ? (int) $expire_date / 1000 : strtotime( $expire_date );
 	}
 }

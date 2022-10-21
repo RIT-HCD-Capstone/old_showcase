@@ -24,7 +24,7 @@ foreach ( $template_vars as $key => $val ) {
 		?>
 	</h3>
 
-	<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Setup Campaign Monitor API Access.', 'forminator' ); ?></p>
+	<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Set Up Campaign Monitor API Access.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['client_name'] ) ) : ?>
 		<div

@@ -64,7 +64,7 @@ class Forminator_Addon_Aweber_Form_Settings extends Forminator_Addon_Form_Settin
 	}
 
 	/**
-	 * Setup Connection Name
+	 * Set up Connection Name
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -165,7 +165,7 @@ class Forminator_Addon_Aweber_Form_Settings extends Forminator_Addon_Form_Settin
 	}
 
 	/**
-	 * Setup List
+	 * Set up List
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -312,7 +312,7 @@ class Forminator_Addon_Aweber_Form_Settings extends Forminator_Addon_Form_Settin
 	}
 
 	/**
-	 * Setup fields map
+	 * Set up fields map
 	 *
 	 * @since 1.0 AWeber Addon
 	 *
@@ -492,7 +492,7 @@ class Forminator_Addon_Aweber_Form_Settings extends Forminator_Addon_Form_Settin
 	}
 
 	/**
-	 * Setup options
+	 * Set up options
 	 *
 	 * Contains :
 	 * - ad_tracking

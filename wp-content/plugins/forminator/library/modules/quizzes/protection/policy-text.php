@@ -58,10 +58,10 @@
 		<?php esc_html_e( 'By default Forminator Quizzes can be configured to connect with these third parties:' ); ?>
 	</p>
 	<ul class="privacy-policy-tutorial">
-		<li><?php esc_html_e( 'Zapier. Enabled when you activated and setup Zapier on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Google Drive. Enabled when you activated and setup Google Drive on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Trello. Enabled when you activated and setup Trello on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Slack. Enabled when you activated and setup Slack on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Zapier. Enabled when you activated and set up Webhook on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Google Drive. Enabled when you activated and set up Google Drive on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Trello. Enabled when you activated and set up Trello on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Slack. Enabled when you activated and set up Slack on Integrations settings.' ); ?></li>
 	</ul>
 	<p>
 		<strong class="privacy-policy-tutorial"><?php esc_html_e( 'Suggested text: ', 'forminator' ); ?></strong>

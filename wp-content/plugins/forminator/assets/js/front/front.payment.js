@@ -532,7 +532,7 @@
 			if (fontFamily && customFonts) {
 				stripeObject.fonts = [
 					{
-						cssSrc: 'https://fonts.googleapis.com/css?family=' + fontFamily,
+						cssSrc: 'https://fonts.bunny.net/css?family=' + fontFamily,
 					}
 				];
 			}

@@ -259,9 +259,7 @@ foreach ( $template_vars as $key => $val ) {
 						id="ticket-description"
 						class="sui-form-control ticket-text"
 						aria-labelledby="ticket-description-label"
-					>
-						<?php echo esc_attr( $vars['ticket_description'] ); ?>
-					</textarea>
+					><?php echo wp_kses_post( $vars['ticket_description'] ); ?></textarea>
 
 					<select id="select-ticket-description" class="sui-variables select-field">
 

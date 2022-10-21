@@ -100,10 +100,10 @@
 						var file_list = Array.prototype.slice.call( fileList );
 
 						if ( file_list.length > 0 ) {
-							param = self.FileObjectItem(file_list);	
+							param = self.FileObjectItem(file_list);
 							if ( 'submission' === $this.data( 'method' ) ) {
 								$this.prop( 'files', param );
-							} 
+							}
 						}
 					}).done(function(){
 						self.uploadingFile = null;
@@ -126,11 +126,15 @@
 				ajax_inc = 0,
 				uploadData = new FormData,
 				nonce = this.form.find('input[name="forminator_nonce"]').val(),
-				method = $this.data('method');
+				method = $this.data('method'),
+				elementId = self.element;
+
+			elementId = elementId.split('_')[0];
 			uploadData.append( "action", "forminator_multiple_file_upload" );
 			uploadData.append( "form_id", this.form_id );
-			uploadData.append( "element_id", self.element );
+			uploadData.append( "element_id", elementId );
 			uploadData.append( "nonce", nonce );
+
 			$.each( param, function ( i, item ) {
 				var unique_id = self.progress_bar( item, method ),
 					totalFile = self.form.find('.upload-container-' + self.element + ' li').length,
@@ -151,7 +155,7 @@
 					uploadData.delete( self.element );
 					uploadData.delete( 'totalFiles' );
 					uploadData.append( "totalFiles", totalFile );
-					uploadData.append( self.element, item );
+					uploadData.append( elementId, item );
 					ajax_request.push( $.ajax({
 						xhr: function () {
 							var xhr = new window.XMLHttpRequest();

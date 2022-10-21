@@ -62,7 +62,11 @@ function forminator_get_disable_url( $plugin, $slug ) {
 		return false;
 	}
 
-	return wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $slug . '&amp;plugin_status=all', 'deactivate-plugin_' . $slug );
+	if ( is_plugin_active_for_network( $slug ) ) {
+		return wp_nonce_url( trailingslashit( network_admin_url() ). 'plugins.php?action=deactivate&amp;plugin=' . $slug . '&amp;plugin_status=all', 'deactivate-plugin_' . $slug );
+	} else {
+		return wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $slug . '&amp;plugin_status=all', 'deactivate-plugin_' . $slug );
+	}
 }
 
 

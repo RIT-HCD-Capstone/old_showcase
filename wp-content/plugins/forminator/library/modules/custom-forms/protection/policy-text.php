@@ -75,14 +75,14 @@ Fields.',
 		<li><?php esc_html_e( 'Akismet. Enabled when you installed and configured Akismet on your site.' ); ?></li>
 		<li><?php esc_html_e( 'Google reCAPTCHA. Enabled when you added reCAPTCHA on your forms.' ); ?></li>
 		<li><?php esc_html_e( 'hCaptcha. Enabled when you added hCaptcha on your forms.' ); ?></li>
-		<li><?php esc_html_e( 'Mailchimp. Enabled when you activated and setup Mailchimp on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Zapier. Enabled when you activated and setup Zapier on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'ActiveCampaign. Enabled when you activated and setup ActiveCampaign on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Aweber. Enabled when you activated and setup Aweber on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Campaign Monitor. Enabled when you activated and setup Campaign Monitor on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Google Drive. Enabled when you activated and setup Google Drive on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Trello. Enabled when you activated and setup Trello on Integrations settings.' ); ?></li>
-		<li><?php esc_html_e( 'Slack. Enabled when you activated and setup Slack on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Mailchimp. Enabled when you activated and set up Mailchimp on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Zapier. Enabled when you activated and set up Webhook on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'ActiveCampaign. Enabled when you activated and set up ActiveCampaign on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Aweber. Enabled when you activated and set up Aweber on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Campaign Monitor. Enabled when you activated and set up Campaign Monitor on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Google Drive. Enabled when you activated and set up Google Drive on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Trello. Enabled when you activated and set up Trello on Integrations settings.' ); ?></li>
+		<li><?php esc_html_e( 'Slack. Enabled when you activated and set up Slack on Integrations settings.' ); ?></li>
 	</ul>
 	<p>
 		<strong class="privacy-policy-tutorial"><?php esc_html_e( 'Suggested text: ', 'forminator' ); ?></strong>

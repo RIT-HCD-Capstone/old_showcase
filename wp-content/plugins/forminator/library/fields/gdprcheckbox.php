@@ -98,12 +98,13 @@ class Forminator_GdprCheckbox extends Forminator_Field {
 	 * @since 1.0.5
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$html        = '';
@@ -111,7 +112,7 @@ class Forminator_GdprCheckbox extends Forminator_Field {
 		$name        = $id;
 		$form_id     = isset( $settings['form_id'] ) ? $settings['form_id'] : false;
 		$description = wp_kses_post( forminator_replace_variables( self::get_property( 'gdpr_description', $field ), $form_id ) );
-		$id          = 'forminator-field-' . $id . '-' . uniqid();
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$label       = esc_html( self::get_property( 'field_label', $field ) );
 
 		$html .= '<div class="forminator-field">';

@@ -244,7 +244,7 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 
 
 	/**
-	 * Setup API Wizard
+	 * Set up API Wizard
 	 *
 	 * @since 1.0 Active Campaign Addon
 	 *

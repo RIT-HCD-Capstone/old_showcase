@@ -429,21 +429,20 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$template         = forminator_addon_slack_dir() . 'views/settings/wait-authorize.php';
 		$template_success = forminator_addon_slack_dir() . 'views/settings/success-authorize.php';
 		$template_error   = forminator_addon_slack_dir() . 'views/settings/error-authorize.php';
-
-		$buttons = array();
-
-		$is_poll = true;
+		$buttons          = array();
+		$token            = $this->get_client_access_token();
+		$is_poll          = true;
 
 		$template_params = array(
-			'token'    => $this->_token,
+			'token'    => $token,
 			'auth_url' => $this->get_auth_url(),
 		);
 
 		$has_errors = false;
 
-		if ( $this->_token ) {
+		if ( $token ) {
 			$buttons['close'] = array(
-				'markup' => self::get_button_markup( esc_html__( 'Close', 'forminator' ), 'sui-button-ghost forminator-addon-close' ),
+				'markup' => self::get_button_markup( esc_html__( 'Close', 'forminator' ), 'forminator-addon-close forminator-integration-popup__close' ),
 			);
 			$is_poll          = false;
 
@@ -500,6 +499,12 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$client_id       = '';
 		if ( isset( $settings_values ['client_id'] ) ) {
 			$client_id = $settings_values ['client_id'];
+		} else {
+			$settings = $this->get_slack_settings();
+
+			if ( isset( $settings['client_id'] ) ) {
+				$client_id = $settings['client_id'];
+			}
 		}
 
 		/**
@@ -525,6 +530,12 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$client_secret   = '';
 		if ( isset( $settings_values ['client_secret'] ) ) {
 			$client_secret = $settings_values ['client_secret'];
+		} else {
+			$settings = $this->get_slack_settings();
+
+			if ( isset( $settings['client_secret'] ) ) {
+				$client_secret = $settings['client_secret'];
+			}
 		}
 
 		/**
@@ -550,6 +561,12 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$token           = '';
 		if ( isset( $settings_values ['token'] ) ) {
 			$token = $settings_values ['token'];
+		} else {
+			$settings = $this->get_slack_settings();
+
+			if ( isset( $settings['token'] ) ) {
+				$token = $settings['token'];
+			}
 		}
 
 		/**
@@ -562,6 +579,20 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$token = apply_filters( 'forminator_addon_slack_client_access_token', $token );
 
 		return $token;
+	}
+
+	/**
+	 * Get slack settings while app is being connected
+	 *
+	 * @since 1.18 Slack Addon
+	 *
+	 * @return array
+	 */
+	public function get_slack_settings() {
+		$settings = get_option( 'forminator_addon_slack_settings' );
+		$settings = array_shift( array_slice( $settings, 0, 1 ) );
+
+		return $settings;
 	}
 
 	/**

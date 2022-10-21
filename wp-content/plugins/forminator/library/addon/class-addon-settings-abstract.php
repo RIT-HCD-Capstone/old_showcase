@@ -101,4 +101,29 @@ abstract class Forminator_Addon_Settings_Abstract {
 		$global_id = ! empty( $addon->multi_global_id ) ? '_' . $addon->multi_global_id : '';
 		return 'forminator_addon_' . $addon->get_slug() . '_' . static::$module_slug . '_settings' . $global_id;
 	}
+
+	/**
+	 * Replace '-' to '_' in keys because some integrations don't support dashes like tray.io and workato.
+	 * don't do it for zapier for backward compatibility
+	 *
+	 * @param array  $array Original array.
+	 * @param string $endpoint Endpoint URL.
+	 */
+	public static function replace_dashes_in_keys( $array, $endpoint ) {
+		if ( strpos( $endpoint, 'zapier' ) ) {
+			return $array;
+		}
+
+		foreach ( $array as $key => $value ) {
+			if ( is_array( $value ) ) {
+				// Replace it recursively.
+				$value = self::replace_dashes_in_keys( $value, $endpoint );
+			}
+			unset( $array[ $key ] );
+			$new_key           = str_replace( '-', '_', $key );
+			$array[ $new_key ] = $value;
+		}
+
+		return $array;
+	}
 }

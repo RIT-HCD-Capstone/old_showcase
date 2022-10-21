@@ -74,6 +74,18 @@
 			});
 		},
 
+		removeCountryCode: function( form ) {
+			form.find('.forminator-field--phone').each(function() {
+				var phone_element = $(this);
+				if ( !phone_element.data('required') && 'international' === phone_element.data('validation') ) {
+					var dialCode = '+' + phone_element.intlTelInput( 'getSelectedCountryData' ).dialCode;
+					var currentInput = phone_element.val();
+					if (dialCode === currentInput)
+						phone_element.val('');
+				}
+			});
+		},
+
 		handle_submit_custom_form: function () {
 			var self = this,
 				saveDraftBtn = self.$el.find( '.forminator-save-draft-link' );
@@ -121,9 +133,14 @@
 			}
 
 			$('body').on('submit.frontSubmit', this.settings.forminator_selector, function ( e, submitter ) {
+				// Disable submit button right away.
+				self.disable_form_submit( self, true );
+
                 if ( 0 !== self.$el.find( 'input[type="hidden"][value="forminator_submit_preview_form_custom-forms"]' ).length ) {
+					self.disable_form_submit( self, false );
                     return false;
                 }
+
 				var $this = $(this),
 				    thisForm = this,
 				    submitEvent = e,
@@ -134,9 +151,13 @@
 					$datepicker = $('body').find( '#ui-datepicker-div.forminator-custom-form-' + self.$el.data( 'form-id' ) )
 					;
 
+				// to remove dial code from the phone field which are optional so that validation doesn't throw error.
+				self.removeCountryCode( $this );
+
 				if( self.settings.inline_validation && self.$el.find('.forminator-uploaded-files').length > 0 && ! $saveDraft ) {
 					var file_error = self.$el.find('.forminator-uploaded-files li.forminator-has_error');
 					if( file_error.length > 0 ) {
+						self.disable_form_submit( self, false );
 						return false;
 					}
 				}
@@ -145,18 +166,22 @@
 				if( submitEvent.originalEvent !== undefined ) {
 					var submitBtn = $(this).find('.forminator-button-submit').first();
 					if( submitBtn.length === 0 || $( submitBtn ).closest('.forminator-col').hasClass('forminator-hidden') ) {
+						self.disable_form_submit( self, false );
 						return false;
 					}
 				}
 				// Check if datepicker is open, prevent submit
 				if ( 0 !== $datepicker.length && self.$el.datepicker( "widget" ).is(":visible") ) {
+					self.disable_form_submit( self, false );
 					return false;
 				}
 
 				if ( self.$el.data( 'forminatorFrontPayment' ) && ! $saveDraft ) {
 					// Disable submit button right away to prevent multiple submissions
-					$this.find( 'button' ).attr( 'disabled', true );
+					$this.find( '.forminator-button-submit' ).attr( 'disabled', true );
 					if ( false === self.processCaptcha( self, $captcha_field, $target_message ) ) {
+						$this.find( '.forminator-button-submit' ).attr( 'disabled', false );
+						self.disable_form_submit( self, false );
 						return false;
 					}
 				}
@@ -177,6 +202,7 @@
 
 					if ( ! self.$el.data( 'forminatorFrontPayment' ) && ! $saveDraft ) {
 						if ( false === self.processCaptcha( self, $captcha_field, $target_message ) ) {
+							self.disable_form_submit( self, false );
 							return false;
 						}
 					}
@@ -447,10 +473,10 @@
 												self.$el.hide();
 											}
 											//new tab redirection
-											window.open( self.decodeHtmlEntity( data.data.url ), '_blank' );
+											window.open( self.decodeHtmlEntity( decodeURIComponent( data.data.url ) ), '_blank' );
 										} else {
 											//same tab redirection
-											window.location.href = self.decodeHtmlEntity( data.data.url );
+											window.location.href = self.decodeHtmlEntity( decodeURIComponent( data.data.url ) );
 										}
 
 									}
@@ -495,6 +521,7 @@
 								saveDraftBtn.addClass( 'disabled' );
 							}
 
+							self.disable_form_submit( self, false );
 							$this.trigger('after:forminator:form:submit', formData);
 						});
 					} else {
@@ -511,13 +538,14 @@
 						}
 
 						submitEvent.currentTarget.submit();
+						self.disable_form_submit( self, false );
 					}
 				};
 
 				// payment setup
 				var paymentIsHidden = self.$el.find('div[data-is-payment="true"]')
-					.closest('.forminator-row').hasClass('forminator-hidden');
-				if ( self.$el.data('forminatorFrontPayment') && !paymentIsHidden && ! $saveDraft ) {
+					.closest('.forminator-row, .forminator-col').hasClass('forminator-hidden');
+				if ( self.$el.data('forminatorFrontPayment') && ! paymentIsHidden && ! $saveDraft ) {
 					self.$el.trigger('payment.before.submit.forminator', [formData, function () {
 						submitCallback.apply(thisForm);
 					}]);
@@ -1575,6 +1603,10 @@
 					$(this).attr('disabled', disable);
 				}
 			});
+		},
+
+		disable_form_submit: function ( form, disable  ) {
+			$( form ).find( '.forminator-button-submit' ).attr( 'disabled', disable );
 		}
 
 	});

@@ -15,7 +15,7 @@ foreach ( $template_vars as $key => $val ) {
 <div class="forminator-integration-popup__header">
 
 	<h3 id="forminator-integration-popup__title" class="sui-box-title sui-lg" style="overflow: initial; white-space: normal; text-overflow: initial;">
-		<?php echo esc_html( __( 'Setup Name', 'forminator' ) ); ?>
+		<?php echo esc_html( __( 'Set Up Name', 'forminator' ) ); ?>
 	</h3>
 
 	<p id="forminator-integration-popup__description" class="sui-description"><?php esc_html_e( 'Set up a friendly name for this integration, so you can easily identify it.', 'forminator' ); ?></p>

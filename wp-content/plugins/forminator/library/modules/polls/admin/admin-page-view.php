@@ -54,6 +54,8 @@ class Forminator_Poll_Page extends Forminator_Admin_Module_Edit_Page {
 		return apply_filters(
 			'forminator_polls_bulk_actions',
 			array(
+				'publish-polls'      => __( 'Publish', 'forminator' ),
+				'draft-polls'        => __( 'Unpublish', 'forminator' ),
 				'clone-polls'        => __( 'Duplicate', 'forminator' ),
 				'reset-views-polls'  => __( 'Reset Tracking Data', 'forminator' ),
 				'delete-votes-polls' => __( 'Delete Votes', 'forminator' ),

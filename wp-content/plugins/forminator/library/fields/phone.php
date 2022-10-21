@@ -149,26 +149,27 @@ class Forminator_Phone extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings    = $views_obj->model->settings;
 		$this->field = $field;
 
 		$html                  = '';
 		$id                    = self::get_property( 'element_id', $field );
 		$name                  = $id;
 		$ariaid                = $id;
-		$id                    = 'forminator-field-' . $id;
+		$id                    = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required              = self::get_property( 'required', $field, false, 'bool' );
 		$ariareq               = 'false';
 		$design                = $this->get_form_style( $settings );
 		$placeholder           = $this->sanitize_value( self::get_property( 'placeholder', $field ) );
 		$value                 = esc_html( self::get_property( 'value', $field ) );
 		$national_country      = self::get_property( 'phone_national_country', $field, 'AF' );
-		$international_country = self::get_property( 'phone_international_country', $field, 'US' );
+		$international_country = self::get_property( 'phone_international_country', $field, 'AF' );
 		$limit                 = esc_html( self::get_property( 'limit', $field, 10 ) );
 		$label                 = esc_html( self::get_property( 'field_label', $field, '' ) );
 		$description           = self::get_property( 'description', $field, '' );
@@ -322,7 +323,10 @@ class Forminator_Phone extends Forminator_Field {
 		$messages           = '"' . $this->get_id( $field ) . '": {' . "\n";
 
 		if ( $this->is_required( $field ) ) {
-			$required_message = self::get_property( 'required_message', $field, __( 'This field is required. Please input a phone number.', 'forminator' ) );
+			$required_message = self::get_property( 'required_message', $field );
+			if ( empty( $required_message ) ) {
+				$required_message = __( 'This field is required. Please input a phone number.', 'forminator' );
+			}
 			$required_message = apply_filters(
 				'forminator_field_phone_required_validation_message',
 				$required_message,

@@ -50,8 +50,25 @@
 			var self      = this;
 			var submitted = false;
 			var $form     = this.$el;
+			var rules     = self.settings.rules;
+			var messages  = self.settings.messages;
 
-			$( this.element ).validate({
+			// Duplicate rules for new repeated Group fields.
+			if ( $form.hasClass( 'forminator-grouped-fields' ) ) {
+				let suffix = $form.data( 'suffix' );
+				$.each( rules, function ( key, val ) {
+					// Separate keys with [] at the end.
+					const newKey = key.replace( /(.+?)(\[\])?$/g, '$1' + '-' + suffix + '$2' );
+					if ( ! $form.find( '[name="' + newKey + '"]' ).length && ! $form.find( '#' + newKey.replace( '[]', '' ) ).length ) {
+						return;
+					}
+					rules[ newKey ] = val;
+					messages[ newKey ] = messages[ key ];
+				} );
+				$form = $form.closest( 'form.forminator-ui' );
+			}
+
+			$form.data('validator', null).unbind('validate').validate({
 
 				// add support for hidden required fields (uploads, wp_editor) when required
 				ignore: ":hidden:not(.do-validate)",
@@ -308,16 +325,22 @@
 
 				},
 
-				rules: self.settings.rules,
+				rules: rules,
 
-				messages: self.settings.messages
+				messages: messages
 
 			});
 
-			$( this.element ).on('forminator.validate.signature', function () {
+			$form.off('forminator.validate.signature').on('forminator.validate.signature', function () {
 				//validator.element( $( this ).find( "input[id$='_data']" ) );
 				var validator = $( this ).validate();
 				validator.form();
+			});
+
+			// Trigger change for the hour field.
+			$( '.time-minutes.has-time-limiter, .time-ampm.has-time-limiter' ).on( 'change', function () {
+				var hourContainer = $( this ).closest( '.forminator-col' ).siblings( '.forminator-col' ).first();
+				hourContainer.find( '.time-hours' ).trigger( 'focusout' );
 			});
 		}
 	});
@@ -349,6 +372,11 @@
 		return this.optional(element) || $(element).intlTelInput('isValidNumber');
 	});
 	$.validator.addMethod("forminatorPhoneInternational", function (value, element) {
+		// check whether phone field is international and optional
+		if ( !$(element).data('required') && value === '+' +$(element).intlTelInput( 'getSelectedCountryData' ).dialCode ) {
+			return true;
+		}
+
 		// Uses intlTelInput to check if the number is valid.
 		return this.optional(element) || $(element).intlTelInput('isValidNumber');
 	});
@@ -525,6 +553,30 @@
 		var maxVal = parseFloatFromString( value );
 		return maxVal <= param;
 	});
+	$.validator.addMethod( 'timeLimit', function ( value, el, limit ) {
+		var chosenTime = forminatorGetTime( el, value ),
+		    startLimit = forminatorConvertToSeconds( limit.start_limit ),
+		    endLimit   = forminatorConvertToSeconds( limit.end_limit ),
+		    comparison = chosenTime >= startLimit && chosenTime <= endLimit,
+			hoursDiv   = $( el ).closest( '.forminator-col' ),
+			minutesField = hoursDiv.next().find( '.forminator-field' )
+			;
+
+		// Lets add error class to minutes field if hours has error.
+		if ( ! comparison && true !== chosenTime ) {
+			setTimeout(
+				function() {
+					minutesField.addClass( 'forminator-has_error' );
+				},
+				10
+			);
+		} else {
+			minutesField.removeClass( 'forminator-has_error' );
+		}
+
+		// Check if chosenTime is not true, then compare if chosenTime in seconds is >= to the limit in seconds.
+		return true !== chosenTime ? comparison: true;
+	});
 
 	function parseFloatFromString( value ) {
 		value = String( value ).trim();
@@ -550,7 +602,63 @@
 		return ( Math.floor( num * 100 ) / 100 ).toFixed( precision );
 	}
 
-	// Backup the recently added custom validation methods (they will be 
+	function forminatorGetTime ( el, value ) {
+		var hoursDiv, minutesDiv, hours, minutes, meridiem, final = '';
+
+		// Get the values minutes and meridiem.
+		if ( el.name.includes( 'hours' ) ) {
+			hoursDiv = $( el ).closest( '.forminator-col' );
+			hours = value;
+			minutesDiv = hoursDiv.next();
+			minutes = minutesDiv.find( '.time-minutes' );
+
+			if ( 'select' === minutes.prop( 'tagName' ).toLowerCase() ) {
+				minutes = minutesDiv.find( '.time-minutes option:selected' ).val();
+			} else {
+				minutes = minutesDiv.find( '.time-minutes' ).val();
+			}
+
+			meridiem = minutesDiv.next().find( 'select[name$="ampm"] option:selected' ).val();
+		}
+
+		if (
+			'undefined' !== typeof hours && '' !== hours &&
+			'undefined' !== typeof minutes && '' !== minutes
+		) {
+			final = hours + ':' + minutes;
+		} else {
+			return true;
+		}
+
+		if ( '' !== final && 'undefined' !== typeof meridiem ) {
+			final += ' ' + meridiem;
+		}
+
+		final = forminatorConvertToSeconds( final );
+
+		return final;
+	}
+
+	function forminatorConvertToSeconds ( chosenTime ) {
+		var [ time, modifier ] = chosenTime.split(' ');
+		var [ hours, minutes ] = time.split(':');
+
+		if ( 'undefined' !== typeof modifier ) {
+			if ( 12 === parseInt( hours, 10 ) ) {
+				hours = 0;
+			}
+			if ( 'pm' === modifier.toLowerCase() ) {
+				hours = parseInt( hours, 10 ) + 12;
+			}
+		}
+
+		hours   = hours * 60 * 60;
+		minutes = minutes * 60;
+
+		return hours + minutes;
+	}
+
+	// Backup the recently added custom validation methods (they will be
 	// checked in the plugin wrapper later)
 	ownMethods = $.validator.methods;
 

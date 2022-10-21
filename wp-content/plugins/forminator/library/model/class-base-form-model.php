@@ -168,6 +168,42 @@ abstract class Forminator_Base_Form_Model {
 	}
 
 	/**
+	 * Get filtered fields by group. If group ID is empty - it returns ungrouped fields
+	 *
+	 * @param string $group_id Group ID.
+	 * @return array
+	 */
+	public function get_grouped_real_fields( $group_id = '' ) {
+		$real_fields = $this->get_real_fields();
+		$fields      = array_filter(
+			$real_fields,
+			function( $value ) use ( $group_id ) {
+				return ! $group_id ? empty( $value->parent_group ) : $group_id === $value->parent_group;
+			}
+		);
+
+		return $fields;
+	}
+
+	/**
+	 * Get filtered fields by group. If group ID is empty - it returns ungrouped fields
+	 *
+	 * @param string $group_id Group ID.
+	 * @return array
+	 */
+	public function get_grouped_fields( $group_id = '' ) {
+		$fields         = $this->get_fields();
+		$grouped_fields = array_filter(
+			$fields,
+			function( $value ) use ( $group_id ) {
+				return ! $group_id ? empty( $value->parent_group ) : $group_id === $value->parent_group;
+			}
+		);
+
+		return $grouped_fields;
+	}
+
+	/**
 	 * @param        $property
 	 * @param        $name
 	 * @param        $array
@@ -759,13 +795,14 @@ abstract class Forminator_Base_Form_Model {
 			if ( ! isset( $wrappers[ $form_id ] ) ) {
 				$wrappers[ $form_id ] = array(
 					'wrapper_id' => $form_id,
-					'fields'     => array(),
 				);
 			}
 
-			$field_data                       = $field->to_formatted_array();
-			$field_data                       = $this->migrate_payments( $field_data );
-			$wrappers[ $form_id ]['fields'][] = $field_data;
+			$field_data                           = $field->to_formatted_array();
+			$field_data                           = $this->migrate_payments( $field_data );
+			$wrappers[ $form_id ]['parent_group'] = ! empty( $field->parent_group ) ? $field->parent_group : '';
+			$wrappers[ $form_id ]['fields'][]     = $field_data;
+
 		}
 		$wrappers = array_values( $wrappers );
 
@@ -1214,7 +1251,7 @@ abstract class Forminator_Base_Form_Model {
 									$data['fields'][ $i ]['payments'][ $x ]['subscription_variable'] = '';
 								}
 							}
-							$data['fields'][ $i ]['payments'][ $x ]['plan_id'] = '';
+							$data['fields'][ $i ]['payments'][ $x ]['plan_id']      = '';
 							$data['fields'][ $i ]['payments'][ $x ]['live_plan_id'] = '';
 							$data['fields'][ $i ]['payments'][ $x ]['test_plan_id'] = '';
 							$x ++;
@@ -1473,5 +1510,140 @@ abstract class Forminator_Base_Form_Model {
 		$enabled = apply_filters( 'forminator_module_is_entry_share_enabled', $enabled, $module_id, $module_type );
 
 		return $enabled;
+	}
+
+	/**
+	 * Check if we can submit the form
+	 *
+	 * @since 1.19.0
+	 * @return array
+	 */
+	public function form_can_submit() {
+		$form_settings = $this->settings;
+		$can_show      = array(
+			'can_submit' => true,
+			'error'      => '',
+		);
+
+		// Allow module slug to be translated for messages.
+		$module_slug   = static::$module_slug;
+		switch ( $module_slug ) {
+			case 'quiz':
+				$module_slug = esc_html__( 'quiz', 'forminator' );
+				break;
+			case 'poll':
+				$module_slug = esc_html__( 'poll', 'forminator' );
+				break;
+			default:
+				$module_slug = esc_html__( 'form', 'forminator' );
+				break;
+		}
+
+		if ( ! empty( $form_settings['logged-users'] ) ) {
+			if ( filter_var( $form_settings['logged-users'], FILTER_VALIDATE_BOOLEAN ) && ! is_user_logged_in() ) {
+				$can_show = array(
+					'can_submit' => false,
+					/* translators: %s: module slug */
+					'error'      => sprintf( esc_html__( 'Only logged in users can submit this %s.', 'forminator' ), $module_slug ),
+				);
+			}
+		}
+		if ( $can_show['can_submit'] ) {
+			if ( isset( $form_settings['form-expire'] ) ) {
+				if ( 'submits' === $form_settings['form-expire'] ) {
+					if ( isset( $form_settings['expire_submits'] ) && ! empty( $form_settings['expire_submits'] ) ) {
+						$submits       = intval( $form_settings['expire_submits'] );
+						$total_entries = Forminator_Form_Entry_Model::count_entries( $this->id );
+						if ( $total_entries >= $submits ) {
+							$can_show = array(
+								'can_submit' => false,
+								/* translators: %s: module slug */
+								'error'      => sprintf( esc_html__( 'You have reached the maximum allowed submissions for this %s.', 'forminator' ), $module_slug ),
+							);
+						}
+					}
+				} elseif ( 'date' === $form_settings['form-expire'] ) {
+					if ( isset( $form_settings['expire_date'] ) && ! empty( $form_settings['expire_date'] ) ) {
+						$expire_date  = $this->get_expiry_date( $form_settings['expire_date'] );
+						$current_date = strtotime( 'now' );
+						if ( $current_date > $expire_date ) {
+							$can_show = array(
+								'can_submit' => false,
+								/* translators: %s: module slug */
+								'error'      => sprintf( esc_html__( 'Unfortunately this %s has expired.', 'forminator' ), $module_slug ),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		if ( $can_show['can_submit'] ) {
+			// disable submit if status is draft.
+			if ( self::STATUS_DRAFT === $this->status ) {
+				$can_show = array(
+					'can_submit' => false,
+					/* translators: %s: module slug */
+					'error'      => sprintf( esc_html__( 'This %s is not published.', 'forminator' ), $module_slug ),
+				);
+			}
+		}
+
+		return apply_filters( 'forminator_cform_' . static::$module_slug . '_is_submittable', $can_show, $this->id, $form_settings );
+	}
+
+	/**
+	 * Check if we can show the form
+	 *
+	 * @param $is_preview
+	 *
+	 * @since 1.19.0
+	 * @return bool
+	 */
+	public function form_is_visible( $is_preview ) {
+		$form_settings = $this->settings;
+		$can_show      = true;
+
+		if ( isset( $form_settings['logged-users'] ) && ! empty( $form_settings['logged-users'] ) ) {
+			if ( filter_var( $form_settings['logged-users'], FILTER_VALIDATE_BOOLEAN ) && ! is_user_logged_in() ) {
+				$can_show = false;
+			}
+		}
+		if ( $can_show ) {
+			if ( isset( $form_settings['form-expire'] ) ) {
+				if ( 'submits' === $form_settings['form-expire'] ) {
+					if ( isset( $form_settings['expire_submits'] ) && ! empty( $form_settings['expire_submits'] ) ) {
+						$submits       = intval( $form_settings['expire_submits'] );
+						$total_entries = Forminator_Form_Entry_Model::count_entries( $this->id );
+						if ( $total_entries >= $submits && ! $is_preview ) {
+							$can_show = false;
+						}
+					}
+				} elseif ( 'date' === $form_settings['form-expire'] ) {
+					if ( isset( $form_settings['expire_date'] ) && ! empty( $form_settings['expire_date'] ) ) {
+						$expire_date  = $this->get_expiry_date( $form_settings['expire_date'] );
+						$current_date = strtotime( 'now' );
+						if ( $current_date > $expire_date && ! $is_preview ) {
+							$can_show = false;
+						}
+					}
+				}
+			}
+		}
+
+		return apply_filters( 'forminator_cform_' . static::$module_slug . '_is_visible', $can_show, $this->id, $form_settings );
+	}
+
+	/**
+	 * Get expiry date
+	 *
+	 * Before 1.15.4 expiry date is being saved like: 1 Mar 2022
+	 * Since we changed it to save as Unix timestamp, we need to process it
+	 *
+	 * @since 1.19.0
+	 * @return string
+	 */
+	public function get_expiry_date( $expire_date ) {
+		return is_numeric( $expire_date ) ? (int) $expire_date / 1000 : strtotime( $expire_date );
 	}
 }

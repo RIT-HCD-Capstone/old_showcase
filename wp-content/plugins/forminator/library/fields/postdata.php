@@ -136,14 +136,15 @@ class Forminator_Postdata extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
-		$this->field 		= $field;
-		$this->draft_values = ! empty( $draft_value['value'] ) ? $draft_value['value'] : array() ;
+		$settings           = $views_obj->model->settings;
+		$this->field        = $field;
+		$this->draft_values = ! empty( $draft_value['value'] ) ? $draft_value['value'] : array();
 
 		$html     = '';
 		$required = self::get_property( 'required', $field, false );
@@ -359,7 +360,7 @@ class Forminator_Postdata extends Forminator_Field {
 		$type          = trim( $type );
 		$full_id       = 'forminator-field-' . $input_suffix . '-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$is_preview    = filter_input( INPUT_POST, 'is_preview', FILTER_VALIDATE_BOOLEAN );
-		$draft_value   = isset( $this->draft_values[$input_suffix] ) ? $this->draft_values[$input_suffix] : '';
+		$draft_value   = isset( $this->draft_values[ $input_suffix ] ) ? $this->draft_values[ $input_suffix ] : '';
 
 		if ( ! empty( $field_enabled ) ) {
 			$cols         = 12;
@@ -392,7 +393,7 @@ class Forminator_Postdata extends Forminator_Field {
 			$ajax = ! empty( $options['ajax'] );
 			if ( 'wp_editor' === $type ) {
 				// multiple wp_editor support.
-				$field_markup['id'] = $field_markup['id'] . '-' . uniqid();
+				$field_markup['id'] = $field_markup['id'];
 			}
 
 			if ( 'wp_editor' === $type && ! $is_preview && ! $ajax ) {
@@ -470,10 +471,10 @@ class Forminator_Postdata extends Forminator_Field {
 					$post_value = self::get_post_data( $name, self::FIELD_PROPERTY_VALUE_NOT_EXIST );
 				}
 
-				$name       = $id . '-' . $field_name . '[]';
-				$get_id     = $id . '-' . $field_name;
-				$html      .= '<div class="forminator-multiselect">';
-				$i          = 1;
+				$name   = $id . '-' . $field_name . '[]';
+				$get_id = $id . '-' . $field_name;
+				$html  .= '<div class="forminator-multiselect">';
+				$i      = 1;
 
 				foreach ( $options as $option ) {
 
@@ -489,10 +490,10 @@ class Forminator_Postdata extends Forminator_Field {
 					}
 
 					if ( $selected ) {
-						$selected 		= esc_attr( 'checked="checked"' );
+						$selected       = esc_attr( 'checked="checked"' );
 						$selected_class = esc_attr( 'forminator-option forminator-is_checked' );
 					} else {
-						$selected 		= '';
+						$selected       = '';
 						$selected_class = esc_attr( 'forminator-option' );
 					}
 
@@ -546,7 +547,7 @@ class Forminator_Postdata extends Forminator_Field {
 					'single',
 					0,
 					array(
-						'accept' => '.' . implode( ',.', $this->image_extensions )
+						'accept' => '.' . implode( ',.', $this->image_extensions ),
 					)
 				);
 			} else {
@@ -646,7 +647,7 @@ class Forminator_Postdata extends Forminator_Field {
 		$post_excerpt             = self::get_property( 'post_excerpt', $field, '' );
 		$setting_required_message = self::get_property( 'required_message', $field, '' );
 		$post_type                = self::get_property( 'post_type', $field, 'post' );
-		$post_image 			  = self::get_property( 'post_image', $field, '' );
+		$post_image               = self::get_property( 'post_image', $field, '' );
 
 		$title         = isset( $data['post-title'] ) ? $data['post-title'] : '';
 		$content       = isset( $data['post-content'] ) ? $data['post-content'] : '';

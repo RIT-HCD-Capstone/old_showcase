@@ -44,7 +44,7 @@ class Forminator_Stripe extends Forminator_Field {
 	/**
 	 * @var string
 	 */
-	public $icon = 'sui-icon-stripe';
+	public $icon = 'sui-icon forminator-icon-stripe';
 
 	/**
 	 * @var bool
@@ -137,11 +137,12 @@ class Forminator_Stripe extends Forminator_Field {
 	 * Field front-end markup
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array() ) {
+	public function markup( $field, $views_obj ) {
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -174,7 +175,7 @@ class Forminator_Stripe extends Forminator_Field {
 		$metadata         = self::get_property( 'options', $field, array() );
 		$desc             = self::get_property( 'product_description', $field, '' );
 		$company          = self::get_property( 'company_name', $field, '' );
-		$uniqid           = uniqid();
+		$uniqid           = Forminator_CForm_Front::$uid;
 
 		if ( mb_strlen( $company ) > 22 ) {
 			$company = mb_substr( $company, 0, 19 ) . '...';
@@ -197,6 +198,17 @@ class Forminator_Stripe extends Forminator_Field {
 
 		if ( ! isset( $settings['form-style'] ) ) {
 			$settings['form-style'] = 'default';
+		}
+
+		if( ! empty( $settings['form-font-family'] ) ) {
+			$field_font_family = $this->get_form_setting( 'cform-input-font-family', $settings, 'inherit' );
+			if( $field_font_family == 'custom' ) {
+				$data_font_family = $this->get_form_setting( 'cform-input-custom-family', $settings, 'inherit' );
+			} else {
+				$data_font_family = $field_font_family;
+			}
+		} else {
+			$data_font_family = 'inherit';
 		}
 
 		$attr = array(
@@ -229,7 +241,7 @@ class Forminator_Stripe extends Forminator_Field {
 			'data-font-color-error' => $this->get_form_setting( 'input-color', $settings, '#000000' ),
 			'data-font-size'        => $this->get_form_setting( 'cform-input-font-size', $settings, '16' ) . 'px',
 			// 'data-line-height'      => '1.3em',.
-			'data-font-family'      => $this->get_form_setting( 'cform-input-font-family', $settings, 'inherit' ),
+			'data-font-family'      => $data_font_family,
 			'data-font-weight'      => $this->get_form_setting( 'cform-input-font-weight', $settings, '400' ),
 			'data-icon-color'       => $this->get_form_setting( 'input-icon', $settings, '#777771' ),
 			'data-icon-color-hover' => $this->get_form_setting( 'input-icon-hover', $settings, '#17A8E3' ),
@@ -435,7 +447,7 @@ class Forminator_Stripe extends Forminator_Field {
 		// apply merge tags to payment description.
 		$product_description = isset( $field['product_description'] ) ? $field['product_description'] : '';
 		if ( ! empty( $product_description ) ) {
-			$product_description          = forminator_replace_form_data( $product_description );
+			$product_description          = forminator_replace_form_data( $product_description, Forminator_Front_Action::$module_object );
 			$field['product_description'] = $product_description;
 		}
 
@@ -467,7 +479,9 @@ class Forminator_Stripe extends Forminator_Field {
 		}
 
 		// Convert object to array.
-		$stored_metadata = $intent->metadata->toArray();
+		$metadata_key    = $intent->metadata->keys();
+		$metadata_value  = $intent->metadata->values();
+		$stored_metadata = array_combine( $metadata_key, $metadata_value );
 
 		// New metadata array.
 		$metadata = array();
@@ -683,7 +697,7 @@ class Forminator_Stripe extends Forminator_Field {
 	}
 
 	/**
-	 * @param array                 $field
+	 * @param array $field
 	 *
 	 * @return array
 	 */
@@ -900,9 +914,9 @@ class Forminator_Stripe extends Forminator_Field {
 	 * @return array
 	 */
 	public function get_amount_dependent_fields( $field_settings ) {
-		$depend_field = array();
+		$depend_field       = array();
 		$this->payment_plan = $this->get_payment_plan( $field_settings );
-		$plan = $this->payment_plan;
+		$plan               = $this->payment_plan;
 
 		if ( empty( $plan['payment_method'] ) ) {
 			return $depend_field;
@@ -930,7 +944,7 @@ class Forminator_Stripe extends Forminator_Field {
 	 *
 	 * @since 1.7
 	 *
-	 * @param array                 $field
+	 * @param array $field
 	 *
 	 * @return double
 	 */
@@ -953,7 +967,7 @@ class Forminator_Stripe extends Forminator_Field {
 			$amount_var = $amount_variable;
 			$form_field = Forminator_Front_Action::$module_object->get_field( $amount_var, false );
 			if ( $form_field ) {
-				$form_field        = $form_field->to_formatted_array();
+				$form_field = $form_field->to_formatted_array();
 				if ( isset( $form_field['type'] ) ) {
 					if ( 'calculation' === $form_field['type'] ) {
 

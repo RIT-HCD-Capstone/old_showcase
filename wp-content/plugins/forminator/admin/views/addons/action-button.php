@@ -25,9 +25,6 @@ if ( isset( $compound ) && true === is_bool( $compound ) ) {
 				echo esc_attr( $data ) . '="' . esc_attr( $val ) . '"';
 			}
 		}
-		if ( isset( $disabled ) && $disabled ) {
-			echo 'disabled="' . esc_attr( $disabled ) . '"';
-		}
 		?>
 	>
 
@@ -59,9 +56,6 @@ if ( isset( $compound ) && true === is_bool( $compound ) ) {
 			foreach ( $attrs as $data => $val ) {
 				echo esc_attr( $data ) . '="' . esc_attr( $val ) . '"';
 			}
-		}
-		if ( isset( $disabled ) && $disabled ) {
-			echo 'disabled="' . esc_attr( $disabled ) . '"';
 		}
 		?>
 	>

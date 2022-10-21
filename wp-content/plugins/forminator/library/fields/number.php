@@ -112,12 +112,13 @@ class Forminator_Number extends Forminator_Field {
 	 * @since 1.0
 	 *
 	 * @param $field
-	 * @param $settings
+	 * @param Forminator_Render_Form $views_obj Forminator_Render_Form object.
 	 *
 	 * @return mixed
 	 */
-	public function markup( $field, $settings = array(), $draft_value = null ) {
+	public function markup( $field, $views_obj, $draft_value = null ) {
 
+		$settings            = $views_obj->model->settings;
 		$this->field         = $field;
 		$this->form_settings = $settings;
 
@@ -126,7 +127,7 @@ class Forminator_Number extends Forminator_Field {
 		$max         = '';
 		$id          = self::get_property( 'element_id', $field );
 		$name        = $id;
-		$id          = 'forminator-field-' . $id;
+		$id          = 'forminator-field-' . $id . '_' . Forminator_CForm_Front::$uid;
 		$required    = self::get_property( 'required', $field, false );
 		$ariareq     = 'false';
 		$placeholder = $this->sanitize_value( self::get_property( 'placeholder', $field ) );
@@ -136,7 +137,7 @@ class Forminator_Number extends Forminator_Field {
 		$design      = $this->get_form_style( $settings );
 		$min         = esc_html( self::get_property( 'limit_min', $field, false ) );
 		$max         = esc_html( self::get_property( 'limit_max', $field, false ) );
-		$precision   = self::get_property( 'precision', $field, 0 );
+		$precision   = self::get_property( 'precision', $field, 2 );
 		$separator   = self::get_property( 'separators', $field, 'blank' );
 		$separators  = $this->forminator_separators( $separator, $field );
 
@@ -171,6 +172,13 @@ class Forminator_Number extends Forminator_Field {
 
 		if ( 'blank' === $separator ) {
 			$number_attr['type'] = 'number';
+			$number_attr['step'] = 'any';
+			if ( $min ) {
+				$number_attr['min'] = $min;
+			}
+			if ( $max ) {
+				$number_attr['max'] = $max;
+			}
 		}
 
 		$autofill_markup = $this->get_element_autofill_markup_attr( self::get_property( 'element_id', $field ) );
@@ -210,10 +218,10 @@ class Forminator_Number extends Forminator_Field {
 		}
 
 		if ( false !== $min && is_numeric( $min ) ) {
-			$rules .= '"minNumber": ' . $min . ',';
+			$rules .= '"minNumber": ' . (float) $min . ',';
 		}
 		if ( false !== $max && is_numeric( $max ) ) {
-			$rules .= '"maxNumber": ' . $max . ',';
+			$rules .= '"maxNumber": ' . (float) $max . ',';
 		}
 
 		$rules .= '},';
@@ -236,7 +244,10 @@ class Forminator_Number extends Forminator_Field {
 		$messages = '"' . $this->get_id( $field ) . '": {' . "\n";
 
 		if ( $this->is_required( $field ) ) {
-			$required_validation_message = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', 'forminator' ) );
+			$required_validation_message = self::get_property( 'required_message', $field );
+			if ( empty( $required_validation_message ) ) {
+				$required_validation_message = __( 'This field is required. Please enter number.', 'forminator' );
+			}
 			$required_validation_message = apply_filters(
 				'forminator_field_number_required_validation_message',
 				$required_validation_message,
