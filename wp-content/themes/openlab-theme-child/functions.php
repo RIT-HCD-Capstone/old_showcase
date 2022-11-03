@@ -7,6 +7,24 @@
  * @author Kadin Benjamin ktb1193
  * */
 
+/* prefix_print_script_handle
+ *
+ * prints the handles of all registered scripts that load on a page
+ * to the top of the page.
+ *
+ * @sourced from https://gist.github.com/robneu/8291089
+ *
+ * @author robneu
+ * */
+/*function prefix_print_script_handles() {
+	global $wp_scripts;
+	// Loop through and display all script handles.
+	foreach( $wp_scripts->queue as $handle ) {
+		echo $handle . ' | ';
+	}
+}
+add_action( 'wp_print_scripts', 'prefix_print_script_handles' );*/
+
 /* get_child_url
  *
  * @return the @link of the website, https://dhssatrit.cad.rit.edu/.
@@ -32,15 +50,21 @@ function get_child_template_directory_uri() {
  *
  * - registers openlab-theme-child/style.css.
  * - loads openlab-theme-child/style.css after openlab-theme css.
- * - loads openlab-theme-child/openlab-theme-child.js.
+ * - loads openlab-theme-child/js/openlab-theme-child.js.
+ * - unloads openlab-theme/js/directory.js
+ * - loads openlab-theme-child/js/directory.js
  *
  * @author Kadin Benjamin ktb1193
  * */
-function my_theme_enqueue_styles() {
+function my_theme_enqueue_scripts_n_styles() {
         wp_register_style( 'child-style', get_stylesheet_uri(), array( 'main-styles' ), wp_get_theme()->get('Version') );
         wp_enqueue_style( 'child-style' );
-        wp_enqueue_script( 'my_script', get_stylesheet_directory_uri() . '/openlab-theme-child.js' );
-} add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
+        wp_enqueue_script( 'my_script', get_stylesheet_directory_uri() . '/js/openlab-theme-child.js' );
+        wp_dequeue_script( 'openlab-directory' );
+        wp_deregister_script( 'openlab-directory' );
+        wp_register_script( 'openlab-child-directory', get_child_template_directory_uri() . 'js/child-directory.js', [ 'jquery' ], 1, true );
+        wp_enqueue_script( 'openlab-child-directory' );
+} add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_scripts_n_styles' );
 
 /* site_footer
  *
