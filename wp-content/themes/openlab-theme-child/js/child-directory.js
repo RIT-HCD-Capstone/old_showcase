@@ -14,7 +14,7 @@
 				$groupTypeCheckboxes = $( '.sidebar-filter-checkbox input.group-type-checkbox' );
 				$groupTypeCheckboxes.on( 'change', calculateFilterStates );
 				calculateFilterStates();
-			}
+			}	
 		}
 	);
 

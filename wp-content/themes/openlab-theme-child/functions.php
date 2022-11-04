@@ -62,9 +62,9 @@ function my_theme_enqueue_scripts_n_styles() {
         wp_enqueue_script( 'my_script', get_stylesheet_directory_uri() . '/js/openlab-theme-child.js' );
         wp_dequeue_script( 'openlab-directory' );
         wp_deregister_script( 'openlab-directory' );
-        wp_register_script( 'openlab-child-directory', get_child_template_directory_uri() . 'js/child-directory.js', [ 'jquery' ], 1, true );
-        wp_enqueue_script( 'openlab-child-directory' );
-} add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_scripts_n_styles' );
+        //wp_register_script( 'openlab-child-directory', get_child_template_directory_uri() . 'js/child-directory.js', [ 'jquery' ], 1, true );
+        //wp_enqueue_script( 'openlab-child-directory' );
+} add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_scripts_n_styles', 99 );
 
 /* site_footer
  *
