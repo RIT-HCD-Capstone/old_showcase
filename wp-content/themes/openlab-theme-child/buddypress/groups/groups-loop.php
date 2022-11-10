@@ -1,7 +1,7 @@
 <?php
 /* groups-loop.php
  *
- * the purpose of groups-loop.php is to define the retrieval and display routines for the search-results page (I think).
+ * the purpose of groups-loop.php is to define the display routines for the search-results page (I think).
  *
  * @overrides openlab-theme/buddypress/groups/groups-loop.php
  *

@@ -1,4 +1,13 @@
 <?php
+/* sidebar-group-archive.php
+ *
+ * sidebar-group-archive.php defines the structure of the search sidebar.
+ *
+ * @overrides openlab-theme/sidebar-group-archive.php
+ *
+ * @author OpenLab Team
+ * @author Kadin Benjamin ktb1193
+ * */
 
 $group_type        = bp_get_current_group_directory_type();
 $group_type_object = cboxol_get_group_type( $group_type );
@@ -47,7 +56,7 @@ var OLAcadUnits = ' . wp_json_encode( $academic_unit_map ) . ';
 		<form id="group_seq_form" name="group_seq_form" action="#" method="get">
 			<?php get_template_part( 'parts/sidebar/filter-search' ); ?>
 
-			<p><?php esc_html_e( 'Narrow down your results using some of the filters below.', 'commons-in-a-box' ); ?></p>
+			<!-- <p><?php //esc_html_e( 'Narrow down your results using some of the filters below.', 'commons-in-a-box' ); ?></p> -->
 
 			<div id="sidebarCustomSelect" class="custom-select-parent">
 				<?php if ( $is_search ) : ?>
